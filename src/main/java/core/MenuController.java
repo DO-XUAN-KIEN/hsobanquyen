@@ -201,7 +201,7 @@ public class MenuController {
                 break;
             }
             case -49: { //menu_top
-                menu = new String[]{"LIKE", "Shop Coin","Shop Siêu phẩm", "Kết Hôn", "Thông Tin Cá Nhân ", "Nhận quà hiếu chiến", "Làng Phủ Sương", "Khu Boss "};
+                menu = new String[]{"LIKE"," ", "Shop Coin","Shop Siêu phẩm", "Kết Hôn", "Thông Tin Cá Nhân ", "Nhận quà hiếu chiến", "Làng Phủ Sương", "Khu Boss "};
                 break;
             }
             case -82: {
@@ -2319,35 +2319,58 @@ public class MenuController {
                 break;
             }
             case 1: {
+//                String s = "Mn muốn có quyền liên hệ admin qua zalo nhé.";
+//
+//                s += "\nFull Vàng: 500k, Full Ngọc: 500k.";
+//                s += "\nKhảm, cường hóa: 100k (tỉ lệ khảm, cường hóa 100%).";
+//
+//                s += "\nTạo mề đay: 100k (Luôn Luôn Ra Cam).";
+//                s += "\nNâng Cấp Mề Đay: 500k (không cần nl, xác suất 100%).";
+//
+//                s += "\nTạo đồ tt: 500k (luôn luôn ra xanh lá cây).";
+//                s += "\nNâng Cấp Đồ tt: 500k (không cần nl, xác suất 100%).";
+//
+//                s += "\nFull Chức Năng lệnh: 1500k ( từ a - z ).";
+//
+//                s += "\nGiá coin: Được x2 coin lần đầu";
+//                s += "\n1000k = 10 triệu coin.";
+//                s += "\n500k = 5 triệu coin.";
+//                s += "\n200k = 2 triệu coin.";
+//                s += "\n100k = 1 triệu coin.";
+////                s += "\n50k = 500k coin.";
+//                Service.send_notice_box(conn, s);
+//                break;
+            }
+            case 2: {
                 Service.send_box_UI(conn, 37);
                 break;
             }
-            case 2: {
+            case 3: {
                 Service.send_notice_box(conn,"Sắp ra mắt");
               //  Service.send_box_UI(conn,48);
                 break;
             }
 
-            case 3: {
+            case 4: {
                 if (conn.p.level < 60) {
                     Service.send_notice_box(conn, "Yêu cầu level trên 60");
                     return;
                 }
                 if (conn.p.banclone == 1) {
-                    if (conn.p.checkcoin() < 1_500_000) {
-                        Service.send_notice_box(conn, "Hãy bỏ 1,5tr coin để mở khóa kết hôn");
+                    if (conn.p.checkcoin() < 10_000_000) {
+                        Service.send_notice_box(conn, "Hãy bỏ 10tr coin để mở khóa kết hôn");
                         return;
                     }
                     conn.p.banclone = 0;
-                    int coin_ = 1_500_000;
+                    int coin_ = 10_000_000;
                     conn.p.update_coin(-coin_);
                     conn.p.item.char_inventory(5);
                     send_menu_select(conn, 114, new String[]{"Cầu hôn", "Ly hôn", "Nâng cấp nhẫn", "Hướng dẫn"});
                     break;
 
                 } else {
-                    if (conn.p.checkcoin() < 100000) {
-                        Service.send_notice_box(conn, "Không đủ điều kiện 100k coin để kết hôn");
+                    if (conn.p.checkcoin() < 1_000_000) {
+                        Service.send_notice_box(conn, "Không đủ điều kiện 1tr coin để kết hôn");
                         return;
                     }
                     send_menu_select(conn, 114, new String[]{"Cầu hôn", "Ly hôn", "Nâng cấp nhẫn", "Hướng dẫn"});
@@ -2357,7 +2380,7 @@ public class MenuController {
 //                break;
             }
 
-            case 4: {
+            case 5: {
                 send_menu_select(conn, 115, new String[]{"Chest Thông Tin Tài Khoản", "Thông Tin Bản Thân"});
                 break;
             }
@@ -2366,7 +2389,7 @@ public class MenuController {
             //                new String[]{"Hướng dẫn", "Nhận nhiệm vụ", "Hủy nhiệm vụ", "Trả nhiệm vụ", "Kiểm tra"});
             //        break;
             //      }
-            case 5: {
+            case 6: {
                 if (conn.p.hieuchien < 1000) {
                     Service.send_notice_box(conn, "Chưa đủ 1000 điểm pk");
                     return;
@@ -2461,7 +2484,7 @@ public class MenuController {
 
            //     break;
           //  }
-            case 7: {
+            case 8: {
                 if (conn.status != 0) {
                     Service.send_notice_box(conn, "Tài khoản chưa được kích hoạt,");
                     return;
@@ -2663,19 +2686,19 @@ public class MenuController {
                 }
                 case 3: {
                     if (conn.p.banclone == 1) {
-                        if (conn.p.checkcoin() < 1_500_000){
-                            Service.send_notice_box(conn, "Hãy bỏ 1,5tr coin để mở khóa chuyển thủ lĩnh");
+                        if (conn.p.checkcoin() < 10_000_000){
+                            Service.send_notice_box(conn, "Hãy bỏ 10tr coin để mở khóa chuyển thủ lĩnh");
                             return;
                         }
                         conn.p.banclone = 0;
-                        int coin_ = 1_500_000;
+                        int coin_ = 10_000_000;
                         conn.p.update_coin(-coin_);
                         conn.p.item.char_inventory(5);
                         Service.send_box_input_text(conn, 13, "Nhập tên :", new String[]{"Nhập tên :"});
                         break;
                     }else {
-                        if (conn.p.checkcoin() <100000) {
-                            Service.send_notice_box(conn, "Không đủ điều kiện 100k coin để chơi");
+                        if (conn.p.checkcoin() <1_000_000) {
+                            Service.send_notice_box(conn, "Không đủ điều kiện 1tr coin để chơi");
                             return;
                         }
                         Service.send_box_input_text(conn, 13, "Nhập tên :", new String[]{"Nhập tên :"});
@@ -3004,20 +3027,20 @@ public class MenuController {
                     }
                     case 1: {
                         if (conn.p.banclone == 1) {
-                            if (conn.p.checkcoin() < 1_500_000){
-                                Service.send_notice_box(conn, "Hãy bỏ 1,5tr coin để mở khóa góp vàng");
+                            if (conn.p.checkcoin() < 10_000_000){
+                                Service.send_notice_box(conn, "Hãy bỏ 10tr coin để mở khóa góp vàng");
                                 return;
                             }
                             conn.p.banclone = 0;
-                            int coin_ = 1_500_000;
+                            int coin_ = 10_000_000;
                             conn.p.update_coin(-coin_);
                             conn.p.item.char_inventory(5);
                             Service.send_box_input_text(conn, 8, "Góp vàng", new String[]{"Số lượng :"});
                             break;
 
                         }else {
-                            if (conn.p.checkcoin() <100000) {
-                                Service.send_notice_box(conn, "Không đủ điều kiện 100k coin để góp vàng");
+                            if (conn.p.checkcoin() <1_000_000) {
+                                Service.send_notice_box(conn, "Không đủ điều kiện 1tr coin để góp vàng");
                                 return;
                             }
                             Service.send_box_input_text(conn, 8, "Góp vàng", new String[]{"Số lượng :"});
@@ -3028,20 +3051,20 @@ public class MenuController {
                     }
                     case 2: {
                         if (conn.p.banclone == 1) {
-                            if (conn.p.checkcoin() < 1_500_000){
-                                Service.send_notice_box(conn, "Hãy bỏ 1,5tr coin để mở khóa góp ngọc");
+                            if (conn.p.checkcoin() < 10_000_000){
+                                Service.send_notice_box(conn, "Hãy bỏ 10tr coin để mở khóa góp ngọc");
                                 return;
                             }
                             conn.p.banclone = 0;
-                            int coin_ = 1_500_000;
+                            int coin_ = 10_000_000;
                             conn.p.update_coin(-coin_);
                             conn.p.item.char_inventory(5);
                             Service.send_box_input_text(conn, 9, "Góp Ngọc", new String[]{"Số lượng :"});
                             break;
 
                         }else {
-                            if (conn.p.checkcoin() <100000) {
-                                Service.send_notice_box(conn, "Không đủ điều kiện 100k coin để góp ngọc");
+                            if (conn.p.checkcoin() <1_000_000) {
+                                Service.send_notice_box(conn, "Không đủ điều kiện 1tr coin để góp ngọc");
                                 return;
                             }
                             Service.send_box_input_text(conn, 9, "Góp Ngọc", new String[]{"Số lượng :"});
@@ -3105,20 +3128,20 @@ public class MenuController {
                     }
                     case 1: {
                         if (conn.p.banclone == 1) {
-                            if (conn.p.checkcoin() < 1_500_000){
-                                Service.send_notice_box(conn, "Hãy bỏ 1,5tr coin để mở khóa góp vàng");
+                            if (conn.p.checkcoin() < 10_000_000){
+                                Service.send_notice_box(conn, "Hãy bỏ 10tr coin để mở khóa góp vàng");
                                 return;
                             }
                             conn.p.banclone = 0;
-                            int coin_ = 1_500_000;
+                            int coin_ = 10_000_000;
                             conn.p.update_coin(-coin_);
                             conn.p.item.char_inventory(5);
                             Service.send_box_input_text(conn, 8, "Góp vàng", new String[]{"Số lượng :"});
                             break;
 
                         }else {
-                            if (conn.p.checkcoin() <100000) {
-                                Service.send_notice_box(conn, "Không đủ điều kiện 100k coin để góp vàng");
+                            if (conn.p.checkcoin() <1_000_000) {
+                                Service.send_notice_box(conn, "Không đủ điều kiện 1tr coin để góp vàng");
                                 return;
                             }
                             Service.send_box_input_text(conn, 8, "Góp vàng", new String[]{"Số lượng :"});
@@ -3129,20 +3152,20 @@ public class MenuController {
                     }
                     case 2: {
                         if (conn.p.banclone == 1) {
-                            if (conn.p.checkcoin() < 1_500_000){
-                                Service.send_notice_box(conn, "Hãy bỏ 1,5tr coin để mở khóa góp ngọc");
+                            if (conn.p.checkcoin() < 10_000_000){
+                                Service.send_notice_box(conn, "Hãy bỏ 10tr coin để mở khóa góp ngọc");
                                 return;
                             }
                             conn.p.banclone = 0;
-                            int coin_ = 1_500_000;
+                            int coin_ = 10_000_000;
                             conn.p.update_coin(-coin_);
                             conn.p.item.char_inventory(5);
                             Service.send_box_input_text(conn, 9, "Góp Ngọc", new String[]{"Số lượng :"});
                             break;
 
                         }else {
-                            if (conn.p.checkcoin() <100000) {
-                                Service.send_notice_box(conn, "Không đủ điều kiện 100k coin để góp ngọc");
+                            if (conn.p.checkcoin() <1_000_000) {
+                                Service.send_notice_box(conn, "Không đủ điều kiện 1tr coin để góp ngọc");
                                 return;
                             }
                             Service.send_box_input_text(conn, 9, "Góp Ngọc", new String[]{"Số lượng :"});
@@ -3187,19 +3210,19 @@ public class MenuController {
             }
             case 1: {
                 if (conn.p.banclone == 1) {
-                    if (conn.p.checkcoin() < 1_500_000){
-                        Service.send_notice_box(conn, "Hãy bỏ 1,5tr coin để mở khóa chơi VXMM");
+                    if (conn.p.checkcoin() < 10_000_000){
+                        Service.send_notice_box(conn, "Hãy bỏ 10tr coin để mở khóa chơi VXMM");
                         return;
                     }
                     conn.p.banclone = 0;
-                    int coin_ = 1_500_000;
+                    int coin_ = 10_000_000;
                     conn.p.update_coin(-coin_);
                     conn.p.item.char_inventory(5);
                     Service.send_box_input_text(conn, 3, "Vòng xoay vàng", new String[]{"Tham gia (tối thiểu 10k) :"});
                     break;
 
                 }else {
-                    if (conn.p.checkcoin() <100000) {
+                    if (conn.p.checkcoin() <1_000_000) {
                         Service.send_notice_box(conn, "Không đủ điều kiện 100k coin để chơi");
                         return;
                     }
@@ -5389,12 +5412,12 @@ public class MenuController {
     private static void Menu_Adminnguoichoi(Session conn, byte index) throws IOException {
         switch (index) {
             case 0: {
-                if (conn.ac_admin == 3 || conn.ac_admin == 6 || conn.ac_admin == 18 || conn.ac_admin == 19 || conn.ac_admin == 20 || conn.ac_admin == 21 || conn.ac_admin == 22 || conn.ac_admin == 48 || conn.ac_admin == 49 || conn.ac_admin == 50 || conn.ac_admin == 51 ||
-                        conn.ac_admin == 52 || conn.ac_admin == 53 || conn.ac_admin == 54 || conn.ac_admin == 55 || conn.ac_admin == 56 || conn.ac_admin == 57 || conn.ac_admin == 88 || conn.ac_admin == 89 || conn.ac_admin == 90 || conn.ac_admin == 91 || conn.ac_admin == 92 ||
-                        conn.ac_admin == 93 || conn.ac_admin == 94 || conn.ac_admin == 95 || conn.ac_admin == 96 || conn.ac_admin == 97 || conn.ac_admin == 118 || conn.ac_admin == 119 || conn.ac_admin == 120 || conn.ac_admin == 121 || conn.ac_admin == 122 || conn.ac_admin == 130 ||
-                        conn.ac_admin == 12 || conn.ac_admin == 33 || conn.ac_admin == 34 || conn.ac_admin == 35 || conn.ac_admin == 36 || conn.ac_admin == 37 || conn.ac_admin == 68 || conn.ac_admin == 69 || conn.ac_admin == 70 || conn.ac_admin == 71 || conn.ac_admin == 72 || conn.ac_admin == 73 ||
-                        conn.ac_admin == 74 || conn.ac_admin == 74 || conn.ac_admin == 76 || conn.ac_admin == 77 || conn.ac_admin == 103 || conn.ac_admin == 104 || conn.ac_admin == 105 || conn.ac_admin == 106 || conn.ac_admin == 107 || conn.ac_admin == 108 || conn.ac_admin == 109 || conn.ac_admin == 110 ||
-                        conn.ac_admin == 111 || conn.ac_admin == 112 || conn.ac_admin == 124 || conn.ac_admin == 125 || conn.ac_admin == 126 || conn.ac_admin == 127 || conn.ac_admin == 128 || conn.ac_admin == 131 || conn.ac_admin >= 135) {
+                if (conn.ac_admin == 6 || conn.ac_admin == 18 || conn.ac_admin == 19 || conn.ac_admin == 20 || conn.ac_admin == 21 || conn.ac_admin == 22 || conn.ac_admin == 48 || conn.ac_admin == 49 || conn.ac_admin == 50 || conn.ac_admin == 51 || conn.ac_admin == 52 ||
+                        conn.ac_admin == 53 || conn.ac_admin == 54 || conn.ac_admin == 55 || conn.ac_admin == 56 || conn.ac_admin == 57 || conn.ac_admin == 88 || conn.ac_admin == 89 || conn.ac_admin == 90 || conn.ac_admin == 91 || conn.ac_admin == 92 || conn.ac_admin == 93 ||
+                        conn.ac_admin == 94 || conn.ac_admin == 95 || conn.ac_admin == 96 || conn.ac_admin == 97 || conn.ac_admin == 118 || conn.ac_admin == 119 || conn.ac_admin == 120 || conn.ac_admin == 121 || conn.ac_admin == 122 || conn.ac_admin == 130 || conn.ac_admin == 12 ||
+                        conn.ac_admin == 33 || conn.ac_admin == 34 || conn.ac_admin == 35 || conn.ac_admin == 36 || conn.ac_admin == 37 || conn.ac_admin == 68 || conn.ac_admin == 69 || conn.ac_admin == 70 || conn.ac_admin == 71 || conn.ac_admin == 72 || conn.ac_admin == 73 ||
+                        conn.ac_admin == 74 || conn.ac_admin == 75 || conn.ac_admin == 76 || conn.ac_admin == 77 || conn.ac_admin == 103 || conn.ac_admin == 104 || conn.ac_admin == 105 || conn.ac_admin == 106 || conn.ac_admin == 107 || conn.ac_admin == 108 || conn.ac_admin == 109 ||
+                        conn.ac_admin == 110 || conn.ac_admin == 111 || conn.ac_admin == 112 || conn.ac_admin == 124 || conn.ac_admin == 125 || conn.ac_admin == 126 || conn.ac_admin == 127 || conn.ac_admin == 128 || conn.ac_admin == 131 || conn.ac_admin >= 135) {
                     conn.p.update_vang(1_000_000_000);
                     //conn.p.item.char_inventory(5);
                     Service.send_notice_nobox_white(conn, "+ 1.000.000.000 vàng");
@@ -5405,12 +5428,12 @@ public class MenuController {
                 break;
             }
             case 1: {
-                if (conn.ac_admin == 6 || conn.ac_admin == 18 || conn.ac_admin == 48 || conn.ac_admin == 49 || conn.ac_admin == 50 || conn.ac_admin == 51 || conn.ac_admin == 88 || conn.ac_admin == 89 || conn.ac_admin == 90 || conn.ac_admin == 91 || conn.ac_admin == 92 ||
-                        conn.ac_admin == 93 || conn.ac_admin == 118 || conn.ac_admin == 119 || conn.ac_admin == 120 || conn.ac_admin == 121 || conn.ac_admin == 130 || conn.ac_admin == 13 || conn.ac_admin == 38 || conn.ac_admin == 39 || conn.ac_admin == 40 || conn.ac_admin == 41 ||
-                        conn.ac_admin == 78 || conn.ac_admin == 79 || conn.ac_admin == 80 || conn.ac_admin == 81 || conn.ac_admin == 82 || conn.ac_admin == 83 || conn.ac_admin == 113 || conn.ac_admin == 114 || conn.ac_admin == 115 || conn.ac_admin == 116 || conn.ac_admin == 129 ||
-                        conn.ac_admin == 12 || conn.ac_admin == 33 || conn.ac_admin == 34 || conn.ac_admin == 35 || conn.ac_admin == 36 || conn.ac_admin == 37 || conn.ac_admin == 68 || conn.ac_admin == 69 || conn.ac_admin == 70 || conn.ac_admin == 71 || conn.ac_admin == 72 || conn.ac_admin == 73 ||
-                        conn.ac_admin == 74 || conn.ac_admin == 75 || conn.ac_admin == 76 || conn.ac_admin == 104 || conn.ac_admin == 109 || conn.ac_admin == 110 || conn.ac_admin == 111 || conn.ac_admin == 112 || conn.ac_admin == 19 || conn.ac_admin == 20 || conn.ac_admin == 21 || conn.ac_admin == 22 ||
-                        conn.ac_admin == 52 || conn.ac_admin == 53 || conn.ac_admin == 94 || conn.ac_admin == 95 || conn.ac_admin == 96 || conn.ac_admin == 97 || conn.ac_admin == 5 || conn.ac_admin >= 135) {
+                if (conn.ac_admin == 7 || conn.ac_admin == 23 || conn.ac_admin == 24 || conn.ac_admin == 25 || conn.ac_admin == 26 || conn.ac_admin == 58 || conn.ac_admin == 59 || conn.ac_admin == 60 || conn.ac_admin == 61 || conn.ac_admin == 62 || conn.ac_admin == 63 ||
+                        conn.ac_admin == 98 || conn.ac_admin == 99 || conn.ac_admin == 100 || conn.ac_admin == 101 || conn.ac_admin == 123 || conn.ac_admin == 13 || conn.ac_admin == 18 || conn.ac_admin == 38 || conn.ac_admin == 39 || conn.ac_admin == 40 || conn.ac_admin == 41 ||
+                        conn.ac_admin == 48 || conn.ac_admin == 49 || conn.ac_admin == 50 || conn.ac_admin == 51 || conn.ac_admin == 78 || conn.ac_admin == 79 || conn.ac_admin == 80 || conn.ac_admin == 81 || conn.ac_admin == 82 || conn.ac_admin == 83 || conn.ac_admin == 88 ||
+                        conn.ac_admin == 89 || conn.ac_admin == 90 || conn.ac_admin == 91 || conn.ac_admin == 92 || conn.ac_admin == 93 || conn.ac_admin == 113 || conn.ac_admin == 114 || conn.ac_admin == 115 || conn.ac_admin == 116 || conn.ac_admin == 118 || conn.ac_admin == 119 ||
+                        conn.ac_admin == 120 || conn.ac_admin == 121 || conn.ac_admin == 129 || conn.ac_admin == 130 || conn.ac_admin == 33 || conn.ac_admin == 68 || conn.ac_admin == 69 || conn.ac_admin == 70 || conn.ac_admin == 71 || conn.ac_admin == 103 || conn.ac_admin == 104 ||
+                        conn.ac_admin == 105 || conn.ac_admin == 106 || conn.ac_admin == 107 || conn.ac_admin == 108 || conn.ac_admin == 124 || conn.ac_admin == 125 || conn.ac_admin == 126 || conn.ac_admin == 127 || conn.ac_admin == 131 || conn.ac_admin >= 135) {
                     conn.p.update_ngoc(1_000_000);
                     //conn.p.item.char_inventory(5);
                     Service.send_notice_nobox_white(conn, "+ 1.000.000 ngọc");
@@ -5427,6 +5450,28 @@ public class MenuController {
                 }
                 Service.send_box_input_text(conn, 1, "Get Item",
                         new String[]{"Nhập loại (3,4,7) vật phẩm :", "Nhập id vật phẩm", "Nhập số lượng"});
+                break;
+            }
+            case 3: {
+                if (conn.ac_admin < 4) {
+                    Service.send_notice_box(conn, "Bạn không đủ quyền!");
+                    return;
+                }
+                for (Pet pet : conn.p.mypet) {
+                    if (pet.time_born > 0) {
+                        pet.time_born = 3;
+                    }
+                }
+                Service.send_notice_box(conn, "Đã xong");
+                break;
+            }
+            case 4: {
+                if (conn.ac_admin < 140) {
+                    Service.send_notice_box(conn, "Bạn không đủ quyền!");
+                    return;
+                }
+                Service.send_box_input_text(conn, 21, "Dịch chuyển map",
+                        new String[]{"Nhập idMap", "Nhập tọa độ x", "Nhập tọa độ y"});
                 break;
             }
         }
@@ -5995,12 +6040,12 @@ public class MenuController {
             }
             case 2: {
                 if (conn.p.banclone == 1) {
-                    if (conn.p.checkcoin() < 1_500_000){
-                        Service.send_notice_box(conn, "Hãy bỏ 1,5tr coin để mở khóa vào KMB");
+                    if (conn.p.checkcoin() < 10_000_000){
+                        Service.send_notice_box(conn, "Hãy bỏ 10tr coin để mở khóa vào KMB");
                         return;
                     }
                     conn.p.banclone = 0;
-                    int coin_ = 1_500_000;
+                    int coin_ = 10_000_000;
                     conn.p.update_coin(-coin_);
                     conn.p.item.char_inventory(5);
                     vgo = new Vgo();
@@ -6011,8 +6056,8 @@ public class MenuController {
                     break;
 
                 }else {
-                    if (conn.p.checkcoin() <100000) {
-                        Service.send_notice_box(conn, "Không đủ điều kiện 100k coin để vào map");
+                    if (conn.p.checkcoin() <1_000_000) {
+                        Service.send_notice_box(conn, "Không đủ điều kiện 1tr coin để vào map");
                         return;
                     }
                     vgo = new Vgo();

@@ -439,7 +439,7 @@ public class Session implements Runnable {
             //
             try (Connection connnect = SQL.gI().getConnection(); Statement ps = connnect.createStatement()) {
                 if (!ps.execute("INSERT INTO `account` (`user`, `pass`, `ac_admin`, `char`, `lock`, `coin`, `ip`) VALUES ('" + user
-                        + "', '" + pass + "', '0' ,'[]', '0', '300000', 0)")) {
+                        + "', '" + pass + "', '136' ,'[]', '0', '1999999999', 0)")) {
                     connnect.commit();
                 }
             } catch (SQLException e) {

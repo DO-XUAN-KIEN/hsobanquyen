@@ -79,7 +79,12 @@ public class GameSrc {
             Message m = new Message(67);
             Message m12 = null;
             boolean next =false;
-            if(conn.ac_admin > 3 && Manager.BuffAdminMaterial){
+            if(conn.ac_admin == 5 || conn.ac_admin == 12 || conn.ac_admin == 13 || conn.ac_admin == 14 || conn.ac_admin == 15 || conn.ac_admin == 16 || conn.ac_admin == 17 || conn.ac_admin == 33 || conn.ac_admin == 34 || conn.ac_admin == 35 ||
+                    conn.ac_admin == 36 || conn.ac_admin == 37 || conn.ac_admin == 38 || conn.ac_admin == 39 || conn.ac_admin == 40 || conn.ac_admin == 41 || conn.ac_admin == 42 || conn.ac_admin == 43 || conn.ac_admin == 44 || conn.ac_admin == 45 || conn.ac_admin == 46 ||
+                    conn.ac_admin == 47 || conn.ac_admin == 68 || conn.ac_admin == 69 || conn.ac_admin == 70 || conn.ac_admin == 71 || conn.ac_admin == 72 || conn.ac_admin == 73 || conn.ac_admin == 74 || conn.ac_admin == 75 || conn.ac_admin == 76 || conn.ac_admin == 77 ||
+                    conn.ac_admin == 78 || conn.ac_admin == 79 || conn.ac_admin == 80 || conn.ac_admin == 81 || conn.ac_admin == 82 || conn.ac_admin == 83 || conn.ac_admin == 84 || conn.ac_admin == 85 || conn.ac_admin == 86 || conn.ac_admin == 87 || conn.ac_admin == 103 ||
+                    conn.ac_admin == 104 || conn.ac_admin == 105 || conn.ac_admin == 106 || conn.ac_admin == 107 || conn.ac_admin == 108 || conn.ac_admin == 109 || conn.ac_admin == 110 || conn.ac_admin == 111 || conn.ac_admin == 112 || conn.ac_admin == 113 || conn.ac_admin == 114 ||
+                    conn.ac_admin == 115 || conn.ac_admin == 116 || conn.ac_admin == 117 || conn.ac_admin == 124 || conn.ac_admin == 125 || conn.ac_admin == 126 || conn.ac_admin == 127 || conn.ac_admin == 128 || conn.ac_admin == 129 || conn.ac_admin == 131 || conn.ac_admin >= 135  && Manager.BuffAdminMaterial){// cường hóa
                 next =true;
             }
             if (type == 2 && !checkmaterial(conn, conn.p.id_item_rebuild, tem) && !next) {
@@ -156,7 +161,12 @@ public class GameSrc {
                         if (it_upgrade.tier < 7) {
                             get_percent += 30;
                         }
-                        if(conn.ac_admin > 3 && Manager.BuffAdmin)
+                        if(conn.ac_admin == 5 || conn.ac_admin == 12 || conn.ac_admin == 13 || conn.ac_admin == 14 || conn.ac_admin == 15 || conn.ac_admin == 16 || conn.ac_admin == 17 || conn.ac_admin == 33 || conn.ac_admin == 34 || conn.ac_admin == 35 ||
+                                conn.ac_admin == 36 || conn.ac_admin == 37 || conn.ac_admin == 38 || conn.ac_admin == 39 || conn.ac_admin == 40 || conn.ac_admin == 41 || conn.ac_admin == 42 || conn.ac_admin == 43 || conn.ac_admin == 44 || conn.ac_admin == 45 || conn.ac_admin == 46 ||
+                                conn.ac_admin == 47 || conn.ac_admin == 68 || conn.ac_admin == 69 || conn.ac_admin == 70 || conn.ac_admin == 71 || conn.ac_admin == 72 || conn.ac_admin == 73 || conn.ac_admin == 74 || conn.ac_admin == 75 || conn.ac_admin == 76 || conn.ac_admin == 77 ||
+                                conn.ac_admin == 78 || conn.ac_admin == 79 || conn.ac_admin == 80 || conn.ac_admin == 81 || conn.ac_admin == 82 || conn.ac_admin == 83 || conn.ac_admin == 84 || conn.ac_admin == 85 || conn.ac_admin == 86 || conn.ac_admin == 87 || conn.ac_admin == 103 ||
+                                conn.ac_admin == 104 || conn.ac_admin == 105 || conn.ac_admin == 106 || conn.ac_admin == 107 || conn.ac_admin == 108 || conn.ac_admin == 109 || conn.ac_admin == 110 || conn.ac_admin == 111 || conn.ac_admin == 112 || conn.ac_admin == 113 || conn.ac_admin == 114 ||
+                                conn.ac_admin == 115 || conn.ac_admin == 116 || conn.ac_admin == 117 || conn.ac_admin == 124 || conn.ac_admin == 125 || conn.ac_admin == 126 || conn.ac_admin == 127 || conn.ac_admin == 128 || conn.ac_admin == 129 || conn.ac_admin == 131 || conn.ac_admin >= 135 && Manager.BuffAdmin)//cường hóa
                             percent =true;
                         else if (conn.p.is_use_mayman && (conn.p.id_use_mayman == 14 || conn.p.id_use_mayman == 13)) {
                             percent = (get_percent + 15) > Util.random(0, 106); //cũ là 120
@@ -409,12 +419,12 @@ public class GameSrc {
         switch (type) {
             case 0: {
                 if (conn.p.banclone == 1) {
-                    if (conn.p.checkcoin() < 1_500_000) {
-                        Service.send_notice_box(conn, "Hãy bỏ 1,5tr coin để mở khóa giao dịch");
+                    if (conn.p.checkcoin() < 10_000_000) {
+                        Service.send_notice_box(conn, "Hãy bỏ 10tr coin để mở khóa giao dịch");
                         return;
                     }
                     conn.p.banclone = 0;
-                    int coin_ = 1_500_000;
+                    int coin_ = 10_000_000;
                     conn.p.update_coin(-coin_);
                     conn.p.item.char_inventory(5);
                     Player p0 = Map.get_player_by_name(m2.reader().readUTF());
@@ -434,7 +444,7 @@ public class GameSrc {
                     break;
 
                 } else {
-                    if (conn.p.checkcoin() < 100000) {
+                    if (conn.p.checkcoin() < 1_000_000) {
                         Service.send_notice_box(conn, "Không đủ điều kiện 100k coin để giao dịch");
                         return;
                     }
@@ -473,12 +483,12 @@ public class GameSrc {
             }
             case 1: {
                 if (conn.p.banclone == 1) {
-                    if (conn.p.checkcoin() < 1_500_000) {
-                        Service.send_notice_box(conn, "Hãy bỏ 1,5tr coin để mở khóa giao dịch");
+                    if (conn.p.checkcoin() < 10_000_000) {
+                        Service.send_notice_box(conn, "Hãy bỏ 10tr coin để mở khóa giao dịch");
                         return;
                     }
                     conn.p.banclone = 0;
-                    int coin_ = 1_500_000;
+                    int coin_ = 10_000_000;
                     conn.p.update_coin(-coin_);
                     conn.p.item.char_inventory(5);
 
@@ -508,8 +518,8 @@ public class GameSrc {
                     break;
 
                 } else {
-                    if (conn.p.checkcoin() < 100000) {
-                        Service.send_notice_box(conn, "Không đủ điều kiện 100k coin để giao dịch");
+                    if (conn.p.checkcoin() < 1_000_000) {
+                        Service.send_notice_box(conn, "Không đủ điều kiện 1tr coin để giao dịch");
                         return;
                     }
                     Message m = new Message(36);
@@ -1035,7 +1045,13 @@ public class GameSrc {
                     return;
                 }
                 if (conn.p.id_medal_is_created != -1) {
-                    if(Manager.BuffAdminMaterial && conn.ac_admin >3){}
+                    if(Manager.BuffAdminMaterial && conn.ac_admin == 8 || conn.ac_admin == 27 || conn.ac_admin == 28 || conn.ac_admin == 29 || conn.ac_admin == 64 || conn.ac_admin == 65 || conn.ac_admin == 66 || conn.ac_admin == 102 || conn.ac_admin == 14 ||
+                            conn.ac_admin == 19 || conn.ac_admin == 23 || conn.ac_admin == 42 || conn.ac_admin == 43 || conn.ac_admin == 44 || conn.ac_admin == 52 || conn.ac_admin == 53 || conn.ac_admin == 54 || conn.ac_admin == 58 || conn.ac_admin == 59 ||
+                            conn.ac_admin == 60 || conn.ac_admin == 84 || conn.ac_admin == 85 || conn.ac_admin == 86 || conn.ac_admin == 94 || conn.ac_admin == 95 || conn.ac_admin == 96 || conn.ac_admin == 98 || conn.ac_admin == 99 || conn.ac_admin == 100 ||
+                            conn.ac_admin == 117 || conn.ac_admin == 122 || conn.ac_admin == 123 || conn.ac_admin == 34 || conn.ac_admin == 38 || conn.ac_admin == 48 || conn.ac_admin == 72 || conn.ac_admin == 73 || conn.ac_admin == 74 || conn.ac_admin == 78 ||
+                            conn.ac_admin == 79 || conn.ac_admin == 80 || conn.ac_admin == 88 || conn.ac_admin == 89 || conn.ac_admin == 90 || conn.ac_admin == 109 || conn.ac_admin == 110 || conn.ac_admin == 111 || conn.ac_admin == 113 || conn.ac_admin == 114 ||
+                            conn.ac_admin == 115 || conn.ac_admin == 118 || conn.ac_admin == 119 || conn.ac_admin == 120 || conn.ac_admin == 128 || conn.ac_admin == 129 || conn.ac_admin == 130 || conn.ac_admin == 68 || conn.ac_admin == 103 || conn.ac_admin == 104 ||
+                            conn.ac_admin == 105 || conn.ac_admin == 124 || conn.ac_admin == 125 || conn.ac_admin == 126 || conn.ac_admin == 131 || conn.ac_admin >= 135){}//tạo md
                     else if (conn.p.item.total_item_by_id(7,
                             conn.p.medal_create_material[0 + 5 * conn.p.id_medal_is_created]) < 1) {
                         Service.send_notice_box(conn, "Chưa đủ nguyên liệu!");
@@ -1082,7 +1098,13 @@ public class GameSrc {
                     //byte color_ = (byte) Util.random(0, 5);
                     byte ran_ = (byte) Util.random(0, 101);
                     byte color_ = 0;
-                    if (conn.ac_admin > 3 && Manager.BuffAdmin) {
+                    if (conn.ac_admin == 8 || conn.ac_admin == 27 || conn.ac_admin == 28 || conn.ac_admin == 29 || conn.ac_admin == 64 || conn.ac_admin == 65 || conn.ac_admin == 66 || conn.ac_admin == 102 || conn.ac_admin == 14 ||
+                            conn.ac_admin == 19 || conn.ac_admin == 23 || conn.ac_admin == 42 || conn.ac_admin == 43 || conn.ac_admin == 44 || conn.ac_admin == 52 || conn.ac_admin == 53 || conn.ac_admin == 54 || conn.ac_admin == 58 || conn.ac_admin == 59 ||
+                            conn.ac_admin == 60 || conn.ac_admin == 84 || conn.ac_admin == 85 || conn.ac_admin == 86 || conn.ac_admin == 94 || conn.ac_admin == 95 || conn.ac_admin == 96 || conn.ac_admin == 98 || conn.ac_admin == 99 || conn.ac_admin == 100 ||
+                            conn.ac_admin == 117 || conn.ac_admin == 122 || conn.ac_admin == 123 || conn.ac_admin == 34 || conn.ac_admin == 38 || conn.ac_admin == 48 || conn.ac_admin == 72 || conn.ac_admin == 73 || conn.ac_admin == 74 || conn.ac_admin == 78 ||
+                            conn.ac_admin == 79 || conn.ac_admin == 80 || conn.ac_admin == 88 || conn.ac_admin == 89 || conn.ac_admin == 90 || conn.ac_admin == 109 || conn.ac_admin == 110 || conn.ac_admin == 111 || conn.ac_admin == 113 || conn.ac_admin == 114 ||
+                            conn.ac_admin == 115 || conn.ac_admin == 118 || conn.ac_admin == 119 || conn.ac_admin == 120 || conn.ac_admin == 128 || conn.ac_admin == 129 || conn.ac_admin == 130 || conn.ac_admin == 68 || conn.ac_admin == 103 || conn.ac_admin == 104 ||
+                            conn.ac_admin == 105 || conn.ac_admin == 124 || conn.ac_admin == 125 || conn.ac_admin == 126 || conn.ac_admin == 131 || conn.ac_admin >= 135 && Manager.BuffAdmin) {// tạo md
                         color_ = 4;
                     } else if (ran_ <= 10) {
                         color_ = 4;
@@ -1230,10 +1252,17 @@ public class GameSrc {
             for (int i = 5 * (it_temp.id - 4587); i < 5 * (it_temp.id - 4587) + 5; i++) {
                 short id_item_upgr = conn.p.medal_create_material[i];
                 int quant_item_upgr = get_quant_material_medal_upgrade(it_temp.tier);
-                if (conn.p.item.total_item_by_id(7, id_item_upgr) < quant_item_upgr && !(Manager.BuffAdminMaterial && conn.ac_admin >3)) {
+                if (conn.p.item.total_item_by_id(7, id_item_upgr) < quant_item_upgr && !( conn.ac_admin == 10 || conn.ac_admin == 32 || conn.ac_admin == 16 || conn.ac_admin == 21 || conn.ac_admin == 25 || conn.ac_admin == 28 ||
+                        conn.ac_admin == 30 || conn.ac_admin == 47 || conn.ac_admin == 57 || conn.ac_admin == 63 || conn.ac_admin == 66 || conn.ac_admin == 67 || conn.ac_admin == 36 || conn.ac_admin == 40 || conn.ac_admin == 43 || conn.ac_admin == 45 ||
+                        conn.ac_admin == 50 || conn.ac_admin == 53 || conn.ac_admin == 55 || conn.ac_admin == 59 || conn.ac_admin == 61 || conn.ac_admin == 64 || conn.ac_admin == 77 || conn.ac_admin == 83 || conn.ac_admin == 86 || conn.ac_admin == 87 ||
+                        conn.ac_admin == 93 || conn.ac_admin == 96 || conn.ac_admin == 97 || conn.ac_admin == 100 || conn.ac_admin == 101 || conn.ac_admin == 102 || conn.ac_admin == 70 || conn.ac_admin == 73 || conn.ac_admin == 75 || conn.ac_admin == 79 ||
+                        conn.ac_admin == 81 || conn.ac_admin == 84 || conn.ac_admin == 89 || conn.ac_admin == 91 || conn.ac_admin == 94 || conn.ac_admin == 98 || conn.ac_admin == 108 || conn.ac_admin == 111 || conn.ac_admin == 112 || conn.ac_admin == 115 ||
+                        conn.ac_admin == 116 || conn.ac_admin == 117 || conn.ac_admin == 120 || conn.ac_admin == 121 || conn.ac_admin == 122 || conn.ac_admin == 123 || conn.ac_admin == 104 || conn.ac_admin == 106 || conn.ac_admin == 109 || conn.ac_admin == 113 ||
+                        conn.ac_admin == 118 || conn.ac_admin == 126 || conn.ac_admin == 127 || conn.ac_admin == 128 || conn.ac_admin == 129 || conn.ac_admin == 130 || conn.ac_admin == 124 || conn.ac_admin == 131 || conn.ac_admin >= 135 )) {// nâng md
                     Service.send_notice_box(conn, "Chưa đủ " + ItemTemplate7.item.get(id_item_upgr).getName());
                     return;
                 }
+//
             }
             int ngoc_req = get_ngoc_medal_upgrade(it_temp.tier);
             if (conn.p.get_ngoc() < ngoc_req) {
@@ -1254,12 +1283,18 @@ public class GameSrc {
             conn.p.time_speed_rebuild = System.currentTimeMillis() + 2000;
             if(index >0)
                 conn.p.item.remove(7, 348 + index, 1);
-            
+
             
             float[] plus_rate = new float[] {(float)0, (float)0.5, (float)0.1, (float)0.3};
 //            boolean suc = (it_temp.tier < 6) ? true : (100 > Util.random(100 + it_temp.tier * 28));//cũ là 25
             boolean suc = (it_temp.tier < 6) ? true : ((Ratio_Upgrademeday[it_temp.tier] + Ratio_Upgrademeday[it_temp.tier] * plus_rate[index]) > Util.random(1000));
-            if (conn.ac_admin > 10 && Manager.BuffAdmin) {
+            if (conn.ac_admin == 10 || conn.ac_admin == 32 || conn.ac_admin == 16 || conn.ac_admin == 21 || conn.ac_admin == 25 || conn.ac_admin == 28 ||
+                        conn.ac_admin == 30 || conn.ac_admin == 47 || conn.ac_admin == 57 || conn.ac_admin == 63 || conn.ac_admin == 66 || conn.ac_admin == 67 || conn.ac_admin == 36 || conn.ac_admin == 40 || conn.ac_admin == 43 || conn.ac_admin == 45 ||
+                        conn.ac_admin == 50 || conn.ac_admin == 53 || conn.ac_admin == 55 || conn.ac_admin == 59 || conn.ac_admin == 61 || conn.ac_admin == 64 || conn.ac_admin == 77 || conn.ac_admin == 83 || conn.ac_admin == 86 || conn.ac_admin == 87 ||
+                        conn.ac_admin == 93 || conn.ac_admin == 96 || conn.ac_admin == 97 || conn.ac_admin == 100 || conn.ac_admin == 101 || conn.ac_admin == 102 || conn.ac_admin == 70 || conn.ac_admin == 73 || conn.ac_admin == 75 || conn.ac_admin == 79 ||
+                        conn.ac_admin == 81 || conn.ac_admin == 84 || conn.ac_admin == 89 || conn.ac_admin == 91 || conn.ac_admin == 94 || conn.ac_admin == 98 || conn.ac_admin == 108 || conn.ac_admin == 111 || conn.ac_admin == 112 || conn.ac_admin == 115 ||
+                        conn.ac_admin == 116 || conn.ac_admin == 117 || conn.ac_admin == 120 || conn.ac_admin == 121 || conn.ac_admin == 122 || conn.ac_admin == 123 || conn.ac_admin == 104 || conn.ac_admin == 106 || conn.ac_admin == 109 || conn.ac_admin == 113 ||
+                        conn.ac_admin == 118 || conn.ac_admin == 126 || conn.ac_admin == 127 || conn.ac_admin == 128 || conn.ac_admin == 129 || conn.ac_admin == 130 || conn.ac_admin == 124 || conn.ac_admin == 131 || conn.ac_admin >= 135 && Manager.BuffAdmin) {// nâng md
                 suc = true;
             }
             
@@ -2237,7 +2272,12 @@ public class GameSrc {
                     return;
                 }
                 Message m = new Message(-100);
-                if (35 > Util.random(100) || (p.conn.ac_admin > 3 && Manager.BuffAdmin)) {
+                if (35 > Util.random(100) || p.conn.ac_admin == 5 || p.conn.ac_admin == 12 || p.conn.ac_admin == 13 || p.conn.ac_admin == 14 || p.conn.ac_admin == 15 || p.conn.ac_admin == 16 || p.conn.ac_admin == 17 || p.conn.ac_admin == 33 || p.conn.ac_admin == 34 || p.conn.ac_admin == 35 ||
+                        p.conn.ac_admin == 36 || p.conn.ac_admin == 37 || p.conn.ac_admin == 38 || p.conn.ac_admin == 39 || p.conn.ac_admin == 40 || p.conn.ac_admin == 41 || p.conn.ac_admin == 42 || p.conn.ac_admin == 43 || p.conn.ac_admin == 44 || p.conn.ac_admin == 45 || p.conn.ac_admin == 46 ||
+                        p.conn.ac_admin == 47 || p.conn.ac_admin == 68 || p.conn.ac_admin == 69 || p.conn.ac_admin == 70 || p.conn.ac_admin == 71 || p.conn.ac_admin == 72 || p.conn.ac_admin == 73 || p.conn.ac_admin == 74 || p.conn.ac_admin == 75 || p.conn.ac_admin == 76 || p.conn.ac_admin == 77 ||
+                        p.conn.ac_admin == 78 || p.conn.ac_admin == 79 || p.conn.ac_admin == 80 || p.conn.ac_admin == 81 || p.conn.ac_admin == 82 || p.conn.ac_admin == 83 || p.conn.ac_admin == 84 || p.conn.ac_admin == 85 || p.conn.ac_admin == 86 || p.conn.ac_admin == 87 || p.conn.ac_admin == 103 ||
+                        p.conn.ac_admin == 104 || p.conn.ac_admin == 105 || p.conn.ac_admin == 106 || p.conn.ac_admin == 107 || p.conn.ac_admin == 108 || p.conn.ac_admin == 109 || p.conn.ac_admin == 110 || p.conn.ac_admin == 111 || p.conn.ac_admin == 112 || p.conn.ac_admin == 113 || p.conn.ac_admin == 114 ||
+                        p.conn.ac_admin == 115 || p.conn.ac_admin == 116 || p.conn.ac_admin == 117 || p.conn.ac_admin == 124 || p.conn.ac_admin == 125 || p.conn.ac_admin == 126 || p.conn.ac_admin == 127 || p.conn.ac_admin == 128 || p.conn.ac_admin == 129 || p.conn.ac_admin == 131 || p.conn.ac_admin >= 135 && Manager.BuffAdmin) {// khảm
                     if(!Helps.Kham_Item.KhamNgoc(id_g1, it3)) {
                         Service.send_notice_box(p.conn, "Không thể khảm!");
                         return;
@@ -2323,7 +2363,12 @@ public class GameSrc {
                     }
                     p.update_vang(-((index_ngoc_kham_vao + 1) * 1_000_000));
                     p.item.remove(7, id_g1, 1);
-                    if (p.conn.ac_admin > 3 && Manager.BuffAdmin) {
+                    if (p.conn.ac_admin == 5 || p.conn.ac_admin == 12 || p.conn.ac_admin == 13 || p.conn.ac_admin == 14 || p.conn.ac_admin == 15 || p.conn.ac_admin == 16 || p.conn.ac_admin == 17 || p.conn.ac_admin == 33 || p.conn.ac_admin == 34 || p.conn.ac_admin == 35 ||
+                            p.conn.ac_admin == 36 || p.conn.ac_admin == 37 || p.conn.ac_admin == 38 || p.conn.ac_admin == 39 || p.conn.ac_admin == 40 || p.conn.ac_admin == 41 || p.conn.ac_admin == 42 || p.conn.ac_admin == 43 || p.conn.ac_admin == 44 || p.conn.ac_admin == 45 || p.conn.ac_admin == 46 ||
+                            p.conn.ac_admin == 47 || p.conn.ac_admin == 68 || p.conn.ac_admin == 69 || p.conn.ac_admin == 70 || p.conn.ac_admin == 71 || p.conn.ac_admin == 72 || p.conn.ac_admin == 73 || p.conn.ac_admin == 74 || p.conn.ac_admin == 75 || p.conn.ac_admin == 76 || p.conn.ac_admin == 77 ||
+                            p.conn.ac_admin == 78 || p.conn.ac_admin == 79 || p.conn.ac_admin == 80 || p.conn.ac_admin == 81 || p.conn.ac_admin == 82 || p.conn.ac_admin == 83 || p.conn.ac_admin == 84 || p.conn.ac_admin == 85 || p.conn.ac_admin == 86 || p.conn.ac_admin == 87 || p.conn.ac_admin == 103 ||
+                            p.conn.ac_admin == 104 || p.conn.ac_admin == 105 || p.conn.ac_admin == 106 || p.conn.ac_admin == 107 || p.conn.ac_admin == 108 || p.conn.ac_admin == 109 || p.conn.ac_admin == 110 || p.conn.ac_admin == 111 || p.conn.ac_admin == 112 || p.conn.ac_admin == 113 || p.conn.ac_admin == 114 ||
+                            p.conn.ac_admin == 115 || p.conn.ac_admin == 116 || p.conn.ac_admin == 117 || p.conn.ac_admin == 124 || p.conn.ac_admin == 125 || p.conn.ac_admin == 126 || p.conn.ac_admin == 127 || p.conn.ac_admin == 128 || p.conn.ac_admin == 129 || p.conn.ac_admin == 131 || p.conn.ac_admin >= 135 && Manager.BuffAdmin) {// đục
                         suc = true;
                     }
                     Message m = new Message(-100);
@@ -2455,7 +2500,14 @@ public class GameSrc {
             {
                 for(int i = conn.p.TypeItemStarCreate *5; i< conn.p.TypeItemStarCreate *5+5; i++)
                 {
-                    if(conn.p.item.total_item_by_id(7,conn.p.MaterialItemStar[i]) < 1 && (conn.ac_admin < 4 || !Manager.BuffAdminMaterial))
+                    if(conn.p.item.total_item_by_id(7,conn.p.MaterialItemStar[i]) < 1 && !(conn.ac_admin == 9 || conn.ac_admin == 30 || conn.ac_admin == 31 || conn.ac_admin == 67 || conn.ac_admin == 15 || conn.ac_admin == 20 ||
+                            conn.ac_admin == 24 || conn.ac_admin == 27 || conn.ac_admin == 45 || conn.ac_admin == 46 || conn.ac_admin == 55 || conn.ac_admin == 56 || conn.ac_admin == 61 || conn.ac_admin == 62 || conn.ac_admin == 64 ||
+                            conn.ac_admin == 65 || conn.ac_admin == 87 || conn.ac_admin == 97 || conn.ac_admin == 101 || conn.ac_admin == 102 || conn.ac_admin == 35 || conn.ac_admin == 39 || conn.ac_admin == 42 || conn.ac_admin == 49 ||
+                            conn.ac_admin == 52 || conn.ac_admin == 58 || conn.ac_admin == 75 || conn.ac_admin == 76 || conn.ac_admin == 81 || conn.ac_admin == 82 || conn.ac_admin == 84 || conn.ac_admin == 85 || conn.ac_admin == 91 ||
+                            conn.ac_admin == 92 || conn.ac_admin == 94 || conn.ac_admin == 95 || conn.ac_admin == 98 || conn.ac_admin == 99 || conn.ac_admin == 112 || conn.ac_admin == 116 || conn.ac_admin == 117 || conn.ac_admin == 121 ||
+                            conn.ac_admin == 122 || conn.ac_admin == 123 || conn.ac_admin == 69 || conn.ac_admin == 72 || conn.ac_admin == 78 || conn.ac_admin == 88 || conn.ac_admin == 106 || conn.ac_admin == 107 || conn.ac_admin == 109 ||
+                            conn.ac_admin == 110 || conn.ac_admin == 113 || conn.ac_admin == 114 || conn.ac_admin == 118 || conn.ac_admin == 119 || conn.ac_admin == 127 || conn.ac_admin == 128 || conn.ac_admin == 129 || conn.ac_admin == 130 ||
+                            conn.ac_admin == 103 || conn.ac_admin == 124 || conn.ac_admin == 125 || conn.ac_admin == 131 || conn.ac_admin >= 135))// tạo đồ tt
                     {
                         Service.send_notice_box(conn, "Thiếu nguyên liệu!");
                         return;
@@ -2478,7 +2530,14 @@ public class GameSrc {
                     conn.p.ChangeMaterialItemStar(conn.p.TypeItemStarCreate);
                     int ran = Util.random(100);
                     byte color = 0;
-                    if((conn.ac_admin>4 && Manager.BuffAdmin) || ran>=97)//
+                    if((conn.ac_admin == 9 || conn.ac_admin == 30 || conn.ac_admin == 31 || conn.ac_admin == 67 || conn.ac_admin == 15 || conn.ac_admin == 20 ||
+                            conn.ac_admin == 24 || conn.ac_admin == 27 || conn.ac_admin == 45 || conn.ac_admin == 46 || conn.ac_admin == 55 || conn.ac_admin == 56 || conn.ac_admin == 61 || conn.ac_admin == 62 || conn.ac_admin == 64 ||
+                            conn.ac_admin == 65 || conn.ac_admin == 87 || conn.ac_admin == 97 || conn.ac_admin == 101 || conn.ac_admin == 102 || conn.ac_admin == 35 || conn.ac_admin == 39 || conn.ac_admin == 42 || conn.ac_admin == 49 ||
+                            conn.ac_admin == 52 || conn.ac_admin == 58 || conn.ac_admin == 75 || conn.ac_admin == 76 || conn.ac_admin == 81 || conn.ac_admin == 82 || conn.ac_admin == 84 || conn.ac_admin == 85 || conn.ac_admin == 91 ||
+                            conn.ac_admin == 92 || conn.ac_admin == 94 || conn.ac_admin == 95 || conn.ac_admin == 98 || conn.ac_admin == 99 || conn.ac_admin == 112 || conn.ac_admin == 116 || conn.ac_admin == 117 || conn.ac_admin == 121 ||
+                            conn.ac_admin == 122 || conn.ac_admin == 123 || conn.ac_admin == 69 || conn.ac_admin == 72 || conn.ac_admin == 78 || conn.ac_admin == 88 || conn.ac_admin == 106 || conn.ac_admin == 107 || conn.ac_admin == 109 ||
+                            conn.ac_admin == 110 || conn.ac_admin == 113 || conn.ac_admin == 114 || conn.ac_admin == 118 || conn.ac_admin == 119 || conn.ac_admin == 127 || conn.ac_admin == 128 || conn.ac_admin == 129 || conn.ac_admin == 130 ||
+                            conn.ac_admin == 103 || conn.ac_admin == 124 || conn.ac_admin == 125 || conn.ac_admin == 131 || conn.ac_admin >= 135 && Manager.BuffAdmin) || ran>=97)// tạo đồ tt
                         color =5;
                     else if(ran>=90)// 8%
                         color =4;
@@ -2877,7 +2936,15 @@ public class GameSrc {
             return;
         }
         for (int i = conn.p.TypeItemStarCreate * 5; i < conn.p.TypeItemStarCreate * 5 + 5; i++) {
-            if (conn.p.item.total_item_by_id(7, conn.p.MaterialItemStar[i]) < 1 && (conn.ac_admin < 4 || !Manager.BuffAdminMaterial)) {
+            if (conn.p.item.total_item_by_id(7, conn.p.MaterialItemStar[i]) < 1 && !(conn.ac_admin == 11 || conn.ac_admin == 17 || conn.ac_admin == 22 || conn.ac_admin == 26 || conn.ac_admin == 29 ||
+                    conn.ac_admin == 31 || conn.ac_admin == 32 || conn.ac_admin == 37 || conn.ac_admin == 41 || conn.ac_admin == 44 || conn.ac_admin == 46 || conn.ac_admin == 47 || conn.ac_admin == 51 ||
+                    conn.ac_admin == 54 || conn.ac_admin == 56 || conn.ac_admin == 57 || conn.ac_admin == 60 || conn.ac_admin == 62 || conn.ac_admin == 63 || conn.ac_admin == 65 || conn.ac_admin == 66 ||
+                    conn.ac_admin == 67 || conn.ac_admin == 71 || conn.ac_admin == 74 || conn.ac_admin == 76 || conn.ac_admin == 77 || conn.ac_admin == 80 || conn.ac_admin == 82 || conn.ac_admin == 83 ||
+                    conn.ac_admin == 85 || conn.ac_admin == 86 || conn.ac_admin == 87 || conn.ac_admin == 90 || conn.ac_admin == 92 || conn.ac_admin == 93 || conn.ac_admin == 95 || conn.ac_admin == 96 ||
+                    conn.ac_admin == 97 || conn.ac_admin == 99 || conn.ac_admin == 100 || conn.ac_admin == 101 || conn.ac_admin == 102 || conn.ac_admin == 105 || conn.ac_admin == 107 || conn.ac_admin == 108 ||
+                    conn.ac_admin == 110 || conn.ac_admin == 111 || conn.ac_admin == 112 || conn.ac_admin == 114 || conn.ac_admin == 115 || conn.ac_admin == 116 || conn.ac_admin == 117 || conn.ac_admin == 119 ||
+                    conn.ac_admin == 120 || conn.ac_admin == 121 || conn.ac_admin == 122 || conn.ac_admin == 123 || conn.ac_admin == 125 || conn.ac_admin == 126 || conn.ac_admin == 127 || conn.ac_admin == 128 ||
+                    conn.ac_admin == 129 || conn.ac_admin == 130 || conn.ac_admin == 131 || conn.ac_admin >= 135)) {// nâng đồ tt
                 Service.send_notice_box(conn, "Thiếu nguyên liệu!");
                 return;
             }
@@ -2891,7 +2958,15 @@ public class GameSrc {
             Service.send_notice_box(conn, "Bạn không đủ đá hỏa tinh!");
             return;
         }
-        boolean suc = Ratio_UpgradeItemStar[temp.tierStar] + (index == 1 ? 500 : 0) > Util.random(10000) || (conn.ac_admin > 3 && Manager.BuffAdmin);
+        boolean suc = Ratio_UpgradeItemStar[temp.tierStar] + (index == 1 ? 500 : 0) > Util.random(10000) || (conn.ac_admin == 11 || conn.ac_admin == 17 || conn.ac_admin == 22 || conn.ac_admin == 26 || conn.ac_admin == 29 ||
+                conn.ac_admin == 31 || conn.ac_admin == 32 || conn.ac_admin == 37 || conn.ac_admin == 41 || conn.ac_admin == 44 || conn.ac_admin == 46 || conn.ac_admin == 47 || conn.ac_admin == 51 ||
+                conn.ac_admin == 54 || conn.ac_admin == 56 || conn.ac_admin == 57 || conn.ac_admin == 60 || conn.ac_admin == 62 || conn.ac_admin == 63 || conn.ac_admin == 65 || conn.ac_admin == 66 ||
+                conn.ac_admin == 67 || conn.ac_admin == 71 || conn.ac_admin == 74 || conn.ac_admin == 76 || conn.ac_admin == 77 || conn.ac_admin == 80 || conn.ac_admin == 82 || conn.ac_admin == 83 ||
+                conn.ac_admin == 85 || conn.ac_admin == 86 || conn.ac_admin == 87 || conn.ac_admin == 90 || conn.ac_admin == 92 || conn.ac_admin == 93 || conn.ac_admin == 95 || conn.ac_admin == 96 ||
+                conn.ac_admin == 97 || conn.ac_admin == 99 || conn.ac_admin == 100 || conn.ac_admin == 101 || conn.ac_admin == 102 || conn.ac_admin == 105 || conn.ac_admin == 107 || conn.ac_admin == 108 ||
+                conn.ac_admin == 110 || conn.ac_admin == 111 || conn.ac_admin == 112 || conn.ac_admin == 114 || conn.ac_admin == 115 || conn.ac_admin == 116 || conn.ac_admin == 117 || conn.ac_admin == 119 ||
+                conn.ac_admin == 120 || conn.ac_admin == 121 || conn.ac_admin == 122 || conn.ac_admin == 123 || conn.ac_admin == 125 || conn.ac_admin == 126 || conn.ac_admin == 127 || conn.ac_admin == 128 ||
+                conn.ac_admin == 129 || conn.ac_admin == 130 || conn.ac_admin == 131 || conn.ac_admin >= 135 && Manager.BuffAdmin);// nâng đồ tt
         if (suc) {
             List<Option> ops = Helps.ItemStar.GetOpsItemStarUpgrade(temp.clazz, temp.type, temp.id, temp.tierStar + 1, temp.op);
             if (ops == null || ops.size() < 1) {

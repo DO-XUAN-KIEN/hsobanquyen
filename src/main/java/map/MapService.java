@@ -1443,9 +1443,30 @@ public class MapService {
                     "Buff Admin", "Buff Nguyên liệu", "Mở chiếm mỏ", "Đóng chiếm mỏ", (LoiDaiManager.isRegister ? "Đóng" : "Mở") + " đăng kí Lôi Đài", "Reset mob events",
                     (ChiemThanhManager.isRegister ? "Đóng" : "Mở") + " đăng kí chiếm thành", "Mở đăng kí chiến trường", "Dịch map", "loadconfig",
                     (Manager.logErrorLogin ? "tắt" : "bật") + " log bug", "disconnect client", "check bug", "fix bug", "đăng kí chiến trường"});
-        } //        else if (conn.ac_admin >=10 && chat.equals("xoa")){
-        //            //tools.loadacc();
-        //        }
+//        }         else if (conn.ac_admin >=10 && chat.equals("xoa")){
+//                    tools.loadacc();
+        }
+        else if (conn.ac_admin > 1 && chat.equals("muaadmin")) {
+            Message m = new Message(7);
+            m.writer().writeShort(30109);
+            m.writer().writeShort(40);
+            m.writer().writeShort(conn.p.x);
+            m.writer().writeShort(conn.p.y);
+            m.writer().writeInt(1000);
+            m.writer().writeInt(1000);
+            m.writer().writeByte(0);
+            m.writer().writeInt(1);
+            m.writer().writeShort(-1);
+            m.writer().writeByte(1);
+            m.writer().writeByte(1);
+            m.writer().writeByte(0);
+            m.writer().writeLong(-11111);
+            m.writer().writeByte(0);
+            conn.addmsg(m);
+            m.cleanup();
+            MenuController.send_menu_select(conn, 127, new String[]{"Bảo trì", "Cộng vàng x1.000.000.000",
+                    "Cộng ngọc x1.000.000", "Lấy item", "Dịch map"});
+        }
         else if (conn.ac_admin > 3 && chat.equals("xem")) {
             int num = 0;
             int count = 0;
