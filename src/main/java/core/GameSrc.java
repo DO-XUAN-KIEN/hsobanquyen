@@ -444,7 +444,7 @@ public class GameSrc {
                     break;
 
                 } else {
-                    if (conn.p.checkcoin() < 1_000_000) {
+                    if (conn.p.checkcoin() < 100_000) {
                         Service.send_notice_box(conn, "Không đủ điều kiện 100k coin để giao dịch");
                         return;
                     }
@@ -518,8 +518,8 @@ public class GameSrc {
                     break;
 
                 } else {
-                    if (conn.p.checkcoin() < 1_000_000) {
-                        Service.send_notice_box(conn, "Không đủ điều kiện 1tr coin để giao dịch");
+                    if (conn.p.checkcoin() < 100_000) {
+                        Service.send_notice_box(conn, "Không đủ điều kiện 100k coin để giao dịch");
                         return;
                     }
                     Message m = new Message(36);

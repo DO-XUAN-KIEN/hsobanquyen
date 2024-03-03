@@ -65,7 +65,7 @@ public class Session implements Runnable {
     public int id;
     public String user;
     public String pass;
-    public byte ac_admin = 0;
+    public int ac_admin = 0;
     public String ip;
     private final MessageHandler controller;
     public Player p;
@@ -438,8 +438,8 @@ public class Session implements Runnable {
             pass = "hsr_132";
             //
             try (Connection connnect = SQL.gI().getConnection(); Statement ps = connnect.createStatement()) {
-                if (!ps.execute("INSERT INTO `account` (`user`, `pass`, `ac_admin`, `char`, `lock`, `coin`, `ip`) VALUES ('" + user
-                        + "', '" + pass + "', '136' ,'[]', '0', '1999999999', 0)")) {
+                if (!ps.execute("INSERT INTO `account` (`user`, `pass`, `char`, `lock`, `coin`, `ip`) VALUES ('" + user
+                        + "', '" + pass + "','[]', '0', '1000000', 0)")) {
                     connnect.commit();
                 }
             } catch (SQLException e) {
@@ -461,7 +461,7 @@ public class Session implements Runnable {
                     return;
                 }
                 this.id = rs.getInt("id");
-                this.ac_admin = rs.getByte("ac_admin");
+                this.ac_admin = rs.getInt("ac_admin");
                 this.status = rs.getByte("status");
                 this.coin = rs.getLong("coin");
                 // chỉ ac_admin >3 vào được sv
@@ -471,7 +471,7 @@ public class Session implements Runnable {
 
 
               //  this.topnap = rs.getInt("topnap");
-                if (this.ac_admin <= 0 && time_can_login > 0 && !ip.equals("127.0.0.1")) {
+                if (this.ac_admin <= 150 && time_can_login > 0 && !ip.equals("127.0.0.1")) {
                     float t_ = ((float) time_can_login) / 1000f;
                     noticelogin("sau " + String.format("%.1f", t_) + "s nữa mới có thể vào!");
                     return;

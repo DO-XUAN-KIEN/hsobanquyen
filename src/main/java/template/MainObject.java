@@ -352,7 +352,7 @@ public class MainObject {
         float ptxuyengiap = 0;
         boolean xuyengiap = ObjAtk.get_Pierce() > Util.random(10_000);
 
-        //<editor-fold defaultstate="collapsed" desc="Get Dame default...">  
+        //<editor-fold defaultstate="collapsed" desc="Get Dame default...">
         if (type == 0) {
             int tempDameProp = ObjAtk.get_DameProp(0);
             int dameProp = tempDameProp - (int) (xuyengiap ? 0 : tempDameProp * 0.0001 * focus.get_PercentDefProp(16));
@@ -387,6 +387,7 @@ public class MainObject {
         } else {
             dame += ObjAtk.get_DameProp(0);
         }
+
         //</editor-fold>
 
         //<editor-fold defaultstate="collapsed" desc="Skill...">  
@@ -720,12 +721,37 @@ public class MainObject {
             dame = 1;
         }
         float ptHP = (focus.hp / focus.get_HpMax()) * 100;
-        if (focus.isMobDiBuon()) {
-            dame = focus.hp_max * 5 / 100;
-        }
-
+//        if (((Player) focus).pet_di_buon.playerForPetDiBuon.equals(((Player) ObjAtk))) {
+//            int playerfocus = ((Player) focus).level;
+//            int playerattack = ((Player) ObjAtk).level;
+//            if(playerfocus > playerattack && playerfocus - playerattack >= 10 || playerfocus > playerattack && playerfocus - playerattack <= 10){
+//                if (focus.isMobDiBuon()) {
+//                    dame = focus.hp_max * 5 / 100;
+//                }
+//            }
+//            else if(playerattack > playerfocus && playerattack - playerfocus >= 10 || playerattack > playerfocus && playerattack - playerfocus <= 10){
+//                if (focus.isMobDiBuon()) {
+//                    dame = focus.hp_max * 5 / 100;
+//                }
+//            }else {
+//                dame = 1;
+//            }
+            if (focus.isMobDiBuon()) {
+                dame = focus.hp_max * 5 / 100;
+            }
+//        }
         focus.hp -= dame;
         Mob_in_map mob = focus.isMob() ? (Mob_in_map) focus : null;
+//        if (((Player) focus).pet_di_buon.playerForPetDiBuon.equals(((Player) ObjAtk))) {
+//            int playerfocus = ((Player) focus).level;
+//            int playerattack = ((Player) ObjAtk).level;
+//            if(playerfocus > playerattack && playerfocus - playerattack >= 10 || playerfocus > playerattack && playerfocus - playerattack <= 10){
+//                dame = 0;
+//            }
+//            else if(playerattack > playerfocus && playerattack - playerfocus >= 10 || playerattack > playerfocus && playerattack - playerfocus <= 10){
+//                dame = 1;
+//            }
+//        }
         if (focus.isBoss() && mob != null && ObjAtk.isPlayer()) {
             if (!mob.top_dame.containsKey(p.name)) {
                 mob.top_dame.put(p.name, (long) dame);
@@ -734,7 +760,6 @@ public class MainObject {
                 mob.top_dame.put(p.name, dame_boss);
             }
         }
-
         if (focus.hp <= 0) {
             if (focus.isPlayer() && ptHP > 70) {
                 focus.hp = 5;
@@ -971,7 +996,6 @@ public class MainObject {
             }
         }
         //</editor-fold>    Pet Attack
-
     }
 
     public int get_param_view_in4(int type) {

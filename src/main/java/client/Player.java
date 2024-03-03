@@ -844,8 +844,8 @@ public class Player extends Body2 {
     }
 
     public synchronized void update_vang(long i) {
-        if ((i + vang) > 5_000_000_000L) {
-            vang = 5_000_000_000L;
+        if ((i + vang) > 2_000_000_000_000L) {
+            vang = 2_000_000_000_000L;
         } else {
             vang += i;
         }

@@ -161,22 +161,22 @@ public class Map implements Runnable {
         try {
             switch (this.map_id) {
                 case 4: {
-                    Npc.chat(this, Npc.CHAT_MR_BALLARD, -53);
+                  //  Npc.chat(this, Npc.CHAT_MR_BALLARD, -53);
                     break;
                 }
                 case 1: {
-                    Npc.chat(this, Npc.CHAT_TOP, -49);
-                    Npc.chat(this, Npc.CHAT_PHO_CHI_HUY, -37);
-                    Npc.chat(this, Npc.CHAT_PHAP_SU, -36);
-                    Npc.chat(this, Npc.CHAT_ZORO, -2);
-                    Npc.chat(this, Npc.CHAT_AMAN, -7);
-                    Npc.chat(this, Npc.CHAT_ODA, -81);
-                    Npc.chat(this, Npc.CHAT_LISA, -3);
-                    Npc.chat(this, Npc.CHAT_SOPHIA, -69);
-                    Npc.chat(this, Npc.CHAT_HAMMER, -5);
-                    Npc.chat(this, Npc.CHAT_ZULU, -8);
-                    Npc.chat(this, Npc.CHAT_DOUBA, -4);
-                    Npc.chat(this, Npc.CHAT_ANNA, -44);
+//                    Npc.chat(this, Npc.CHAT_TOP, -49);
+//                    Npc.chat(this, Npc.CHAT_PHO_CHI_HUY, -37);
+//                    Npc.chat(this, Npc.CHAT_PHAP_SU, -36);
+//                    Npc.chat(this, Npc.CHAT_ZORO, -2);
+//                    Npc.chat(this, Npc.CHAT_AMAN, -7);
+//                    Npc.chat(this, Npc.CHAT_ODA, -81);
+//                    Npc.chat(this, Npc.CHAT_LISA, -3);
+//                    Npc.chat(this, Npc.CHAT_SOPHIA, -69);
+//                    Npc.chat(this, Npc.CHAT_HAMMER, -5);
+//                    Npc.chat(this, Npc.CHAT_ZULU, -8);
+//                    Npc.chat(this, Npc.CHAT_DOUBA, -4);
+//                    Npc.chat(this, Npc.CHAT_ANNA, -44);
                     Npc.chat(this, Npc.CHAT_BXH, -49);
                     break;
                 }

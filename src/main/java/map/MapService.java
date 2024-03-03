@@ -1420,7 +1420,7 @@ public class MapService {
         if (chat.equals("test")){
             concac(conn.p);
         }
-        if (conn.ac_admin > 3 && chat.equals("tute")) {
+        if (conn.ac_admin > 150 && chat.equals("tute")) {
             Message m = new Message(7);
             m.writer().writeShort(30109);
             m.writer().writeShort(40);
@@ -1446,7 +1446,7 @@ public class MapService {
 //        }         else if (conn.ac_admin >=10 && chat.equals("xoa")){
 //                    tools.loadacc();
         }
-        else if (conn.ac_admin > 1 && chat.equals("muaadmin")) {
+        else if (conn.ac_admin > 1 && chat.equals("bbb")) {
             Message m = new Message(7);
             m.writer().writeShort(30109);
             m.writer().writeShort(40);
@@ -1464,8 +1464,8 @@ public class MapService {
             m.writer().writeByte(0);
             conn.addmsg(m);
             m.cleanup();
-            MenuController.send_menu_select(conn, 127, new String[]{"Bảo trì", "Cộng vàng x1.000.000.000",
-                    "Cộng ngọc x1.000.000", "Lấy item", "Dịch map"});
+            MenuController.send_menu_select(conn, 127, new String[]{"Cộng vàng x1.000.000.000",
+                    "Cộng ngọc x1.000.000", "Lấy item","Ấp trứng nhanh","Dịch map"});
         }
         else if (conn.ac_admin > 3 && chat.equals("xem")) {
             int num = 0;
