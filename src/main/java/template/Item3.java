@@ -207,4 +207,12 @@ public class Item3 {
         }
 
     }
+    public boolean hasOption(int id) {
+        for (Option o : op) {
+            if (o.id == id) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

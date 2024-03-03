@@ -343,6 +343,12 @@ public class MainObject {
         //</editor-fold>
 
         Player p = ObjAtk.isPlayer() ? (Player) ObjAtk : null;
+        if (p != null && (idxSkill == 19 && p.skill_110[0] >= 1) || (idxSkill == 20 && p.skill_110[1] >= 1)) {
+            send_eff_to_object(p, focus, p.get_id_eff_skill());
+        }
+        if (p != null && idxSkill == 0) {
+            send_eff_to_object(p, focus, 56);
+        }
         EffTemplate ef;
         long dame = ObjAtk.get_DameBase();
         int hutHP = 0;
@@ -1059,5 +1065,26 @@ public class MainObject {
 
     public void update(Map map) {
 
+    }
+    public static void send_eff_to_object(Player p, MainObject object, int id_eff) {
+        try {
+            byte[] data = Util.loadfile("data/part_char/imgver/x" + p.conn.zoomlv + "/Data/" + (112 + "_" + id_eff));
+            Message m = new Message(-49);
+            m.writer().writeByte(2);
+            m.writer().writeShort(data.length);
+            m.writer().write(data);
+            m.writer().writeByte(0); // b3
+            m.writer().writeByte(0); // b4
+            m.writer().writeByte(id_eff); // num4
+            m.writer().writeShort(object.index); // iD2
+            m.writer().writeByte(object.get_TypeObj()); // tem2
+            m.writer().writeByte(0); // b5
+            m.writer().writeInt(1000); // num5
+
+            MapService.send_msg_player_inside(p.map, p, m, true);
+            m.cleanup();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

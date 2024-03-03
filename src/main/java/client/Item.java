@@ -622,4 +622,47 @@ public class Item {
         }
         return result;
     }
+    public int total_item_book(int color, int id) {
+        int quantity = 0;
+        for (Item3 it : bag3) {
+            if (it != null && it.color == color && it.id == id && it.hasOption((byte) 61)) {
+                quantity++;
+            }
+        }
+        return quantity;
+    }
+
+    public int total_item_book_skill(int id) {
+        int quantity = 0;
+        for (Item3 it : bag3) {
+            if (it != null && it.id == id && !it.hasOption((byte) 61)) {
+                quantity++;
+            }
+        }
+        return quantity;
+    }
+
+    public void remove_item_book(int id, int quantity) {
+        int q = quantity;
+        for (int i = 0; i < bag3.length; i++) {
+            Item3 it = bag3[i];
+            if (it == null) continue;
+            if (it.id == id && it.hasOption((byte) 61) && q > 0) {
+                bag3[i] = null;
+                q--;
+            }
+        }
+    }
+
+    public void remove_item_book_skill(int id, int quantity) {
+        int q = quantity;
+        for (int i = 0; i < bag3.length; i++) {
+            Item3 it = bag3[i];
+            if (it == null) continue;
+            if (it.id == id && !it.hasOption((byte) 61) && q > 0) {
+                bag3[i] = null;
+                q--;
+            }
+        }
+    }
 }

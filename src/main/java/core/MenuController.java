@@ -65,7 +65,7 @@ public class MenuController {
             }
 
             case -5: { // Hammer
-                menu = new String[]{"Chiến Binh", "Sát Thủ", "Pháp Sư", "Xạ Thủ", "Chế tạo trang bị tinh tú", "Nâng cấp trang bị tinh tú", "Tháo Giáp Siêu Nhân ", "Tháo danh hiệu","Tháo Huy hiệu","Tháo Huy chương", "Chế Tạo Giáp Siêu Nhân "};
+                menu = new String[]{"Chiến Binh", "Sát Thủ", "Pháp Sư", "Xạ Thủ", "Chế tạo trang bị tinh tú", "Nâng cấp trang bị tinh tú", "Tháo Giáp Siêu Nhân ", "Tháo danh hiệu","Tháo Huy hiệu","Tháo Huy chương", "Chế Tạo Giáp Siêu Nhân"};
                 break;
             }
             case -77: // Alisama
@@ -497,6 +497,10 @@ public class MenuController {
                 Menu_Adminnguoichoi(conn, index);
                 break;
             }
+            case -128:{
+                Menu_Nang_Skill(conn, index);
+                break;
+            }
             case -36: {
                 Menu_PhapSu(conn, index);
                 break;
@@ -626,6 +630,45 @@ public class MenuController {
             }
         }
     }
+
+    private static void Menu_Nang_Skill(Session conn, byte index) throws IOException {
+        // Đệ tử
+        if (!conn.p.isOwner) {
+            return;
+        }
+        if (conn.p.skill_110[conn.p.id_index_temp] >= 10) {
+            conn.p.id_index_temp = -1;
+            Service.send_notice_box(conn, "Kỹ năng được nâng cấp tối đa");
+            return;
+        }
+        int level = conn.p.skill_110[conn.p.id_index_temp];
+        String name_book = "";
+        if (conn.p.id_index_temp == 1) {
+            name_book = switch (conn.p.clazz) {
+                case 0 -> "sách học kiếm địa chấn";
+                case 1 -> "sách học thần tốc";
+                case 2 -> "sách học cơn phẫn nộ";
+                case 4 -> "sách học súng thần công";
+                default -> name_book;
+            };
+        } else if (conn.p.id_index_temp == 0) {
+            name_book = switch (conn.p.clazz) {
+                case 0 -> "sách học bão lửa";
+                case 1 -> "sách học bão độc";
+                case 2 -> "sách học băng trận";
+                case 4 -> "sách học súng điện từ";
+                default -> name_book;
+            };
+        }
+        String format = String.format("Để nâng từ cấp %s lên cấp %s bạn cần %s sách %s và %s ngọc." +
+                " Bạn có muốn thực hiện", level, level + 1, level + 1, name_book, level * 5 + 10);
+        if (index == 0) {
+            Service.send_box_input_yesno(conn, -121, format);
+        } else if (index == 1) {
+            Service.send_box_input_yesno(conn, -120, format);
+        }
+    }
+
     private static void Menu_Mr_Ballard(Session conn, int idNPC, byte idmenu, byte index) throws IOException {
         if (!conn.p.isOwner) {
             return;
@@ -6612,6 +6655,11 @@ public class MenuController {
                     send_menu_select(conn, 1000, new String[]{"Giáp Siêu Nhân Bạc(ngày)  ", "Giáp Siêu Nhan Tím(ngày) ", " Giáp Siêu Nhan Xanh(ngày)  ", "Giáp Siêu Nhân Vàng(ngày)"});
                     break;
                 }
+                case 11: {
+                    String[] nemu = new String[]{"Sách vật lý", "Sách ma pháp"};
+                    send_menu_select(conn, -5, nemu, (byte) 14);
+                    break;
+                }
                 default: {
                     Service.send_notice_box(conn, "Chưa có chức năng");
                     break;
@@ -6625,7 +6673,9 @@ public class MenuController {
             conn.p.ClazzItemStar = (byte) (idmenu - 10);
             conn.p.TypeItemStarCreate = index;
             Service.send_box_UI(conn, 40 + index);
-        }
+        } else if (idmenu == 14) {
+        Service.send_box_input_yesno(conn, -123 + index, "Giá ghép sách là 10 ngọc, bạn có muốn tiếp tục không?");
+    }
     }
 
     private static void Menu_Alisama(Session conn, byte index, byte idmenu) throws IOException {

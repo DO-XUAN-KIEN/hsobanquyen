@@ -17,14 +17,10 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import ai.NhanBan;
+import core.*;
 import map.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
-import core.Log;
-import core.Manager;
-import core.SQL;
-import core.Service;
-import core.Util;
 import event_daily.ArenaTemplate;
 import event_daily.ChienTruong;
 import event_daily.Wedding;
@@ -160,6 +156,10 @@ public class Player extends Body2 {
     public int jointx;
     public boolean tai;
     public boolean xiu;
+
+    public int id_index_temp;
+
+    public int[] skill_110;
     public String taixiu = "Bạn chưa đặt cược.";
 
     public void datatx() {
@@ -400,6 +400,7 @@ public class Player extends Body2 {
                 item.bag3 = new Item3[maxbag];
                 item.box3 = new Item3[maxbag];
                 item.wear = new Item3[24];
+                skill_110 = new int[2];
                 item.bag47 = new ArrayList<>();
                 item.box47 = new ArrayList<>();
                 for (int i = 0; i < 24; i++) {
@@ -549,6 +550,16 @@ public class Player extends Body2 {
                     giftcode.add(jsar.get(i).toString());
                 }
                 jsar.clear();
+
+                jsar = (JSONArray) JSONValue.parse(rs.getString("skill_110"));
+                if (jsar == null) {
+                    return false;
+                }
+                for (int i = 0; i < 2; i++) {
+                    skill_110[i] = Byte.parseByte(jsar.get(i).toString());
+                }
+                jsar.clear();
+
                 // box
                 jsar = (JSONArray) JSONValue.parse(rs.getString("itembox4"));
                 if (jsar == null) {
@@ -785,6 +796,11 @@ public class Player extends Body2 {
                 skill.id = dis.readByte();
                 skill.iconid = dis.readByte();
                 skill.name = dis.readUTF();
+                if (skill.id == 19 && skill_110[0] >= 1) {
+                    skill.name += " [" + skill_110[0] + "]";
+                } else if (skill.id == 20 && skill_110[1] >= 1) {
+                    skill.name += " [" + skill_110[1] + "]";
+                }
                 skill.type = dis.readByte();
                 skill.range = dis.readShort();
                 skill.detail = dis.readUTF();
@@ -806,6 +822,11 @@ public class Player extends Body2 {
                     skill.mLvSkill[j].minfo = new Option[(int) b3];
                     for (int k = 0; k < (int) b3; k++) {
                         skill.mLvSkill[j].minfo[k] = new Option(dis.readUnsignedByte(), dis.readInt(), (short) 0);
+                        if (skill.id == 19 && skill_110[0] > 1 && skill.mLvSkill[j].minfo[k].id >= 7 && skill.mLvSkill[j].minfo[k].id <= 11) {
+                            skill.mLvSkill[j].minfo[k].param += 800 + skill_110[0] * 300;
+                        } else if (skill.id == 20 && skill_110[1] > 1 && skill.mLvSkill[j].minfo[k].id >= 7 && skill.mLvSkill[j].minfo[k].id <= 11) {
+                            skill.mLvSkill[j].minfo[k].param += 800 + skill_110[1] * 300;
+                        }
                     }
                     skill.mLvSkill[j].nTarget = dis.readByte();
                     skill.mLvSkill[j].range_lan = dis.readShort();
@@ -952,6 +973,11 @@ public class Player extends Body2 {
                     jsar.add(skill_point[i]);
                 }
                 a += ",`skill` = '" + jsar.toJSONString() + "'";
+                jsar.clear();
+                for (int i = 0; i < 2; i++) {
+                    jsar.add(skill_110[i]);
+                }
+                a += ",`skill_110` = '" + jsar.toJSONString() + "'";
                 jsar.clear();
                 //
                 for (Item47 it : item.bag47) {
@@ -1932,14 +1958,14 @@ public class Player extends Body2 {
                     boolean dont_have_book_skill_110 = true;
                     switch (clazz) {
                         case 0: {
-                            if (item.total_item_by_id(3, 4577) > 0 && index == 19) {
+                            if (item.total_item_book_skill(4577) > 0 && index == 19) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4577) {
                                         item.bag3[i] = null;
                                     }
                                 }
-                            } else if (item.total_item_by_id(3, 4578) > 0 && index == 20) {
+                            } else if (item.total_item_book_skill( 4578) > 0 && index == 20) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4578) {
@@ -1950,14 +1976,14 @@ public class Player extends Body2 {
                             break;
                         }
                         case 1: {
-                            if (item.total_item_by_id(3, 4579) > 0 && index == 19) {
+                            if (item.total_item_book_skill(4579) > 0 && index == 19) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4579) {
                                         item.bag3[i] = null;
                                     }
                                 }
-                            } else if (item.total_item_by_id(3, 4580) > 0 && index == 20) {
+                            } else if (item.total_item_book_skill(4580) > 0 && index == 20) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4580) {
@@ -1968,14 +1994,14 @@ public class Player extends Body2 {
                             break;
                         }
                         case 2: {
-                            if (item.total_item_by_id(3, 4581) > 0 && index == 19) {
+                            if (item.total_item_book_skill(4581) > 0 && index == 19) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4581) {
                                         item.bag3[i] = null;
                                     }
                                 }
-                            } else if (item.total_item_by_id(3, 4582) > 0 && index == 20) {
+                            } else if (item.total_item_book_skill(4582) > 0 && index == 20) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4582) {
@@ -1986,14 +2012,14 @@ public class Player extends Body2 {
                             break;
                         }
                         case 3: {
-                            if (item.total_item_by_id(3, 4583) > 0 && index == 19) {
+                            if (item.total_item_book_skill(4583) > 0 && index == 19) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4583) {
                                         item.bag3[i] = null;
                                     }
                                 }
-                            } else if (item.total_item_by_id(3, 4584) > 0 && index == 20) {
+                            } else if (item.total_item_book_skill(584) > 0 && index == 20) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4584) {
@@ -2060,6 +2086,21 @@ public class Player extends Body2 {
                 }
                 MapService.update_in4_2_other_inside(this.map, this);
                 Service.send_char_main_in4(this);
+            }
+        } else if (type == 2) {
+            if (index == 19 || index == 20) {
+                if (conn.p.skill_point[index] != 10) {
+                    conn.p.id_index_temp = -1;
+                    Service.send_notice_box(conn, "Kỹ năng chưa được cộng tối đa");
+                    return;
+                }
+                if (conn.p.skill_110[index - 19] >= 10) {
+                    conn.p.id_index_temp = -1;
+                    Service.send_notice_box(conn, "Kỹ năng được nâng cấp tối đa");
+                    return;
+                }
+                this.id_index_temp = (byte) (index - 19);
+               // MenuController.send_menu_select(conn, -128, new String[]{"Nâng cấp bằng sách", "Nâng cấp bằng sách ghép"});
             }
         }
     }
@@ -2394,6 +2435,19 @@ public class Player extends Body2 {
         m.writer().writeInt(time);
         MapService.send_msg_player_inside(this.map, this, m, true);
         m.cleanup();
+    }
+    public int get_id_eff_skill() {
+        int id = 0;
+        if (this.clazz == 0) {
+            id = 53;
+        } else if (this.clazz == 1) {
+            id = 59;
+        } else if (this.clazz == 2) {
+            id = 52;
+        } else if (this.clazz == 3) {
+            id = 49;
+        }
+        return id;
     }
 }
 

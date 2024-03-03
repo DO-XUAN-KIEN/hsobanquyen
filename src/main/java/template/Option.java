@@ -5,7 +5,7 @@ public class Option {
     private static final int[] parafterupdate
             = new int[]{1, 110, 120, 130, 140, 150, 160, 172, 184, 196, 208, 220, 235, 250, 265, 280};
     public byte id;
-    private int param;
+    public int param;
     private short idItem;
 
     public Option(int id, int param, short iditem) {

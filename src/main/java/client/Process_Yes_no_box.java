@@ -177,6 +177,199 @@ public class Process_Yes_no_box {
                     }
                     break;
                 }
+                case -122: {
+                    // Đệ tử
+                    if (!conn.p.isOwner) {
+                        return;
+                    }
+                    if (conn.p.get_ngoc() > 5) {
+                        if ((conn.p.item.total_item_by_id(7, 472) > 50 && conn.p.item.total_item_by_id(7, 473) > 50
+                                && conn.p.item.total_item_by_id(7, 474) > 50 && conn.p.item.total_item_by_id(7, 475) > 50) || conn.ac_admin > 2) {
+                            short[] id_ma_phap = new short[]{4578, 4579, 4581, 4583};
+                            ItemTemplate3 temp3 = ItemTemplate3.item.get(id_ma_phap[Util.random(id_ma_phap.length)]);
+                            Item3 it = new Item3();
+                            it.id = temp3.getId();
+                            it.name = temp3.getName();
+                            it.clazz = temp3.getClazz();
+                            it.type = temp3.getType();
+                            it.level = temp3.getLevel();
+                            it.icon = temp3.getIcon();
+                            it.op = temp3.getOp();
+                            it.op.add(new Option((byte) 61, 0));
+                            it.color = 3;
+                            it.islock = true;
+                            it.part = temp3.getPart();
+                            conn.p.item.add_item_bag3(it);
+                            it.op.clear();
+                            conn.p.item.remove(7, 472, 50);
+                            conn.p.item.remove(7, 473, 50);
+                            conn.p.item.remove(7, 474, 50);
+                            conn.p.item.remove(7, 475, 50);
+                            conn.p.item.char_inventory(3);
+                            conn.p.item.char_inventory(4);
+                            conn.p.item.char_inventory(7);
+                            conn.p.update_ngoc(-5);
+
+                            Service.send_notice_box(conn, "Ghép thành công");
+                        } else {
+                            Service.send_notice_box(conn, "Bạn cần có 50 mảnh (Mảnh sách đỏ 1, Mảnh sách đỏ 2," +
+                                    " Mảnh sách đỏ 3, Mảnh sách đỏ 4)");
+                        }
+                    } else {
+                        Service.send_notice_box(conn, "Không đủ ngọc");
+                    }
+                    break;
+                }
+                case -123: {
+                    // Đệ tử
+                    if (!conn.p.isOwner) {
+                        return;
+                    }
+                    if (conn.p.get_ngoc() >= 10) {
+                        if ((conn.p.item.total_item_by_id(7, 476) > 50 && conn.p.item.total_item_by_id(7, 477) > 50
+                                && conn.p.item.total_item_by_id(7, 478) > 50 && conn.p.item.total_item_by_id(7, 479) > 50) || conn.ac_admin > 2) {
+                            short[] id_vat_ly = new short[]{4577, 4580, 4582, 4584};
+                            ItemTemplate3 temp3 = ItemTemplate3.item.get(id_vat_ly[Util.random(id_vat_ly.length)]);
+                            Item3 it = new Item3();
+                            it.id = temp3.getId();
+                            it.name = temp3.getName();
+                            it.clazz = temp3.getClazz();
+                            it.type = temp3.getType();
+                            it.level = temp3.getLevel();
+                            it.icon = temp3.getIcon();
+                            it.op = temp3.getOp();
+                            it.op.add(new Option((byte) 61, 0));
+                            it.color = temp3.getColor();
+                            it.islock = true;
+                            it.part = temp3.getPart();
+                            conn.p.item.add_item_bag3(it);
+                            it.op.clear();
+                            conn.p.item.remove(7, 476, 50);
+                            conn.p.item.remove(7, 477, 50);
+                            conn.p.item.remove(7, 478, 50);
+                            conn.p.item.remove(7, 479, 50);
+                            conn.p.item.char_inventory(3);
+                            conn.p.item.char_inventory(4);
+                            conn.p.item.char_inventory(7);
+                            conn.p.update_ngoc(-10);
+
+                            Service.send_notice_box(conn, "Ghép thành công");
+                        } else {
+                            Service.send_notice_box(conn, "Bạn cần có 50 mảnh (Mảnh sách xanh 1, Mảnh sách xanh 2," +
+                                    " Mảnh sách xanh 3, Mảnh sách xanh 4)");
+                        }
+                    } else {
+                        Service.send_notice_box(conn, "Không đủ ngọc");
+                    }
+                    break;
+                }
+                case -121: {
+                    // Đệ tử
+                    if (!conn.p.isOwner) {
+                        return;
+                    }
+                    int level = conn.p.skill_110[conn.p.id_index_temp];
+                    if (conn.p.skill_110[conn.p.id_index_temp] >= 10) {
+                        conn.p.id_index_temp = -1;
+                        Service.send_notice_box(conn, "Kỹ năng được nâng cấp tối đa");
+                        return;
+                    }
+                    int id_book = -1;
+                    if (conn.p.id_index_temp == 1) {
+                        id_book = switch (conn.p.clazz) {
+                            case 0 -> 4577;
+                            case 1 -> 4580;
+                            case 2 -> 4582;
+                            case 3 -> 4584;
+                            default -> id_book;
+                        };
+                    } else if (conn.p.id_index_temp == 0) {
+                        id_book = switch (conn.p.clazz) {
+                            case 0 -> 4578;
+                            case 1 -> 4579;
+                            case 2 -> 4581;
+                            case 3 -> 4583;
+                            default -> id_book;
+                        };
+                    }
+                    if (conn.p.get_ngoc() < level * 5 + 10) {
+                        conn.p.id_index_temp = -1;
+                        Service.send_notice_box(conn, "Không đủ ngọc");
+                        return;
+                    }
+                    if (conn.p.item.total_item_book_skill(id_book) >= (level + 1)) {
+                        if (Util.nextInt(100) < 20 - level || level == 0) {
+                            conn.p.skill_110[conn.p.id_index_temp] += 1;
+                            Service.send_notice_box(conn, "Nâng cấp thành công");
+                            conn.p.load_skill();
+                            Service.send_skill(conn.p);
+                        } else {
+                            Service.send_notice_box(conn, "Thất bại rồi");
+                        }
+                        conn.p.item.remove_item_book_skill(id_book, (level + 1));
+                        conn.p.item.char_inventory(3);
+                        conn.p.id_index_temp = -1;
+                        conn.p.update_ngoc(-(level * 5 + 10));
+                    } else {
+                        Service.send_notice_box(conn, "Không đủ sách");
+                    }
+                    break;
+                }
+                case -120: {
+                    // Đệ tử
+                    if (!conn.p.isOwner) {
+                        return;
+                    }
+                    int level = conn.p.skill_110[conn.p.id_index_temp];
+                    if (conn.p.skill_110[conn.p.id_index_temp] >= 10) {
+                        conn.p.id_index_temp = -1;
+                        Service.send_notice_box(conn, "Kỹ năng được nâng cấp tối đa");
+                        return;
+                    }
+                    int id_book = -1;
+                    int type_book = -1;
+                    if (conn.p.id_index_temp == 1) {
+                        type_book = 0;
+                        id_book = switch (conn.p.clazz) {
+                            case 0 -> 4577;
+                            case 1 -> 4580;
+                            case 2 -> 4582;
+                            case 3 -> 4583;
+                            default -> id_book;
+                        };
+                    } else if (conn.p.id_index_temp == 0) {
+                        type_book = 3;
+                        id_book = switch (conn.p.clazz) {
+                            case 0 -> 4578;
+                            case 1 -> 4579;
+                            case 2 -> 4581;
+                            case 3 -> 4584;
+                            default -> id_book;
+                        };
+                    }
+                    if (conn.p.get_ngoc() < level * 5 + 10) {
+                        conn.p.id_index_temp = -1;
+                        Service.send_notice_box(conn, "Không đủ ngọc");
+                        return;
+                    }
+                    if (conn.p.item.total_item_book(type_book, id_book) >= (level + 1)) {
+                        if (Util.nextInt(100) < 20 - level || level == 0) {
+                            conn.p.skill_110[conn.p.id_index_temp] += 1;
+                            Service.send_notice_box(conn, "Nâng cấp thành công");
+                            conn.p.load_skill();
+                            Service.send_skill(conn.p);
+                        } else {
+                            Service.send_notice_box(conn, "Thất bại rồi");
+                        }
+                        conn.p.id_index_temp = -1;
+                        conn.p.item.remove_item_book(id_book, (level + 1));
+                        conn.p.item.char_inventory(3);
+                        conn.p.update_ngoc(-(level * 5 + 10));
+                    } else {
+                        Service.send_notice_box(conn, "Không đủ sách");
+                    }
+                    break;
+                }
                 case 112: {
                     Wedding temp = Wedding.get_obj(conn.p.name);
                     if (temp.exp < Level.entrys.get(temp.it.tier).exp) {
