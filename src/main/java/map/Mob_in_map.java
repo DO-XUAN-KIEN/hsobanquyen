@@ -213,7 +213,7 @@ public final static HashMap<Integer, Mob_in_map> ENTRYS = new HashMap<>();
 //                                MapService.mob_fire(this, mob, p0);
                     }
                     this.time_fight = System.currentTimeMillis() + 3500L;
-                } else if (this.list_fight.size() > 0) {
+                } else if (this.list_fight.isEmpty()) {
                     Player p0 = this.list_fight.get(Util.random(this.list_fight.size()));
                     if (p0 != null && !p0.isdie && p0.map.map_id == this.map_id && p0.map.zone_id == this.zone_id) {
                         if (Math.abs(this.x - p0.x) < 200 && Math.abs(this.y - p0.y) < 200) {

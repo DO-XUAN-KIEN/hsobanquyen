@@ -671,6 +671,10 @@ public class UseItem {
                 break;
             }
             case 206: {
+                    if (conn.p.item.get_bag_able() < 5) {
+                        Service.send_notice_box(conn, "Cần tối thiểu trống 5 ô hành trang");
+                        return;
+                    }
                     ItemTemplate7 item1 = ItemTemplate7.item.get(Util.random(8, 12));
                     ItemTemplate7 item2 = ItemTemplate7.item.get((50 > Util.random(0, 100)) ? 0 : 3);
                     int quant1_ = Util.random(1, 6);
@@ -727,6 +731,10 @@ public class UseItem {
                     break;
             }
             case 273: {
+                if (conn.p.item.get_bag_able() < 5) {
+                    Service.send_notice_box(conn, "Cần tối thiểu trống 5 ô hành trang");
+                    return;
+                }
                 ItemTemplate7 item1 = ItemTemplate7.item.get(Util.random(246, 335));
                 ItemTemplate7 item2 = ItemTemplate7.item.get((50 > Util.random(0, 100)) ? 0 : 3);
                 int quant1_ = Util.random(1, 2);
@@ -783,6 +791,10 @@ public class UseItem {
                 break;
             }
             case 274: {
+                if (conn.p.item.get_bag_able() < 5) {
+                    Service.send_notice_box(conn, "Cần tối thiểu trống 5 ô hành trang");
+                    return;
+                }
                 ItemTemplate7 item1 = ItemTemplate7.item.get(Util.random(417, 456));
                 ItemTemplate7 item2 = ItemTemplate7.item.get(Util.random(457, 463));
                 ItemTemplate7 item3 = ItemTemplate7.item.get(Util.random(246, 345));

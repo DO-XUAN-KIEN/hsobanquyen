@@ -344,7 +344,7 @@ public class MainObject {
 
         Player p = ObjAtk.isPlayer() ? (Player) ObjAtk : null;
         if (p != null && (idxSkill == 19 && p.skill_110[0] >= 1) || (idxSkill == 20 && p.skill_110[1] >= 1)) {
-            send_eff_to_object(p, focus, p.get_id_eff_skill());
+            send_eff_to_object(p, focus, p.get_id_eff_skill(idxSkill));
         }
         if (p != null && idxSkill == 0) {
             send_eff_to_object(p, focus, 56);
@@ -461,7 +461,7 @@ public class MainObject {
 
         //<editor-fold defaultstate="collapsed" desc="Nộ cánh...">
         if (ObjAtk.isPlayer()) {
-            EffTemplate temp2 = ObjAtk.get_EffDefault(StrucEff.PowerWing);
+            EffTemplate temp2 = p.get_EffDefault(StrucEff.PowerWing);
             if (temp2 == null) {
                 Item3 it = p.item.wear[10];
                 if (it != null) {
@@ -477,7 +477,7 @@ public class MainObject {
                     }
                     if (percent > Util.random(10_000)) {
                         //
-                        ObjAtk.add_EffDefault(StrucEff.PowerWing, 1000, time);
+                        p.add_EffDefault(StrucEff.PowerWing, 1000, time);
                         //
                         Message mw = new Message(40);
                         mw.writer().writeByte(0);
@@ -489,10 +489,10 @@ public class MainObject {
                         mw.writer().writeByte(0);
                         mw.writer().writeByte(30);
                         byte[] id__ = new byte[]{7, 8, 9, 10, 11, 15, 0, 1, 2, 3, 4, 14};
-                        int[] par__ = new int[]{2000, 2000, 2000, 2000, 2000, 2000,
-                                2 * (ObjAtk.get_param_view_in4(0) / 10), 2 * (ObjAtk.get_param_view_in4(1) / 10),
-                                2 * (ObjAtk.get_param_view_in4(2) / 10), 2 * (ObjAtk.get_param_view_in4(3) / 10),
-                                2 * (ObjAtk.get_param_view_in4(4) / 10), 2 * (ObjAtk.get_param_view_in4(14) / 10)};
+                        int[] par__ = new int[]{3000, 3000, 3000, 3000, 3000, 3000,
+                                3 * (ObjAtk.get_param_view_in4(0) / 10), 3 * (ObjAtk.get_param_view_in4(1) / 10),
+                                3 * (ObjAtk.get_param_view_in4(2) / 10), 3 * (ObjAtk.get_param_view_in4(3) / 10),
+                                3 * (ObjAtk.get_param_view_in4(4) / 10), 3 * (ObjAtk.get_param_view_in4(14) / 10)};
                         mw.writer().writeByte(id__.length);
                         //
                         for (int i = 0; i < id__.length; i++) {
@@ -632,10 +632,10 @@ public class MainObject {
                 }
             }
             boolean check = dame < 0
-                    || (focus.isBoss() && Math.abs(focus.level - ObjAtk.level) >= 5 && focus.level < 120 && focus.template.mob_id != 174 && !Map.is_map_cant_save_site(focus.map_id))
-                    || (focus.isBoss() && focus.template.mob_id == 174 && map.zone_id == 0 && ObjAtk.level > 89)
-                    || (focus.isBoss() && focus.template.mob_id == 174 && map.zone_id == 2 && !(ObjAtk.level >= 90 && ObjAtk.level < 110))
-                    || (focus.isBoss() && focus.template.mob_id == 174 && map.zone_id == 3 && ObjAtk.level < 110);
+                    || (focus.isBoss() && Math.abs(focus.level - ObjAtk.level) >= 5 && focus.level < 120 && focus.template.mob_id != 192 && !Map.is_map_cant_save_site(focus.map_id))
+                    || (focus.isBoss() && focus.template.mob_id == 192 && map.zone_id == 0 && ObjAtk.level > 74)
+                    || (focus.isBoss() && focus.template.mob_id == 192 && map.zone_id == 2 && !(ObjAtk.level >= 75 && ObjAtk.level <= 99))
+                    || (focus.isBoss() && focus.template.mob_id == 192 && map.zone_id == 3 && ObjAtk.level < 100);
             if (check) {
                 dame = 0;
             }

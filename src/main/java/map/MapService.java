@@ -397,7 +397,7 @@ public class MapService {
                     || Map.is_map__load_board_player(map.map_id)) {
                 if (!temp.list_fight.contains(p)
                         && ((temp.template.mob_id == 151 || temp.template.mob_id == 152 || temp.template.mob_id == 154) || temp.isBoss()
-                        || ((Math.abs(temp.x - p.x) < 50) && (Math.abs(temp.y - p.y) < 50)))) {
+                        || ((Math.abs(temp.x - p.x) < 100) && (Math.abs(temp.y - p.y) < 100)))) {
                     temp.list_fight.add(p);
                 }
                 if (!p.other_mob_inside.containsKey(temp.index)) {
@@ -501,6 +501,8 @@ public class MapService {
         if (mob.isBoss()) {
             int sizelv = p_target.level - mob.level;
             if (mob.template.mob_id == 174 || mob.level >= 120) {
+                sizelv = 0;
+            }else if (mob.template.mob_id == 192 || mob.level >= 120) {
                 sizelv = 0;
             } else if (Map.is_map_cant_save_site(mob.map_id)) {
                 sizelv = 0;

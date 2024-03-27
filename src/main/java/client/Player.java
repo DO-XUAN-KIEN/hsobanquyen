@@ -35,21 +35,21 @@ public class Player extends Body2 {
     ;
     public boolean is_nhanban;
     public final Session conn;
-//    public final int index;
+    //    public final int index;
     public boolean already_setup;
-//    public String name;
+    //    public String name;
     public Map map;
     public boolean is_changemap;
     public long timeCantChangeMap;
 
-//    public short x;
+    //    public short x;
 //    public short y;
 //    public short x_old;
 //    public short y_old;
     public byte head;
     public byte eye;
     public byte hair;
-//    public List<EffTemplate> list_eff;
+    //    public List<EffTemplate> list_eff;
     public Date date;
     public byte diemdanh;
     public byte banclone;
@@ -59,14 +59,14 @@ public class Player extends Body2 {
     public int diemdibuon;
     public int diemdicuop;
     public int chuyensinh;
-//    public int hieuchien;
+    //    public int hieuchien;
     public byte type_exp;
-//    public byte clazz;
+    //    public byte clazz;
 //    public short level;
 //    public long exp;
     public long vang;
     public int kimcuong;
-//    public boolean isdie;
+    //    public boolean isdie;
     public short tiemnang;
     public short kynang;
     public short point1;
@@ -75,7 +75,7 @@ public class Player extends Body2 {
     public short point4;
     public int suckhoe;
     public int pointarena;
-//    public byte typepk;
+    //    public byte typepk;
     public int pointpk;
     public byte[] skill_point;
     public long[] time_delay_skill;
@@ -89,7 +89,7 @@ public class Player extends Body2 {
     public short pet_follow = -1;
     public List<Friend> list_friend;
     public List<String> list_enemies;
-//    public int hp;
+    //    public int hp;
 //    public int mp;
     public byte[] fashion;
     public Skill[] skills;
@@ -121,7 +121,7 @@ public class Player extends Body2 {
     public boolean lock_trade;
     public boolean accept_trade;
     public int money_trade;
-//    public Dungeon dungeon;
+    //    public Dungeon dungeon;
     public Clan myclan;
     public byte id_medal_is_created;
     public short[] medal_create_material;
@@ -153,13 +153,11 @@ public class Player extends Body2 {
     public String[] in4_wedding;
     public int[] quest_daily;
     public int chuyencan;
+    public int id_index_temp;
+    public int[] skill_110;
     public int jointx;
     public boolean tai;
     public boolean xiu;
-
-    public int id_index_temp;
-
-    public int[] skill_110;
     public String taixiu = "Bạn chưa đặt cược.";
 
     public void datatx() {
@@ -238,14 +236,14 @@ public class Player extends Body2 {
 
     public void SetMaterialItemStar() {
         MaterialItemStar = new short[]{
-            (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),
-            (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),
-            (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),
-            (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),
-            (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),
-            (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),
-            (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),
-            (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),};
+                (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),
+                (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),
+                (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),
+                (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),
+                (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),
+                (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),
+                (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),
+                (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),};
     }
 
     public void ChangeMaterialItemStar(byte type) {
@@ -418,6 +416,9 @@ public class Player extends Body2 {
                     JSONArray jsar2 = (JSONArray) JSONValue.parse(jsar.get(i).toString());
                     Item47 temp = new Item47();
                     temp.id = Short.parseShort(jsar2.get(0).toString());
+                    if (temp.id > ItemTemplate4.item.size()) {
+                        continue;
+                    }
                     temp.quantity = Short.parseShort(jsar2.get(1).toString());
                     temp.category = 4;
                     if (temp.quantity > 0) {
@@ -847,7 +848,7 @@ public class Player extends Body2 {
         }
     }
 
-//    public EffTemplate get_EffDefault(int id) {
+    //    public EffTemplate get_EffDefault(int id) {
 //        for (int i = 0; i < list_eff.size(); i++) {
 //            EffTemplate temp = list_eff.get(i);
 //            if (temp.id == id) {
@@ -1161,6 +1162,7 @@ public class Player extends Body2 {
                 }
                 a += ",`itembox3` = '" + jsar.toJSONString() + "'";
                 jsar.clear();
+
                 //
                 for (int i = 0; i < mypet.size(); i++) {
                     JSONArray js1 = new JSONArray();
@@ -1958,14 +1960,14 @@ public class Player extends Body2 {
                     boolean dont_have_book_skill_110 = true;
                     switch (clazz) {
                         case 0: {
-                            if (item.total_item_book_skill(4577) > 0 && index == 19) {
+                            if (item.total_item_by_id(3, 4577) > 0 && index == 19) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4577) {
                                         item.bag3[i] = null;
                                     }
                                 }
-                            } else if (item.total_item_book_skill( 4578) > 0 && index == 20) {
+                            } else if (item.total_item_by_id(3, 4578) > 0 && index == 20) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4578) {
@@ -1976,14 +1978,14 @@ public class Player extends Body2 {
                             break;
                         }
                         case 1: {
-                            if (item.total_item_book_skill(4579) > 0 && index == 19) {
+                            if (item.total_item_by_id(3, 4579) > 0 && index == 19) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4579) {
                                         item.bag3[i] = null;
                                     }
                                 }
-                            } else if (item.total_item_book_skill(4580) > 0 && index == 20) {
+                            } else if (item.total_item_by_id(3, 4580) > 0 && index == 20) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4580) {
@@ -1994,14 +1996,14 @@ public class Player extends Body2 {
                             break;
                         }
                         case 2: {
-                            if (item.total_item_book_skill(4581) > 0 && index == 19) {
+                            if (item.total_item_by_id(3, 4581) > 0 && index == 19) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4581) {
                                         item.bag3[i] = null;
                                     }
                                 }
-                            } else if (item.total_item_book_skill(4582) > 0 && index == 20) {
+                            } else if (item.total_item_by_id(3, 4582) > 0 && index == 20) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4582) {
@@ -2012,14 +2014,14 @@ public class Player extends Body2 {
                             break;
                         }
                         case 3: {
-                            if (item.total_item_book_skill(4583) > 0 && index == 19) {
+                            if (item.total_item_by_id(3, 4583) > 0 && index == 19) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4583) {
                                         item.bag3[i] = null;
                                     }
                                 }
-                            } else if (item.total_item_book_skill(584) > 0 && index == 20) {
+                            } else if (item.total_item_by_id(3, 4584) > 0 && index == 20) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4584) {
@@ -2087,7 +2089,7 @@ public class Player extends Body2 {
                 MapService.update_in4_2_other_inside(this.map, this);
                 Service.send_char_main_in4(this);
             }
-        } else if (type == 2) {
+        }else if (type == 2) {
             if (index == 19 || index == 20) {
                 if (conn.p.skill_point[index] != 10) {
                     conn.p.id_index_temp = -1;
@@ -2100,7 +2102,7 @@ public class Player extends Body2 {
                     return;
                 }
                 this.id_index_temp = (byte) (index - 19);
-               // MenuController.send_menu_select(conn, -128, new String[]{"Nâng cấp bằng sách", "Nâng cấp bằng sách ghép"});
+                MenuController.send_menu_select(conn, -128, new String[]{"Nâng cấp bằng sách", "Nâng cấp bằng sách ghép"});
             }
         }
     }
@@ -2271,7 +2273,7 @@ public class Player extends Body2 {
     public void set_in4() throws IOException {
         id_henshin = -1;
         this.already_setup = true;
-     //   time_use_item_arena = System.currentTimeMillis() + 250_000L;
+        //   time_use_item_arena = System.currentTimeMillis() + 250_000L;
         load_skill();
 //        try{
 //            CheckSkillPoint();
@@ -2436,16 +2438,37 @@ public class Player extends Body2 {
         MapService.send_msg_player_inside(this.map, this, m, true);
         m.cleanup();
     }
-    public int get_id_eff_skill() {
+    public int get_id_eff_skill(int type) {
         int id = 0;
-        if (this.clazz == 0) {
-            id = 53;
-        } else if (this.clazz == 1) {
-            id = 59;
-        } else if (this.clazz == 2) {
-            id = 52;
-        } else if (this.clazz == 3) {
-            id = 49;
+        switch (this.clazz) {
+            case 0:
+                if (type == 19) {
+                    id = 56;
+                } else if (type == 20) {
+                    id = 53;
+                }
+                break;
+            case 1:
+                if (type == 19) {
+                    id = 59; // 59
+                } else if (type == 20) {
+                    id = 76;
+                }
+                break;
+            case 2:
+                if (type == 19) {
+                    id = 49;
+                } else if (type == 20) {
+                    id = 56;
+                }
+                break;
+            case 3:
+                if (type == 19) {
+                    id = 77;
+                } else if (type == 20) {
+                    id = 52;
+                }
+                break;
         }
         return id;
     }

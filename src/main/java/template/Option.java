@@ -41,7 +41,6 @@ public class Option {
             parbuffer += 20 * tier;
             return parbuffer;
         }
-
         if (this.id >= 23 && this.id <= 26) {
             return (parbuffer + tier);
         }
@@ -100,7 +99,6 @@ public class Option {
             parbuffer += 50 * tier;
             return parbuffer;
         }
-
         if (this.id >= 23 && this.id <= 26) {
             return (parbuffer + tier);
         }

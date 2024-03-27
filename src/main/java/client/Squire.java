@@ -68,6 +68,7 @@ public class Squire extends Player {
     }
 
     public void setInfo() throws IOException {
+        this.skill_110 = new int[2];
         id_henshin = -1;
         this.already_setup = true;
         time_use_item_arena = System.currentTimeMillis() + 250_000L;
@@ -511,7 +512,6 @@ public class Squire extends Player {
                 }
                 if (connection != null) {
                     ps.close();
-                    connection.close();
                 }
             }
         } catch (SQLException e) {
@@ -779,7 +779,7 @@ public class Squire extends Player {
         //</editor-fold>
         Player p = ObjAtk.isPlayer() ? (Player) ObjAtk : null;
         EffTemplate ef;
-        long dame = ObjAtk.get_DameBase()*3L;
+        long dame = ObjAtk.get_DameBase() * 3L;
         int hutHP = 0;
         float ptCrit = 0;
         float DamePlus = 0;
@@ -1084,6 +1084,7 @@ public class Squire extends Player {
         if (focus.isMobDiBuon()) {
             dame = focus.get_HpMax() * 5L / 100;
         }
+
         focus.hp -= (int) dame;
 
         if (focus.hp <= 0) {
@@ -1284,4 +1285,3 @@ public class Squire extends Player {
         Squire.squireEnterMap(conn.p);
     }
 }
-

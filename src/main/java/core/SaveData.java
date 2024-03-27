@@ -393,7 +393,7 @@ public class SaveData {
 
                 Memin4 temp = new Memin4();
                 temp.level = rH.getShort("level");
-                temp.diemdicuop= rH.getInt("diemdibuon");
+                temp.diemdicuop= rH.getInt("diemdicuop");
                 temp.name = rH.getString("name");
                 JSONArray jsar = (JSONArray) JSONValue.parse(rH.getString("body"));
                 if (jsar == null) {
