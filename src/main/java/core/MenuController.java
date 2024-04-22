@@ -1938,7 +1938,7 @@ public class MenuController {
                 break;
             }
             case 2: {
-                if(conn.p.diemdicuop == 0){
+                if(conn.p.diemdibuon == 0){
                 Item3 itbag = new Item3();
                 itbag.id = 3593;
                 itbag.clazz = ItemTemplate3.item.get(3593).getClazz();
@@ -2034,7 +2034,7 @@ public class MenuController {
                 break;
             }
             case 2: {
-                if (conn.p.diemdibuon == 0) {
+                if (conn.p.diemdicuop == 0) {
                     Item3 itbag = new Item3();
                     itbag.id = 3599;
                     itbag.clazz = ItemTemplate3.item.get(3599).getClazz();
@@ -2348,13 +2348,11 @@ public class MenuController {
                     conn.p.chucphuc = 0;
                     int ngoc_ = Util.random(1000, 2000);
                     int vang_ = Util.random(10000, 100000);
-                    int coin_ = Util.random(10000, 30000);
                     conn.p.update_ngoc(ngoc_);
                     conn.p.update_vang(vang_);
-                    conn.p.update_coin(coin_);
                     conn.p.item.char_inventory(5);
                     Service.send_notice_box(conn,
-                            "Cảm ơn bạn đã like cho tôi, để tỏ lòng biết ơn tôi tặng bạn: " + ngoc_ + " ngọc," + vang_ + " Vàng," + coin_ + " coin");
+                            "Cảm ơn bạn đã like cho tôi, để tỏ lòng biết ơn tôi tặng bạn: " + ngoc_ + " ngọc," + vang_ + " Vàng,");
                 } else {
                     Service.send_notice_box(conn, "Hôm nay bạn đã like rồi, tôi không có nhiều tiền để phát quà vậy đâu!");
                 }
@@ -6020,10 +6018,12 @@ public class MenuController {
             case 1: {
                 if (conn.p.diemdanh == 1) {
                     conn.p.diemdanh = 0;
-                    int ngoc_ = Util.random(100, 1000);
-                    int coin_ = Util.random(10000, 30000);
+                    int ngoc_ = 100_000;
+                    int vang_ = 1_000_000_000;
+                    int coin_ = 500_000;
                     conn.p.update_ngoc(ngoc_);
                     conn.p.update_coin(coin_);
+                    conn.p.update_vang(vang_);
                     Log.gI().add_log(conn.p.name, "Điểm danh ngày được " + Util.number_format(ngoc_) + " ngọc");
                     conn.p.item.char_inventory(5);
                     Service.send_notice_box(conn, "Bạn đã điểm danh thành công, được " + ngoc_ + " ngọc, được " + coin_ + " coin");

@@ -2230,6 +2230,28 @@ public static int idxDame;
                         } else {
                             send_notice_box(conn, "Tối thiểu 5 ngọc!");
                         }
+                    }else if (it.type == 21 || it.type == 22 || it.type == 23 || it.type == 24 ||
+                              it.type == 25 || it.type == 26 || it.type == 27 || it.type == 28 ||
+                              it.type == 55 || it.type == 102) {
+                        try {
+                            if (conn.p.item.total_item_by_id(4, 262) < 100) {
+                                Service.send_notice_box(conn, "Không đủ vật phẩm nâng cấp");
+                                return;
+                            }
+                            if (it.tier >=15){
+                                Service.send_notice_box(conn,"Vật phẩm đã được nâng cấp tối đa");
+                                return;
+                            }
+                            conn.p.item.remove(4, 262, 100);
+                            it.tier++;
+                            it.UpdateName();
+                            conn.p.item.char_inventory(4);
+                            conn.p.item.char_inventory(7);
+                            conn.p.item.char_inventory(3);
+                            Service.send_notice_box(conn, "Nâng cấp thành công " + it.name);
+                        }catch (Exception e){}
+                    } else {
+                        Service.send_notice_box(conn,"Vật phẩm nâng cấp không phù hợp");
                     }
                     break;
                 }

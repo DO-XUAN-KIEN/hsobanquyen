@@ -138,6 +138,7 @@ public class DailyQuest {
 			 short id_blue = Medal_Material.m_blue[Util.random(0, 10)];
                          short id_yellow = Medal_Material.m_yellow[Util.random(0, 10)];
                          short id_violet = Medal_Material.m_violet[Util.random(0, 10)];
+						 int id_ngocrong = Util.random(464 , 470);
                          int vang = Util.random(50, 100) * (p.quest_daily[1] + 1) * p.quest_daily[2];
 			int ngoc = p.quest_daily[1] == 3 ? Util.random(200, 400)
 			      : (p.quest_daily[1] == 2 ? Util.random(100, 200)
