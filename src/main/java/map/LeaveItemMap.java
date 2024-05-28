@@ -304,6 +304,7 @@ public class LeaveItemMap {
             short[] id_item_leave3 = new short[]{};
             short[] id_item_leave4 = new short[]{};
             short[] id_item_leave7 = new short[]{};
+            short[] id_medal_boss_sk = new short[]{};
             short[] id_medal_boss = new short[]{};
             //short id_medal_material = -1;
             short sizeRandomMedal = 0;
@@ -372,15 +373,6 @@ public class LeaveItemMap {
                 //        id_item_leave3 = new short[]{(short) Util.random(4577, 4585)};
                     }
                     sizeRandomMedal = (short) (60);
-                    break;
-                }
-                case 173: { //tho tuyet
-                   id_item_leave4 = new short[]{-1, -1, -1, -1, -1, -1, 273, 274, 251, 319, 320, 321, 322};
-                    id_item_leave7 = new short[]{14};
-                    if (Util.random(1) < 1) {
-                   //     id_item_leave3 = new short[]{(short) Util.random(4577, 4585)};
-                    }
-                   // sizeRandomMedal = (short) (60);
                     break;
                 }
                 case 174: { // giant skeleton
@@ -463,6 +455,17 @@ public class LeaveItemMap {
                     sizeRandomMedal = (short) (100);
                     break;
                 }
+                case 173: { //boss sk 30/4-1/5
+                    id_item_leave4 = new short[]{-1, -1, -1, -1, -1, -1, 273, 274, 251, 319, 320, 321, 322};
+                    id_item_leave7 = new short[]{14};
+                    id_medal_boss_sk = new short[]{184, 185 , 186, 187, 188};
+                    if (Util.random(100) < 1) {
+                        id_item_leave3 = new short[]{(short) Util.random(4577, 4585)};
+                    }
+                    p.boss++;
+                    sizeRandomMedal = (short) (60);
+                    break;
+                }
                 
 
             }
@@ -486,6 +489,11 @@ public class LeaveItemMap {
             for (int i = 0; i < 2; i++) {
                 for (short id : id_medal_boss) {
                     leave_item_by_type7(map, id, p, mob.index, p.index);
+                }
+            }
+            for (int i = 0; i < Util.random(1,4); i++) {
+                for (short id : id_medal_boss_sk) {
+                    leave_item_by_type4(map, id, p, mob.index, p.index);
                 }
             }
             for (int i = 0; i < 3; i++) {

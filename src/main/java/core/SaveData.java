@@ -261,6 +261,128 @@ public class SaveData {
                 BXH.BXH_Chientruong.add(temp);
             }
             rp.close();
+            BXH.BXH_doiqua.clear();
+            ps = conn.prepareStatement(
+                    "SELECT`level`, `name`, `body`, `itemwear`, `doiqua` FROM `player` WHERE `doiqua` > 0 ORDER BY  doiqua DESC LIMIT 20;");
+            // "SELECT `id`, `level`, `name`, `body`, `itemwear`, `point_arena` FROM `player` WHERE `point_arena` > 10 ORDER BY  point_arena DESC LIMIT 20;");
+            ResultSet rv = ps.executeQuery();
+            while (rv.next()) {
+                Memin4 temp = new Memin4();
+                temp.level = rv.getShort("level");
+                temp.doiqua= rv.getInt("doiqua");
+                temp.name = rv.getString("name");
+                JSONArray jsar = (JSONArray) JSONValue.parse(rv.getString("body"));
+                if (jsar == null) {
+                    return;
+                }
+                temp.head = Byte.parseByte(jsar.get(0).toString());
+                temp.hair = Byte.parseByte(jsar.get(2).toString());
+                temp.eye = Byte.parseByte(jsar.get(1).toString());
+                jsar.clear();
+                jsar = (JSONArray) JSONValue.parse(rv.getString("itemwear"));
+                if (jsar == null) {
+                    return;
+                }
+                temp.itemwear = new ArrayList<>();
+                for (int i3 = 0; i3 < jsar.size(); i3++) {
+                    JSONArray jsar2 = (JSONArray) JSONValue.parse(jsar.get(i3).toString());
+                    byte index_wear = Byte.parseByte(jsar2.get(9).toString());
+                    if (index_wear != 0 && index_wear != 1 && index_wear != 6 && index_wear != 7 && index_wear != 10) {
+                        continue;
+                    }
+                    Part_player temp2 = new Part_player();
+                    temp2.type = Byte.parseByte(jsar2.get(2).toString());
+                    temp2.part = Byte.parseByte(jsar2.get(6).toString());
+                    temp.itemwear.add(temp2);
+                }
+                temp.clan = Clan.get_clan_of_player(temp.name);
+                String percents = "Số điểm: "+temp.doiqua;
+                temp.info = "Level : " + (temp.level) + "\t-\t" + percents +" ";
+                BXH.BXH_doiqua.add(temp);
+            }
+            rv.close();
+            //bxh Phó bản
+            BXH.BXH_phoban.clear();
+            ps = conn.prepareStatement(
+                    "SELECT`level`, `name`, `body`, `itemwear`, `phoban` FROM `player` WHERE `phoban` > 0 ORDER BY  phoban DESC LIMIT 20;");
+            // "SELECT `id`, `level`, `name`, `body`, `itemwear`, `point_arena` FROM `player` WHERE `point_arena` > 10 ORDER BY  point_arena DESC LIMIT 20;");
+            ResultSet ki = ps.executeQuery();
+            while (ki.next()) {
+                Memin4 temp = new Memin4();
+                temp.level = ki.getShort("level");
+                temp.phoban= ki.getInt("phoban");
+                temp.name = ki.getString("name");
+                JSONArray jsar = (JSONArray) JSONValue.parse(ki.getString("body"));
+                if (jsar == null) {
+                    return;
+                }
+                temp.head = Byte.parseByte(jsar.get(0).toString());
+                temp.hair = Byte.parseByte(jsar.get(2).toString());
+                temp.eye = Byte.parseByte(jsar.get(1).toString());
+                jsar.clear();
+                jsar = (JSONArray) JSONValue.parse(ki.getString("itemwear"));
+                if (jsar == null) {
+                    return;
+                }
+                temp.itemwear = new ArrayList<>();
+                for (int i3 = 0; i3 < jsar.size(); i3++) {
+                    JSONArray jsar2 = (JSONArray) JSONValue.parse(jsar.get(i3).toString());
+                    byte index_wear = Byte.parseByte(jsar2.get(9).toString());
+                    if (index_wear != 0 && index_wear != 1 && index_wear != 6 && index_wear != 7 && index_wear != 10) {
+                        continue;
+                    }
+                    Part_player temp2 = new Part_player();
+                    temp2.type = Byte.parseByte(jsar2.get(2).toString());
+                    temp2.part = Byte.parseByte(jsar2.get(6).toString());
+                    temp.itemwear.add(temp2);
+                }
+                temp.clan = Clan.get_clan_of_player(temp.name);
+                String percents = "Số điểm: "+temp.phoban;
+                temp.info = "Level : " + (temp.level) + "\t-\t" + percents +" ";
+                BXH.BXH_phoban.add(temp);
+            }
+            ki.close();
+            //bxh boss
+            BXH.BXH_boss.clear();
+            ps = conn.prepareStatement(
+                    "SELECT`level`, `name`, `body`, `itemwear`, `boss` FROM `player` WHERE `boss` > 0 ORDER BY  boss DESC LIMIT 20;");
+            // "SELECT `id`, `level`, `name`, `body`, `itemwear`, `point_arena` FROM `player` WHERE `point_arena` > 10 ORDER BY  point_arena DESC LIMIT 20;");
+            ResultSet kt = ps.executeQuery();
+            while (kt.next()) {
+                Memin4 temp = new Memin4();
+                temp.level = kt.getShort("level");
+                temp.boss= kt.getInt("boss");
+                temp.name = kt.getString("name");
+                JSONArray jsar = (JSONArray) JSONValue.parse(kt.getString("body"));
+                if (jsar == null) {
+                    return;
+                }
+                temp.head = Byte.parseByte(jsar.get(0).toString());
+                temp.hair = Byte.parseByte(jsar.get(2).toString());
+                temp.eye = Byte.parseByte(jsar.get(1).toString());
+                jsar.clear();
+                jsar = (JSONArray) JSONValue.parse(kt.getString("itemwear"));
+                if (jsar == null) {
+                    return;
+                }
+                temp.itemwear = new ArrayList<>();
+                for (int i3 = 0; i3 < jsar.size(); i3++) {
+                    JSONArray jsar2 = (JSONArray) JSONValue.parse(jsar.get(i3).toString());
+                    byte index_wear = Byte.parseByte(jsar2.get(9).toString());
+                    if (index_wear != 0 && index_wear != 1 && index_wear != 6 && index_wear != 7 && index_wear != 10) {
+                        continue;
+                    }
+                    Part_player temp2 = new Part_player();
+                    temp2.type = Byte.parseByte(jsar2.get(2).toString());
+                    temp2.part = Byte.parseByte(jsar2.get(6).toString());
+                    temp.itemwear.add(temp2);
+                }
+                temp.clan = Clan.get_clan_of_player(temp.name);
+                String percents = "Số điểm: "+temp.boss;
+                temp.info = "Level : " + (temp.level) + "\t-\t" + percents +" ";
+                BXH.BXH_boss.add(temp);
+            }
+            kt.close();
             //bxh lôi đài
             BXH.BXH_Loidai.clear();
             ps = conn.prepareStatement(

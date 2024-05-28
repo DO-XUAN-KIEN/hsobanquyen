@@ -1,5 +1,6 @@
 package core;
 
+import Helps.medal;
 import History.His_DelItem;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -1846,7 +1847,7 @@ public static int idxDame;
                     send_notice_box(p.conn, "Không tìm thấy vật phẩm!");
                     return;
                 }
-                if (Helps.CheckItem.isBuyItemCoin(idbuy))//mua bằng coin shop sieupham
+                if (Helps.CheckItem.isBuyItemSieupham(idbuy))//mua đồ siêu pham
                 {
                     for (itemselldosieupham itsell3 : itemselldosieupham.entry) {
                         if (itsell3.id == idbuy) {
@@ -1967,41 +1968,41 @@ public static int idxDame;
 						}
 						return;
 					}
-                   if (price == 0) {
-                       itemselldosieupham itemselldosieupham = null;
-                       for (int i = 0; i < itemselldosieupham.entry.size(); i++) {
-                           if (itemselldosieupham.entry.get(i).id == idbuy) {
-                               itemselldosieupham = itemselldosieupham.entry.get(i);
-                               break;
-                           }
-                       }
-                       if (itemselldosieupham != null) {
-                           if (p.update_coin(-itemselldosieupham.price)) {
-                               Item3 itbag = new Item3();
-                               itbag.id = idbuy;
-                               itbag.clazz = ItemTemplate3.item.get(idbuy).getClazz();
-                               itbag.type = ItemTemplate3.item.get(idbuy).getType();
-                               itbag.level = 10;
-                               itbag.icon = ItemTemplate3.item.get(idbuy).getIcon();
-                               itbag.color = itemselldosieupham.color;
-                               itbag.part = ItemTemplate3.item.get(idbuy).getPart();
-                               itbag.islock = true;
-                               itbag.name = ItemTemplate3.item.get(idbuy).getName();
-                               itbag.tier = 0;
-                               itbag.op = new ArrayList<>();
-                               for (int i = 0; i < itemselldosieupham.op.size(); i++) {
-                                   itbag.op.add(new Option(itemselldosieupham.op.get(i).id, itemselldosieupham.op.get(i).getParam(0)));
-                               }
-                               itbag.time_use = 0;
-                               p.item.add_item_bag3(itbag);
-                               p.item.char_inventory(3);
-                               send_notice_box(p.conn, "Mua thành công " + ItemTemplate3.item.get(idbuy).getName());
-                           } else {
-                               send_notice_box(p.conn, "Không đủ " + itemselldosieupham.price + " coin");
-                           }
-                       }
-                       return;
-                    }
+                        if (price == 0) {
+                            itemselldosieupham itemselldosieupham = null;
+                            for (int i = 0; i < itemselldosieupham.entry.size(); i++) {
+                                if (itemselldosieupham.entry.get(i).id == idbuy) {
+                                    itemselldosieupham = itemselldosieupham.entry.get(i);
+                                    break;
+                                }
+                            }
+                            if (itemselldosieupham != null) {
+                                if (p.update_coin(-itemselldosieupham.price)) {
+                                    Item3 itbag = new Item3();
+                                    itbag.id = idbuy;
+                                    itbag.clazz = ItemTemplate3.item.get(idbuy).getClazz();
+                                    itbag.type = ItemTemplate3.item.get(idbuy).getType();
+                                    itbag.level = 10;
+                                    itbag.icon = ItemTemplate3.item.get(idbuy).getIcon();
+                                    itbag.color = itemselldosieupham.color;
+                                    itbag.part = ItemTemplate3.item.get(idbuy).getPart();
+                                    itbag.islock = true;
+                                    itbag.name = ItemTemplate3.item.get(idbuy).getName();
+                                    itbag.tier = 0;
+                                    itbag.op = new ArrayList<>();
+                                    for (int i = 0; i < itemselldosieupham.op.size(); i++) {
+                                        itbag.op.add(new Option(itemselldosieupham.op.get(i).id, itemselldosieupham.op.get(i).getParam(0)));
+                                    }
+                                    itbag.time_use = 0;
+                                    p.item.add_item_bag3(itbag);
+                                    p.item.char_inventory(3);
+                                    send_notice_box(p.conn, "Mua thành công " + ItemTemplate3.item.get(idbuy).getName());
+                                } else {
+                                    send_notice_box(p.conn, "Không đủ " + itemselldosieupham.price + " coin");
+                                }
+                            }
+                            return;
+                        }
                     }
                     if (buffer.pricetype == 0) {
                         if (p.get_vang() < price) {
@@ -2230,9 +2231,34 @@ public static int idxDame;
                         } else {
                             send_notice_box(conn, "Tối thiểu 5 ngọc!");
                         }
-                    }else if (it.type == 21 || it.type == 22 || it.type == 23 || it.type == 24 ||
-                              it.type == 25 || it.type == 26 || it.type == 27 || it.type == 28 ||
-                              it.type == 55 || it.type == 102) {
+                    }else if(it != null && it.id >= 4850){
+                        try {
+                            if (conn.p.item.total_item_by_id(4, 244) <= 0) {
+                                Service.send_notice_box(conn, "Không đủ vật phẩm nâng cấp");
+                                return;
+                            }
+                            if (it.tierStar >=15){
+                                Service.send_notice_box(conn,"Vật phẩm đã được nâng cấp tối đa");
+                                return;
+                            }
+                            conn.p.item.remove(4, 244, 1);
+                            it.tierStar++;
+                            it.UpdateName();
+                            it = Helps.medal.nangcap(it);
+                            conn.p.item.char_inventory(4);
+                            conn.p.item.char_inventory(7);
+                            conn.p.item.char_inventory(3);
+                            Service.send_notice_box(conn, "Nâng cấp thành công " + it.name);
+                            for (int i = 0; i < it.op.size(); i++) {
+                                m2.writer().writeByte(it.op.get(i).id);
+                                if (it.op.get(i).id == 96) {
+                                    m2.writer().writeInt(it.op.get(i).getParam(0));
+                                } else {
+                                    m2.writer().writeInt(it.op.get(i).getParam(it.tier));
+                                }
+                            }
+                        }catch (Exception e){}
+                    } else if ((it.type >= 21 && it.type <= 28) || it.type == 55 || it.type == 102) {
                         try {
                             if (conn.p.item.total_item_by_id(4, 262) < 100) {
                                 Service.send_notice_box(conn, "Không đủ vật phẩm nâng cấp");
@@ -2250,7 +2276,56 @@ public static int idxDame;
                             conn.p.item.char_inventory(3);
                             Service.send_notice_box(conn, "Nâng cấp thành công " + it.name);
                         }catch (Exception e){}
-                    } else {
+                    }else if(it.id == 4591){
+                        try{
+                            short nl_t1, nl_t2, nl_x, nl_v, nl_t;
+                            nl_t1 = 255;
+                            nl_t2 = 274;
+                            nl_x = 324;
+                            nl_v = 331;
+                            nl_t = 342;
+                            if((conn.p.item.total_item_by_id(7,nl_t1) < 5 ||
+                                    conn.p.item.total_item_by_id(7,nl_t2) < 5 ||
+                                    conn.p.item.total_item_by_id(7,nl_x) < 5 ||
+                                    conn.p.item.total_item_by_id(7,nl_v) < 5 ||
+                                    conn.p.item.total_item_by_id(7,nl_t) < 5) && conn.ac_admin < 3){
+                                Service.send_notice_box(conn,"Cần 5c Vỏ trai hồng, 5c tổ ong, 5c tay gấu, 5c bọ pha lê and 5c đuôi trăn gấm");
+                                return;
+                            }
+                            if (it.tier >= 15) {
+                                Service.send_notice_box(conn, "Vật phẩm đã được nâng cấp tối đa");
+                                return;
+                            }
+                            int suc = Util.random(100);
+                            if ((suc > 50 && it.tier > 0 ||
+                                    suc > 30 && it.tier > 3 ||
+                                    suc > 10 && it.tier > 6 ||
+                                    suc > 5 && it.tier > 9 ||
+                                    suc > 1 && it.tier > 12) && conn.ac_admin < 3 ) {
+                                conn.p.item.remove(7, nl_t1, 5);
+                                conn.p.item.remove(7, nl_t2, 5);
+                                conn.p.item.remove(7, nl_x, 5);
+                                conn.p.item.remove(7, nl_v, 5);
+                                conn.p.item.remove(7, nl_t, 5);
+                                conn.p.item.char_inventory(7);
+                                Service.send_notice_box(conn,"Nâng cấp thất bại" +it.name);
+                            }else {
+                                conn.p.item.remove(7, nl_t1, 5);
+                                conn.p.item.remove(7, nl_t2, 5);
+                                conn.p.item.remove(7, nl_x, 5);
+                                conn.p.item.remove(7, nl_v, 5);
+                                conn.p.item.remove(7, nl_t, 5);
+                                it.tier++;
+                                it = medal.Upgare_Medal(it);
+                                it.UpdateName();
+                                conn.p.item.char_inventory(4);
+                                conn.p.item.char_inventory(7);
+                                conn.p.item.char_inventory(3);
+                                Service.send_notice_box(conn, "Nâng cấp thành công " + it.name);
+                            }
+                        }catch (Exception e){}
+                        //Service.send_box_input_yesno(conn, 120,"Bạn có chắc chắn muốn nâng cấp vật phẩm" + it.name);
+                    }else {
                         Service.send_notice_box(conn,"Vật phẩm nâng cấp không phù hợp");
                     }
                     break;

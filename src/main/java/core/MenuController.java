@@ -232,6 +232,10 @@ public class MenuController {
                     return;
                     //menu = new String[]{"Coming soon", infoServer.Website};
 
+                } else if (Manager.gI().event == 5) {
+                    menu = new String[]{"Ghép chữ 30-4 end 1-5 thường","Ghép chữ 30-4 end 1-5 đặc biệt","Xem BXH đổi quà", "Xem BXH Phó bản", "Xem BXH Giết BOSS"};
+                    send_menu_select(conn, -69, menu, (byte) Manager.gI().event);
+                    return;
                 } else {
                     Service.send_notice_box(conn, "Chưa có chức năng :(.");
                     return;
@@ -1536,7 +1540,33 @@ public class MenuController {
                     Service.send_notice_box(conn, "Chưa có chức năng ev3!");
                     break;
             }
-        } else {
+        }else if (Manager.gI().event==5){
+            switch (index){
+                case 0:{
+                    Service.send_box_input_text(conn,44,"Ghép chữ 30-4 end 1-5",new String[]{"Bộ chữ 30-4 1-5 + 1 tr vàng"});
+                    break;
+                }
+                case 1:{
+                    Service.send_box_input_text(conn,43,"Ghép chữ 30-4 end 1-5",new String[]{"Bộ chữ 30-4 1-5 + 20k coin"});
+                    break;
+                }
+                case 2: {
+                    BXH.send1(conn, 1);
+                    break;
+                }
+                case 3: {
+                    BXH.send1(conn, 2);
+                    break;
+                }
+                case 4: {
+                    BXH.send1(conn, 3);
+                    break;
+                }
+                default:
+                    Service.send_notice_box(conn, "Chưa có chức năng ev5!");
+                    break;
+            }
+        }else {
             Service.send_notice_box(conn, "menu: " + idmenu + "  ev: " + Manager.gI().event);
         }
 
@@ -2360,23 +2390,8 @@ public class MenuController {
             }
             case 1: {
                 String s = "Mn muốn có quyền liên hệ admin qua zalo nhé.";
-
-                s += "\nFull Vàng: 500k, Full Ngọc: 500k.";
-                s += "\nKhảm, cường hóa: 100k (tỉ lệ khảm, cường hóa 100%).";
-
-                s += "\nTạo mề đay: 100k (100% Ra Cam).";
-                s += "\nNâng Cấp Mề Đay: 500k (không cần nl, xác suất 100%).";
-
-                s += "\nTạo đồ tt: 500k (100% ra xanh lá cây).";
-                s += "\nNâng Cấp Đồ tt: 500k (không cần nl, xác suất 100%).";
-
-                s += "\nFull Chức Năng lệnh: 1500k ( từ a - z ).";
-
-                s += "\nGiá coin: Được x2 coin lần đầu";
-                s += "\n1000k = 10 triệu coin.";
-                s += "\n500k = 5 triệu coin.";
-                s += "\n200k = 2 triệu coin.";
-                s += "\n100k = 1 triệu coin.";
+                s += "\nFull lệnh từ vàng ngọc mề đay tinh tú tỉ lệ 100% đều 150k full bộ";
+                s += "\nGiá coin: không bán tự điểm danh để có coin";
 //                s += "\n50k = 500k coin.";
                 Service.send_notice_box(conn, s);
                 break;
@@ -3804,6 +3819,7 @@ public class MenuController {
                         jsar.clear();
                         conn.p.update_vang(rs.getLong("vang"));
                         conn.p.update_ngoc(rs.getLong("ngoc"));
+                        conn.p.update_coin(rs.getInt("coin"));
                         Log.gI().add_log(conn.p.name, "Get order :" + rs.getInt("id"));
                         conn.p.item.char_inventory(5);
                         conn.p.item.char_inventory(3);
@@ -3931,6 +3947,7 @@ public class MenuController {
                         jsar.clear();
                         conn.p.update_vang(rs.getLong("vang"));
                         conn.p.update_ngoc(rs.getLong("ngoc"));
+                        conn.p.update_coin(rs.getInt("coin"));
                         Log.gI().add_log(conn.p.name, "Get order :" + rs.getInt("id"));
                         conn.p.item.char_inventory(5);
                         conn.p.item.char_inventory(3);
@@ -6981,7 +6998,9 @@ public class MenuController {
 //                s = BossHDL.BossManager.GetInfoBoss(173);
             } else if (index == 16) {
                 s = BossHDL.BossManager.GetInfoBoss(192);
-            }
+            } else if (index == 17) {
+            s = BossHDL.BossManager.GetInfoBoss(173);
+        }
             Service.send_notice_box(conn, s);
             return;
 
@@ -7022,6 +7041,7 @@ public class MenuController {
                     "Bos Even 1x",
                     "Bos Even 2x",
                     "Bos Even 3x",
+                    "Boss săn ngọc rồng",
                     "Boss sự kiện"
 
                 }, (byte) 1);

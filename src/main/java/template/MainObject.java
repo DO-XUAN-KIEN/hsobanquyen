@@ -745,6 +745,10 @@ public class MainObject {
             if (focus.isMobDiBuon()) {
                 dame = focus.hp_max * 5 / 100;
             }
+        if(focus != null && focus.template != null
+                && !focus.isMobDiBuon() && !focus.isPlayer() && focus.template.mob_id == 173 && (focus.level <= 139 && focus.level >= 5)){
+            dame = 100_000;
+        }
 //        }
         focus.hp -= dame;
         Mob_in_map mob = focus.isMob() ? (Mob_in_map) focus : null;
