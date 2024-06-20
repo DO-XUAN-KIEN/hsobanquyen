@@ -510,74 +510,12 @@ public class ChienTruong {
             //short id_medal_material = -1;
             short sizeRandomMedal = 0;
             switch (mob.template.mob_id) {
-                case 93: {
+                case 93, 94, 95, 96, 97, 98, 99, 100: {
 					id_item_leave7 = new short[]{(short) Util.random(126, 136)};
 					if(Util.random(10000) < 1 ){
 						id_item_leave3 = new short[]{(short) Util.random(4577, 4585)};
 					}
-					p.update_point_arena(1);
-					p.item.char_inventory(5);
-                    break;
-                }
-                case 94: {
-					id_item_leave7 = new short[]{(short) Util.random(126, 136)};
-					if(Util.random(10000) < 1 ){
-						id_item_leave3 = new short[]{(short) Util.random(4577, 4585)};
-					}
-					p.update_point_arena(1);
-					p.item.char_inventory(5);
-					break;
-                }
-                case 95: {
-					id_item_leave7 = new short[]{(short) Util.random(126, 136)};
-					if(Util.random(10000) < 1 ){
-						id_item_leave3 = new short[]{(short) Util.random(4577, 4585)};
-					}
-					p.update_point_arena(1);
-					p.item.char_inventory(5);
-					break;
-                }
-                case 96: {
-					id_item_leave7 = new short[]{(short) Util.random(126, 136)};
-					if(Util.random(10000) < 1 ){
-						id_item_leave3 = new short[]{(short) Util.random(4577, 4585)};
-					}
-					p.update_point_arena(1);
-					p.item.char_inventory(5);
-					break;
-                }
-                case 97: {
-					id_item_leave7 = new short[]{(short) Util.random(126, 136)};
-					if(Util.random(10000) < 1 ){
-						id_item_leave3 = new short[]{(short) Util.random(4577, 4585)};
-					}
-					p.update_point_arena(1);
-					p.item.char_inventory(5);
-					break;
-                }
-                case 98: {
-					id_item_leave7 = new short[]{(short) Util.random(126, 136)};
-					if(Util.random(10000) < 1 ){
-						id_item_leave3 = new short[]{(short) Util.random(4577, 4585)};
-					}
-					p.update_point_arena(1);
-					p.item.char_inventory(5);
-					break;
-                }
-                case 99: {
-					id_item_leave7 = new short[]{(short) Util.random(126, 136)};
-					if(Util.random(10000) < 1 ){
-						id_item_leave3 = new short[]{(short) Util.random(4577, 4585)};
-					}
-					p.update_point_arena(1);
-					p.item.char_inventory(5);
-					break;
-                }
-                case 100: {
-					id_item_leave7 = new short[]{(short) Util.random(126, 136)};
-					if(Util.random(10000) < 1 ){
-						id_item_leave3 = new short[]{(short) Util.random(4577, 4585)};
-					}
+					id_item_leave4 = new short[]{(short) Util.random(187,189)};
 					p.update_point_arena(1);
 					p.item.char_inventory(5);
 					break;

@@ -14,25 +14,7 @@ import map.Eff_player_in_map;
 import map.Map;
 import map.MapService;
 import map.Mob_in_map;
-import template.Clan_mems;
-import template.EffTemplate;
-import template.Item3;
-import template.Item47;
-import template.ItemSell3;
-import template.Itemsellcoin;
-import template.itemselldosieupham;
-import template.ItemTemplate3;
-import template.ItemTemplate4;
-import template.ItemTemplate7;
-import template.Level;
-import template.LvSkill;
-import template.Mob_MoTaiNguyen;
-import template.Option;
-import template.OptionItem;
-import template.Option_pet;
-import template.Pet_di_buon;
-import template.Pet_di_buon_manager;
-import template.box_item_template;
+import template.*;
 
 public class Service {
 
@@ -1239,11 +1221,11 @@ public static int idxDame;
                 break;
             }
             case 48:{
-                m.writer().writeUTF("Shop Siêu phẩm");
+                m.writer().writeUTF("Shop siêu phẩm");
                 m.writer().writeByte(1);
-                m.writer().writeShort(itemselldosieupham.entry.size());
-                for (int i = 0; i < itemselldosieupham.entry.size(); i++) {
-                    itemselldosieupham temp = itemselldosieupham.entry.get(i);
+                m.writer().writeShort(Itemselldosieupham.entry.size());
+                for (int i = 0; i < Itemselldosieupham.entry.size(); i++) {
+                    Itemselldosieupham temp = Itemselldosieupham.entry.get(i);
                     m.writer().writeShort(temp.id);
                     m.writer().writeUTF(ItemTemplate3.item.get(temp.id).getName());
                     m.writer().writeByte(ItemTemplate3.item.get(temp.id).getClazz());
@@ -1847,9 +1829,9 @@ public static int idxDame;
                     send_notice_box(p.conn, "Không tìm thấy vật phẩm!");
                     return;
                 }
-                if (Helps.CheckItem.isBuyItemSieupham(idbuy))//mua đồ siêu pham
+                if (idbuy >= 4852 && idbuy <= 4902)
                 {
-                    for (itemselldosieupham itsell3 : itemselldosieupham.entry) {
+                    for (Itemselldosieupham itsell3 : Itemselldosieupham.entry) {
                         if (itsell3.id == idbuy) {
                             if (!p.update_coin(-itsell3.price)) {
                                 send_notice_box(p.conn, "Bạn không đủ coin để mua!");
@@ -1967,12 +1949,12 @@ public static int idxDame;
 							}
 						}
 						return;
-					}
+                   }
                         if (price == 0) {
-                            itemselldosieupham itemselldosieupham = null;
-                            for (int i = 0; i < itemselldosieupham.entry.size(); i++) {
-                                if (itemselldosieupham.entry.get(i).id == idbuy) {
-                                    itemselldosieupham = itemselldosieupham.entry.get(i);
+                            Itemselldosieupham itemselldosieupham = null;
+                            for (int i = 0; i < Itemselldosieupham.entry.size(); i++) {
+                                if (Itemselldosieupham.entry.get(i).id == idbuy) {
+                                    itemselldosieupham = Itemselldosieupham.entry.get(i);
                                     break;
                                 }
                             }

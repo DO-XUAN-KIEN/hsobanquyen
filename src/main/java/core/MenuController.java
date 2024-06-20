@@ -217,9 +217,9 @@ public class MenuController {
             case -69: {
                 if (Manager.gI().event == 1) {
                     menu = new String[]{"Đổi hộp đồ chơi", "Hướng dẫn", "Đăng ký nấu kẹo", "Bỏ nguyên liệu vào nồi kẹo",
-                        "Lấy kẹo đã nấu", "Đổi túi kẹo", "Đổi trứng phượng hoàng băng", "Đổi trứng yêu tinh",
-                        "Đổi giày băng giá", "Đổi mặt nạ băng giá", "Đổi kẹo gậy", "Đổi gậy tuyết", "Đổi xe trượt tuyết",
-                        "Đổi trứng khỉ nâu"};
+                            "Lấy kẹo đã nấu", "Đổi túi kẹo", "Đổi trứng phượng hoàng băng", "Đổi trứng yêu tinh",
+                            "Đổi giày băng giá", "Đổi mặt nạ băng giá", "Đổi kẹo gậy", "Đổi gậy tuyết", "Đổi xe trượt tuyết",
+                            "Đổi trứng khỉ nâu"};
 
                 } else if (Manager.gI().event == 2) {
                     menu = new String[]{"Mâm trái cây", "Top sự kiện", "Top Mở rương", "Đổi quà may mắn"};
@@ -596,6 +596,9 @@ public class MenuController {
                     Menu_MissSophia(conn, idnpc, idmenu, index);
                 }
                 if (Manager.gI().event == 3) {
+                    Menu_MissSophia(conn, idnpc, idmenu, index);
+                }
+                if (Manager.gI().event == 5) {
                     Menu_MissSophia(conn, idnpc, idmenu, index);
                 }
                 break;
@@ -2401,8 +2404,8 @@ public class MenuController {
                 break;
             }
             case 3: {
-                Service.send_notice_box(conn,"Sắp ra mắt");
-              //  Service.send_box_UI(conn,48);
+              //  Service.send_notice_box(conn,"Sắp ra mắt");
+                Service.send_box_UI(conn,48);
                 break;
             }
 

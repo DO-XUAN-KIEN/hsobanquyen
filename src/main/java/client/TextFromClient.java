@@ -1416,7 +1416,7 @@ public class TextFromClient {
                 id_hopqualoc = 194;
                 chuyendoi = 1;
                 if (vang > conn.p.get_vang()) {
-                    Service.send_notice_box(conn, "Không đủ " + vang + " coin để đổi " + quant + " Ruương siêu phẩm");
+                    Service.send_notice_box(conn, "Không đủ " + vang + " vàng để đổi " + quant + " Ruương siêu phẩm");
                     return;
                 }
                 if (id_3 > (ItemTemplate4.item.size() - 1) || id_3 < 0 ||
