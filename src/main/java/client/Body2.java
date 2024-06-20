@@ -1,41 +1,49 @@
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package client;
 
+import ai.Bot;
 import core.Manager;
 import core.Service;
 import core.Util;
 import event_daily.ChiemThanhManager;
-import io.Message;
+
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import map.Eff_special_skill;
+
 import map.Map;
 import map.MapService;
-import map.Mob_in_map;
 import template.EffTemplate;
-import template.Eff_TextFire;
 import template.Item3;
 import template.Kham_template;
-import template.LvSkill;
 import template.MainObject;
 import template.Option;
 import template.Option_pet;
 import template.StrucEff;
+import template.Horse;
 
+/**
+ * @author chien
+ */
+public class Body2 extends MainObject {
 
-public class Body2 extends MainObject{
     private Player p;
 
     protected void SetPlayer(Player p) {
-        if(this.p != null)return;
+        if (this.p != null) {
+            return;
+        }
         this.p = p;
         kham = new Kham_template();
         MainEff = new ArrayList<>();
         Eff_me_kham = new ArrayList<>();
+        Eff_Tinh_Tu = new ArrayList<>();
     }
+
     @Override
-    public boolean isPlayer(){
+    public boolean isPlayer() {
         return true;
     }
 
@@ -43,15 +51,15 @@ public class Body2 extends MainObject{
         int point = 0;
         switch (i) {
             case 1: {
-                point += p.point1 + get_plus_point(23);
+                point += p.point1 + get_plus_point(23)+(p.chuyensinh*100)+(p.tutien)*20;
                 break;
             }
             case 2: {
-                point += p.point2 + get_plus_point(24);
+                point += p.point2 + get_plus_point(24)+(p.chuyensinh*100)+(p.tutien)*20;
                 break;
             }
             case 3: {
-                point += p.point3 + get_plus_point(25);
+                point += p.point3 + get_plus_point(25)+(p.chuyensinh*100)+(p.tutien)*20;
                 break;
             }
             case 4: {
@@ -138,8 +146,10 @@ public class Body2 extends MainObject{
         int param = 0;
         for (int i = 0; i < p.item.wear.length; i++) {
             Item3 temp = p.item.wear[i];
-            if (temp != null ) {
-                if(p.level < temp.level)continue;
+            if (temp != null) {
+                if (p.level < temp.level) {
+                    continue;
+                }
                 for (Option op : temp.op) {
                     if (op.id == id) {
                         param += op.getParam(temp.tier);
@@ -152,22 +162,22 @@ public class Body2 extends MainObject{
 
     @Override
     public int get_HpMax() {
-        long hpm = (long)(2500 * Manager.ratio_hp);
+        long hpm = (int) (2500 * Manager.ratio_hp);
         switch (p.clazz) {
             case 0: {
-                hpm += (550 + get_point(3) * 320) ;
+                hpm += (550 + get_point(3) * 320);
                 break;
             }
             case 1: {
-                hpm += (get_point(3) * 300) ;
+                hpm += (get_point(3) * 300);
                 break;
             }
             case 2: {
-                hpm += (50 + get_point(3) * 310) ;
+                hpm += (50 + get_point(3) * 310);
                 break;
             }
             case 3: {
-                hpm += (120 + get_point(3) * 300) ;
+                hpm += (120 + get_point(3) * 300);
                 break;
             }
         }
@@ -180,17 +190,26 @@ public class Body2 extends MainObject{
                 }
             }
         }
-        hpm += ((hpm * (percent / 100)) / 100);
-        if (p.type_use_mount == 11 || p.type_use_mount == 12 || p.type_use_mount == 13
-                || (p.type_use_mount == 20 && (p.id_horse == 114 || p.id_horse == 121))) {
-            hpm += (hpm / 10) ;
+        if(p.get_EffDefault(EffTemplate.buffhp) != null || p.get_EffDefault(EffTemplate.bufftatca) != null){
+            percent += 2000;
         }
-        EffTemplate ef = p.get_EffDefault(2);
-        if (ef != null) {
+        if (p.type_use_mount == Horse.HEO_RUNG || p.type_use_mount == Horse.CON_LAN || p.type_use_mount == Horse.SKELETON
+                || p.type_use_mount == Horse.CHUOT_TUYET || p.type_use_mount == Horse.VOI_MA_MUT
+                || p.type_use_mount == Horse.MA_TOC_DO || p.type_use_mount == Horse.RONG_BANG) {
+            percent += 1000;
+        }
+        hpm += ((hpm * (percent / 100)) / 100);
+        if (p.get_EffDefault(2) != null) {
             hpm = (hpm * 8) / 10;
         }
         if (hpm > 2_000_000_000) {
             hpm = 2_000_000_000;
+        }
+        if (get_EffDefault(StrucEff.NOI_TAI_BANG) != null) {
+            hpm = hpm / 5 * 4;
+            if (hp > hpm) {
+                hp = (int) hpm;
+            }
         }
         return (int) (hpm * Manager.ratio_hp);
     }
@@ -233,7 +252,6 @@ public class Body2 extends MainObject{
         return (int) mpm;
     }
 
-    
     @Override
     public int total_skill_param(int id) {
         int param = 0;
@@ -258,39 +276,56 @@ public class Body2 extends MainObject{
         if (ef != null) {
             pie += ef.param;
         }
-        return (int)(pie / 2.1);
+        EffTemplate eff_ve_binh = getEffTinhTu(EffTemplate.GIAP_VE_BINH);
+        if (eff_ve_binh != null) {
+            pie = pie / 10;
+        }
+        return (int) (pie / 2.1);
     }
-
     @Override
     public int get_PhanDame() {
         int param = 2 * get_point(3);
         param += total_item_param(35);
-        EffTemplate ef = get_EffDefault(35);
-        if (ef != null) {
-            param += ef.param;
+        if (p.get_EffDefault(35) != null) {
+            param += p.get_EffDefault(35).param;
         }
-        return (int)(param / 2.1);
+        if(p.get_EffDefault(EffTemplate.buffpst) != null || get_EffDefault(EffTemplate.bufftatca) != null){
+            param += 2000;
+        }
+        EffTemplate eff_thien_su = getEffTinhTu(EffTemplate.GIAP_THIEN_SU);
+        if (eff_thien_su != null) {
+            param = param / 10;
+        }
+        return (int) (param / 2.1);
     }
-
     @Override
-    public int get_Miss() {
+    public int get_Miss(boolean giam_ne) {
         int param = 2 * get_point(2);
         param += total_item_param(34);
-        EffTemplate ef = get_EffDefault(34);
-        if (ef != null) {
-            param += ef.param;
+        if (get_EffDefault(34) != null) {
+            param += get_EffDefault(34).param;
         }
-        return (int)(param / 1.8);
+        if (get_EffDefault(EffTemplate.buffne) != null || get_EffDefault(EffTemplate.bufftatca) != null){
+            param += 2000;
+        }
+        if (giam_ne) {
+            param = param / 10 * 9;
+        }
+        return (int) (param / 1.8);
     }
-
     @Override
     public int get_Crit() {
         int crit = total_item_param(33) + total_skill_param(33);
         crit += get_point(1) * 2;
-        EffTemplate ef= get_EffDefault(33);
-        if(ef!= null)
+        EffTemplate ef = get_EffDefault(33);
+        if (ef != null) {
             crit += ef.param;
-        return (int)(crit / 2.1);
+        }
+        EffTemplate eff_bach_kim = getEffTinhTu(EffTemplate.GIAP_BACH_KIM);
+        if (eff_bach_kim != null) {
+            crit = crit / 10;
+        }
+        return (int) (crit / 2.1);
     }
 
     public int get_skill_point(int i) {
@@ -300,7 +335,7 @@ public class Body2 extends MainObject{
         }
         return 0;
     }
-    
+
     @Override
     public int get_PercentDefBase() {
         int def = total_item_param(15);
@@ -313,13 +348,36 @@ public class Body2 extends MainObject{
                 }
             }
         }
-        EffTemplate ef = p.get_EffDefault(24);
-        if (ef != null) {
-            def += ef.param;
+        if (p.get_EffDefault(24) != null) {
+            def += p.get_EffDefault(24).param;
+        }
+        if (p.get_EffDefault(EffTemplate.buffpt) != null || get_EffDefault(EffTemplate.bufftatca) != null){
+            def += 2000;
+        }
+        if (p.type_use_mount == Horse.NGUA_CHIEN_GIAP || p.type_use_mount == Horse.VOI_MA_MUT) {
+            def += 2000;
+        } else if (p.type_use_mount == Horse.NGUA_XICH_THO || p.type_use_mount == Horse.TUAN_LOC
+                || p.type_use_mount == Horse.CAN_DAU_VAN || p.type_use_mount == Horse.XE_TRUOT_TUYET
+                || p.type_use_mount == Horse.CA_CHEP) {
+            def += 1000;
+        } else if (p.type_use_mount == Horse.MA_TOC_DO || p.type_use_mount == Horse.HOA_KY_LAN
+                || p.type_use_mount == Horse.PHUONG_HOANG_LUA) {
+            def += 1500;
+        } else if (p.type_use_mount == Horse.TRAU_RUNG) {
+            def += 3000;
         }
         EffTemplate temp2 = p.get_EffDefault(StrucEff.PowerWing);
         if (temp2 != null) {
             def += 3000;
+        }
+        if(p.get_EffDefault(EffTemplate.SPECIAL) != null){
+            def *= 1.5;
+        }
+        if (p.get_EffDefault(StrucEff.NOI_TAI_LUA) != null) {
+            def -= 2000;
+        }
+        if (def < 0) {
+            def = 0;
         }
         return def;
     }
@@ -328,33 +386,16 @@ public class Body2 extends MainObject{
     public int get_DefBase() {
         int def = total_item_param(14);
         switch (p.clazz) {
-            case 0: {
+            case 0, 2: {
                 def += get_point(2) * 20;
                 break;
             }
-            case 1: {
-                def += get_point(2) * 22;
-                break;
-            }
-            case 2: {
-                def += get_point(2) * 20;
-                break;
-            }
-            case 3: {
+            case 1, 3: {
                 def += get_point(2) * 22;
                 break;
             }
         }
         def += ((def * (get_PercentDefBase() / 100)) / 100);
-        if (p.type_use_mount == 2 || (p.type_use_mount == 15 && p.id_horse == 106)) {
-            def += ((def * 2) / 10);
-        } else if (p.type_use_mount == 3 || p.type_use_mount == 5 || (p.type_use_mount == 17 && p.id_horse == 111)
-                || (p.type_use_mount == 20 && p.id_horse == 115)) {
-            def += ((def * 1) / 10);
-        } else if ((p.type_use_mount == 22 && p.id_horse == 117)
-                || (p.type_use_mount == 20 && (p.id_horse == 114 || p.id_horse == 116))) {
-            def += ((def * 15) / 100);
-        }
         EffTemplate ef = p.get_EffDefault(0);
         if (ef != null) {
             def = (def * 8) / 10;
@@ -363,12 +404,12 @@ public class Body2 extends MainObject{
         if (ef != null) {
             def += (def * (ef.param / 100)) / 100;
         }
-        return (int)(def*0.8);
+        return (int) (def * 0.8);
     }
 
     @Override
     public int get_PercentDameProp(int type) {
-        if(type ==0){
+        if (type == 0) {
             int percent = total_item_param(7);
             switch (p.clazz) {
                 case 0:
@@ -391,12 +432,30 @@ public class Body2 extends MainObject{
                 }
             }
             EffTemplate eff = get_EffDefault(StrucEff.BuffSTVL);
-            if(eff!=null)
+            if (eff != null) {
                 percent += eff.param;
+            }
+            if (p.getEffTinhTu(EffTemplate.SPECIAL) != null) {
+                percent *= 1.5;
+            }
             EffTemplate temp2 = p.get_EffDefault(StrucEff.PowerWing);
             if (temp2 != null) {
                 percent += 3000;
             }
+            //<editor-fold defaultstate="collapsed" desc="ngựa...">
+            if (p.type_use_mount == Horse.NGUA_XICH_THO) {
+                percent += 2000;
+            } else if (p.type_use_mount == Horse.TUAN_LOC) {
+                percent += 4000;
+            } else if (p.type_use_mount == Horse.HEO_RUNG || p.type_use_mount == Horse.CON_LAN || p.type_use_mount == Horse.CA_CHEP) {
+                percent += 1000;
+            } else if (p.type_use_mount == Horse.TRAU_RUNG || p.type_use_mount == Horse.MA_TOC_DO
+                    || p.type_use_mount == Horse.PHUONG_HOANG_LUA) {
+                percent += 1500;
+            } else if (p.type_use_mount == Horse.HOA_KY_LAN) {
+                percent += 3500;
+            }
+            //</editor-fold>
             return percent;
         }
         int perct = 0;
@@ -415,8 +474,9 @@ public class Body2 extends MainObject{
                     }
                 }
                 EffTemplate eff = get_EffDefault(StrucEff.BuffSTLua);
-                if(eff!=null)
+                if (eff != null) {
                     perct += eff.param;
+                }
                 break;
             }
             case 1: {
@@ -433,8 +493,9 @@ public class Body2 extends MainObject{
                     }
                 }
                 EffTemplate eff = get_EffDefault(StrucEff.BuffSTDoc);
-                if(eff!=null)
+                if (eff != null) {
                     perct += eff.param;
+                }
                 break;
             }
             case 2: {
@@ -451,8 +512,9 @@ public class Body2 extends MainObject{
                     }
                 }
                 EffTemplate eff = get_EffDefault(StrucEff.BuffSTBang);
-                if(eff!=null)
+                if (eff != null) {
                     perct += eff.param;
+                }
                 break;
             }
             case 3: {
@@ -469,41 +531,51 @@ public class Body2 extends MainObject{
                     }
                 }
                 EffTemplate eff = get_EffDefault(StrucEff.BuffSTDien);
-                if(eff!=null)
+                if (eff != null) {
                     perct += eff.param;
+                }
                 break;
             }
+        }
+        if (p.getEffTinhTu(EffTemplate.SPECIAL) != null) {
+            perct *= 1.5;
         }
         EffTemplate temp2 = p.get_EffDefault(StrucEff.PowerWing);
         if (temp2 != null) {
             perct += 3000;
         }
+        //<editor-fold defaultstate="collapsed" desc="ngựa...">
+        if (p.type_use_mount == Horse.NGUA_XICH_THO) {
+            perct += 2000;
+        } else if (p.type_use_mount == Horse.TUAN_LOC) {
+            perct += 4000;
+        } else if (p.type_use_mount == Horse.HEO_RUNG || p.type_use_mount == Horse.CON_LAN || p.type_use_mount == Horse.CA_CHEP) {
+            perct += 1000;
+        } else if (p.type_use_mount == Horse.TRAU_RUNG || p.type_use_mount == Horse.MA_TOC_DO
+                || p.type_use_mount == Horse.PHUONG_HOANG_LUA) {
+            perct += 1500;
+        } else if (p.type_use_mount == Horse.HOA_KY_LAN) {
+            perct += 3500;
+        }
+        //</editor-fold>
         return perct;
     }
 
-    
     @Override
-    public int get_DameBase(){
+    public int get_DameBase() {
         return get_param_view_in4(40);
     }
+
     @Override
     public int get_DameProp(int type) {
-        if(type == 0){
+        if (type == 0) {
             long dame = total_item_param(0);
             switch (p.clazz) {
-                case 0: {
+                case 0, 1: {
                     dame += get_point(1) * 4;
                     break;
                 }
-                case 1: {
-                    dame += get_point(1) * 4;
-                    break;
-                }
-                case 2: {
-                    dame += get_point(4) * 4;
-                    break;
-                }
-                case 3: {
+                case 2, 3: {
                     dame += get_point(4) * 4;
                     break;
                 }
@@ -518,28 +590,28 @@ public class Body2 extends MainObject{
         switch (p.clazz) {
             case 0: {
                 if (type == 2) {
-                    dprop += get_point(1) * 4;
+                    dprop += get_point(1) * 4L;
                     dprop += total_item_param(2);
                 }
                 break;
             }
             case 1: {
                 if (type == 4) {
-                    dprop += get_point(1) * 4;
+                    dprop += get_point(1) * 4L;
                     dprop += total_item_param(4);
                 }
                 break;
             }
             case 2: {
                 if (type == 1) {
-                    dprop += get_point(4) * 4;
+                    dprop += get_point(4) * 4L;
                     dprop += total_item_param(1);
                 }
                 break;
             }
             case 3: {
                 if (type == 3) {
-                    dprop += get_point(4) * 4;
+                    dprop += get_point(4) * 4L;
                     dprop += total_item_param(3);
                 }
                 break;
@@ -551,8 +623,6 @@ public class Body2 extends MainObject{
         }
         return (int) dprop;
     }
-
-    
 
     public int get_skill_point_plus(int i) {
         int par = 0;
@@ -575,30 +645,53 @@ public class Body2 extends MainObject{
         if (param < 0) {
             param = 0;
         }
+        if (p.getEffTinhTu(EffTemplate.SPECIAL) != null) {
+            param += 4000;
+        }
+        if (p.get_EffDefault(StrucEff.NOI_TAI_VAT_LY) != null) {
+            param -= 1000;
+        }
+        if (param < 0) {
+            param = 0;
+        }
         return param;
     }
-    
-    
-    
+
     @Override
-    public void SetDie(Map map, MainObject mainAtk)throws IOException{
-        if(map.map_id == 87)
+    public void SetDie(Map map, MainObject mainAtk) throws IOException {
+        if (map.map_id == 87) {
             ChiemThanhManager.PlayerDie(p);
+        }
+        if (map.map_id == 102 && map.kingCupMap != null && map.kingCupMap.timeWait < System.currentTimeMillis()) {
+            Player p0 = (Player) mainAtk;
+            map.kingCupMap.end_round();
+            p0.countWin++;
+            map.kingCupMap.send_notify(String.format("%s đã chiến thắng %s trong hiệp thi đấu thứ %s", mainAtk.name, p.name, map.kingCupMap.countMatch));
+        }
+        p.time_die = System.currentTimeMillis();
         p.dame_affect_special_sk = 0;
         p.hp = 0;
-        p.isdie = true;
-        p.type_use_mount = -1;
-        Player pATK = mainAtk.isPlayer() ? (Player)mainAtk : null;
+        p.isDie = true;
+        if (!Horse.isHorseClan(p.type_use_mount)) {
+            p.type_use_mount = -1;
+            map.send_mount(p);
+        }
+        Player pATK = mainAtk.isPlayer() ? (Player) mainAtk : null;
         if (p.isLiveSquire) {
             Squire.squireLeaveMap(p);
             p.isLiveSquire = false;
         }
-        if(pATK != null){
+        if (map.isMapLangPhuSuong()) {
+            if (pATK!= null && pATK.isPlayer()) {
+                pATK.langPhuSuong();
+            }
+            p.langPhuSuong();
+        }
+        if (pATK != null) {
             if (pATK.list_enemies.contains(this.name)) {
                 pATK.list_enemies.remove(this.name);
                 MapService.SendChat(map, pATK, "Này Thì Cắn :v", true);
-            }
-            else if (p.typepk == -1) {
+            } else if (p.typepk == -1) {
                 if (!p.list_enemies.contains(pATK.name)) {
                     p.list_enemies.add(pATK.name);
                     if (p.list_enemies.size() > 20) {
@@ -607,30 +700,49 @@ public class Body2 extends MainObject{
                 }
                 MapService.SendChat(map, p, "Thằng ranh con này tí bố online bố sút cho không trượt phát nào ><", true);
             }
+            if (pATK.total_item_param(116) > Util.nextInt(10000)) {
+                p.veLang();
+                Service.send_notice_nobox_white(pATK.conn, "Bạn đã đánh đối thủ đăng xuất");
+            }
         }
     }
-    
-    
+
+    public boolean mienST(byte type_dame) {
+        return this.total_item_param(-123 + type_dame) > Util.random(10000);
+    }
+
+    public boolean isEffTinhTu(int id) {
+        return this.total_item_param(id) > Util.random(10000);
+    }
+
     @Override
-    public int get_TypeObj(){
+    public int get_TypeObj() {
         return 0;
     }
-    
+
     @Override
-    public void update(Map map){
-        try{
-            if(isdie)return;
-            //<editor-fold defaultstate="collapsed" desc="auto +hp,mp       ...">  
+    public void update(Map map) {
+        try {
+            if (isDie) {
+                return;
+            }
+            //<editor-fold defaultstate="collapsed" desc="auto +hp,mp       ...">
+            EffTemplate vet_thuong_sau = p.get_EffDefault(StrucEff.VET_THUONG_SAU);
+            EffTemplate te_cong = p.get_EffDefault(StrucEff.TE_CONG);
             int percent = p.body.total_skill_param(29) + p.body.total_item_param(29);
-            if (p.time_buff_hp < System.currentTimeMillis()) {
+            if (p.get_EffDefault(EffTemplate.buffhoihp) != null || get_EffDefault(EffTemplate.bufftatca) != null){
+                percent += 2000;
+            }
+            if (p.time_buff_hp < System.currentTimeMillis() && vet_thuong_sau == null && te_cong == null) {
                 p.time_buff_hp = System.currentTimeMillis() + 5000L;
                 if (percent > 0 && p.hp < p.body.get_HpMax()) {
                     long param = (((long) p.body.get_HpMax()) * (percent / 100)) / 100;
                     Service.usepotion(p, 0, param);
                 }
             }
+            EffTemplate eff_tan_phe = p.getEffTinhTu(EffTemplate.TAN_PHE);
             percent = p.body.total_skill_param(30) + p.body.total_item_param(30);
-            if (p.time_buff_mp < System.currentTimeMillis()) {
+            if (p.time_buff_mp < System.currentTimeMillis() && eff_tan_phe == null) {
                 p.time_buff_mp = System.currentTimeMillis() + 5000L;
                 if (percent > 0 && p.mp < p.body.get_MpMax()) {
                     long param = (((long) p.body.get_MpMax()) * (percent / 100)) / 100;
@@ -638,14 +750,15 @@ public class Body2 extends MainObject{
                 }
             }
             //</editor-fold>    auto +hp,mp
-            
+
             //<editor-fold defaultstate="collapsed" desc="eff Player       ...">  
             long _time = System.currentTimeMillis();
-            if (get_EffMe_Kham(StrucEff.BongLua) != null && !p.isdie) {
+            if (get_EffMe_Kham(StrucEff.BongLua) != null && !p.isDie) {
                 Service.usepotion(p, 0, (int) -(p.hp * Util.random(5, 10) * 0.01));
 //                p.hp -= (int) (p.hp * Util.random(5, 10) * 0.01);
-                if(p.hp <= 0)
-                    p.hp =1;
+                if (p.hp <= 0) {
+                    p.hp = 1;
+                }
 //                Service.send_char_main_in4(p);
             }
             if (get_EffMe_Kham(StrucEff.BongLanh) != null) {
@@ -653,11 +766,50 @@ public class Body2 extends MainObject{
 //                p.mp -= (int) (p.mp * Util.random(5, 10) * 0.01);
 //                Service.send_char_main_in4(p);
             }
-            if (p.hp <= 0 && !p.isdie) {
+            if (getEffTinhTu(EffTemplate.THIEU_CHAY) != null) {
+                Service.usepotion(p, 0, -1500);
+                if (p.hp <= 0) {
+                    p.hp = 1;
+                }
+            }
+            EffTemplate eff = get_EffDefault(StrucEff.NOI_TAI_DOC);
+            if (eff != null) {
+                Service.usepotion(p, 0, -eff.param);
+            }
+            if (p.hp <= 0 && !p.isDie) {
                 p.hp = 0;
-                p.isdie = true;
+                p.isDie = true;
             }
             //</editor-fold>    eff Player
-        }catch(Exception e){}
+            if (map.zone_id == 1 && !Map.is_map_not_zone2(map.map_id) && !p.isSquire) {
+                EffTemplate ff = get_EffDefault(-127);
+                if (ff == null) {
+                    Map m = Map.get_map_by_id(map.map_id)[0];
+                    MapService.leave(map, p);
+                    p.map = m;
+                    MapService.enter(p.map, p);
+                }
+            }
+            if (p.pet_di_buon != null && p.pet_di_buon.id_map == p.map.map_id && p.map.zone_id == p.map.maxzone
+                    && !p.pet_di_buon.item.isEmpty() && map.time_add_bot < System.currentTimeMillis()) {
+                Bot bot = new Bot(map.baseID--, p);
+                bot.target = p;
+                for (int i = 0; i < map.players.size(); i++) {
+                    if (map.players.get(i) != null) {
+                        bot.send_info(map.players.get(i));
+                    }
+                }
+                map.time_add_bot = System.currentTimeMillis() + 15000L;
+                map.bots.add(bot);
+            }
+            if (map.isMapLangPhuSuong() && !p.isSquire) {
+                EffTemplate ef = get_EffDefault(-128);
+                if (ef == null) {
+                    p.langPhuSuong();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -23,6 +23,7 @@ import template.Item47;
 import template.Level;
 import template.Mob_MoTaiNguyen;
 import template.Part_player;
+import template.Horse;
 
 public class Clan {
 
@@ -131,6 +132,9 @@ public class Clan {
                 if (p0 != null) {
                     Service.send_notice_box(p0.conn, "Bạn bị đá khỏi bang vì lý do quá kém cỏi!");
                     p0.myclan = null;
+                    if (Horse.isHorseClan(p0.type_use_mount)) {
+                        p0.type_use_mount = -1;
+                    }
                     MapService.update_in4_2_other_inside(conn.p.map, p0);
                     MapService.send_in4_other_char(p0.map, p0, p0);
                     Service.send_char_main_in4(p0);
@@ -167,7 +171,12 @@ public class Clan {
             }
             case 6: {
                 long value = m2.reader().readInt();
-                if (value < 0 || value > 2_000_000_000 || value > conn.p.get_vang()) {
+                if(conn.status != 10){
+                    Service.send_notice_box(conn,"Không thể góp vàng vào bang");
+                    return;
+                }
+                if (value < 0 || value > 2_000_000_000 || ((value + this.vang) > 2_000_000_000L)
+                        || value > conn.p.get_vang()) {
                     Service.send_notice_box(conn, "Số nhập vào không hợp lệ");
                     return;
                 }
@@ -176,7 +185,12 @@ public class Clan {
             }
             case 7: {
                 long value = m2.reader().readInt();
-                if (value < 0 || value > 2_000_000_000 || value > conn.p.get_ngoc()) {
+                if(conn.status != 10){
+                    Service.send_notice_box(conn,"Không thể góp vàng vào bang");
+                    return;
+                }
+                if (value < 0 || value > 2_000_000_000L || ((value + this.kimcuong) > 2_000_000_000L)
+                        || value > conn.p.get_ngoc()) {
                     Service.send_notice_box(conn, "Số nhập vào không hợp lệ");
                     return;
                 }
@@ -770,11 +784,9 @@ public class Clan {
     public synchronized void update_vang(long quant) {
         this.vang += quant;
     }
-
     public synchronized void update_ngoc(int quant) {
         this.kimcuong += quant;
     }
-
     public boolean check_id(short id) {
         for (Item47 it : this.item_clan) {
             if (it.id == id && it.quantity > 0) {

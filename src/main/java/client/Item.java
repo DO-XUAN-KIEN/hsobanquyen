@@ -2,12 +2,16 @@ package client;
 
 import java.io.IOException;
 import java.util.List;
+
 import core.Service;
 import io.Message;
+
 import java.util.ArrayList;
+
 import template.Item3;
 import template.Item47;
 import template.ItemTemplate3;
+import template.Option;
 
 public class Item {
 
@@ -59,14 +63,14 @@ public class Item {
                             m.writer().writeInt(0); // time use
                         }
                         m.writer().writeByte(temp.islock ? (byte) 1 : (byte) 0); // islock
-                        if(temp.expiry_date <= 0)
+                        if (temp.expiry_date <= 0)
                             m.writer().writeByte(0); // b10
                         else {
                             m.writer().writeByte(1);
 //                            m.writer().writeInt(43200);
 //                            m.writer().writeUTF(""+temp.expiry_date);
                             m.writer().writeInt(0);
-                            m.writer().writeUTF(""+temp.expiry_date);
+                            m.writer().writeUTF("" + temp.expiry_date);
                         }
                         m.writer().writeByte(0); // canShell_notCanTrade
                     }
@@ -98,7 +102,7 @@ public class Item {
                 m.writer().writeByte(total_item_by_type(type));
                 for (int i = 0; i < bag47.size(); i++) {
                     Item47 temp = bag47.get(i);
-                    if(temp == null)continue;
+                    if (temp == null) continue;
                     if (temp.category == type) {
                         m.writer().writeShort(temp.id);
                         m.writer().writeShort(temp.quantity);
@@ -177,7 +181,7 @@ public class Item {
                 m.writer().writeByte(total_item_by_type_box(type));
                 for (int i = 0; i < box47.size(); i++) {
                     Item47 temp = box47.get(i);
-                    if(temp == null)continue;
+                    if (temp == null) continue;
                     if (temp.category == type) {
                         m.writer().writeShort(temp.id);
                         m.writer().writeShort(temp.quantity);
@@ -189,6 +193,21 @@ public class Item {
                 m.cleanup();
                 break;
             }
+        }
+    }
+
+    public void update(byte type, short id) {
+        try {
+            Message m = new Message(16);
+            m.writer().writeByte(2);
+            m.writer().writeByte(type);
+            m.writer().writeLong(p.get_vang());
+            m.writer().writeInt(p.get_ngoc());
+            m.writer().writeByte(type);
+            m.writer().writeShort(id); // size item quest
+            p.conn.addmsg(m);
+            m.cleanup();
+        } catch (Exception e) {
         }
     }
 
@@ -252,15 +271,15 @@ public class Item {
 
     public void add_item_bag47(int type, Item47 item) {
         Item47 temp = new Item47(item);
-        temp.category = (byte)type;
+        temp.category = (byte) type;
         switch (type) {
             case 4:
             case 7: {
-                int size =temp.quantity;
+                int size = temp.quantity;
                 if (size > 0) {
-                    for(int i = bag47.size() -1; i>=0; i--){
+                    for (int i = bag47.size() - 1; i >= 0; i--) {
                         Item47 t = bag47.get(i);
-                        if(t==null)continue;
+                        if (t == null) continue;
                         if (t.category == type && t.id == temp.id) {
                             size += t.quantity;
                             bag47.remove(i);
@@ -272,11 +291,12 @@ public class Item {
                         temp.quantity = (short) size;
                     }
                     bag47.add(temp);
-                } 
+                }
                 break;
             }
         }
     }
+
     public void add_item_bag47(short id, short qt, byte cat) {
         Item47 temp = new Item47();
         temp.category = cat;
@@ -285,11 +305,11 @@ public class Item {
         switch (cat) {
             case 4:
             case 7: {
-                int size =temp.quantity;
+                int size = temp.quantity;
                 if (size > 0) {
-                    for(int i = bag47.size() -1; i>=0; i--){
+                    for (int i = bag47.size() - 1; i >= 0; i--) {
                         Item47 t = bag47.get(i);
-                        if(t==null)continue;
+                        if (t == null) continue;
                         if (t.category == cat && t.id == id) {
                             size += t.quantity;
                             bag47.remove(i);
@@ -301,7 +321,7 @@ public class Item {
                         temp.quantity = (short) size;
                     }
                     bag47.add(temp);
-                } 
+                }
                 break;
             }
         }
@@ -312,7 +332,7 @@ public class Item {
         switch (type) {
             case 3: {
                 for (Item3 it : bag3) {
-                    if(it==null)continue;
+                    if (it == null) continue;
                     if (it != null && it.id == id) {
                         quantity += 1;
                     }
@@ -322,7 +342,7 @@ public class Item {
             case 4:
             case 7: {
                 for (Item47 it : bag47) {
-                    if(it == null)continue;
+                    if (it == null) continue;
                     if (it.category == type && it.id == id) {
                         quantity += it.quantity;
                     }
@@ -338,7 +358,7 @@ public class Item {
         switch (type) {
             case 3: {
                 for (Item3 it : box3) {
-                    if(it==null)continue;
+                    if (it == null) continue;
                     if (it != null && it.id == id) {
                         quantity += 1;
                     }
@@ -348,7 +368,7 @@ public class Item {
             case 4:
             case 7: {
                 for (Item47 it : box47) {
-                    if(it==null)continue;
+                    if (it == null) continue;
                     if (it.category == type && it.id == id) {
                         quantity += it.quantity;
                     }
@@ -361,16 +381,16 @@ public class Item {
 
     public void add_item_box47(int type, Item47 item) {
         Item47 temp = new Item47(item);
-        temp.category = (byte)type;
+        temp.category = (byte) type;
         switch (type) {
             case 4:
             case 7: {
-                int size =temp.quantity;
+                int size = temp.quantity;
                 if (size > 0) {
-                    for(int i = box47.size() -1; i>=0; i--){
-                    //for (int i = 0; i < box47.size(); i++) {
+                    for (int i = box47.size() - 1; i >= 0; i--) {
+                        //for (int i = 0; i < box47.size(); i++) {
                         Item47 t = box47.get(i);
-                        if(t==null)continue;
+                        if (t == null) continue;
                         if (t.category == type && t.id == temp.id) {
                             size += t.quantity;
                             box47.remove(i);
@@ -383,11 +403,12 @@ public class Item {
                         temp.quantity = (short) size;
                     }
                     box47.add(temp);
-                } 
+                }
                 break;
             }
         }
     }
+
     public void add_item_box47(short id, short qt, byte cat) {
         Item47 temp = new Item47();
         temp.category = cat;
@@ -396,11 +417,11 @@ public class Item {
         switch (cat) {
             case 4:
             case 7: {
-                int size =temp.quantity;
+                int size = temp.quantity;
                 if (size > 0) {
-                    for(int i = box47.size() -1; i>=0; i--){
+                    for (int i = box47.size() - 1; i >= 0; i--) {
                         Item47 t = box47.get(i);
-                        if(t==null)continue;
+                        if (t == null) continue;
                         if (t.category == cat && t.id == id) {
                             size += t.quantity;
                             box47.remove(i);
@@ -412,7 +433,7 @@ public class Item {
                         temp.quantity = (short) size;
                     }
                     box47.add(temp);
-                } 
+                }
                 break;
             }
         }
@@ -426,6 +447,7 @@ public class Item {
             }
         }
     }
+
     public void add_item_bag3_default(short it, int date, boolean isLock) {
         Item3 itbag = new Item3();
         itbag.id = it;
@@ -441,7 +463,7 @@ public class Item {
         itbag.tier = 0;
         itbag.time_use = 0;
         itbag.islock = isLock;
-        if(date>0){
+        if (date > 0) {
             itbag.expiry_date = System.currentTimeMillis() + 1000L * 60 * 60 * 24 * date;
         }
         add_item_bag3(itbag);
@@ -467,23 +489,24 @@ public class Item {
                 int index_remove = -1;
                 for (int j = bag47.size() - 1; j >= 0; j--) {
                     Item47 it = bag47.get(j);
-                    if(it == null)continue;
-                    if (it.category == type && it.id == id && quantity >0) {
-                        if(it.quantity > quantity){
+                    if (it == null) continue;
+                    if (it.category == type && it.id == id && quantity > 0) {
+                        if (it.quantity > quantity) {
                             bag47.get(j).quantity -= quantity;
                             break;
-                        } else{
+                        } else {
                             quantity -= bag47.get(j).quantity;
                             bag47.remove(j);
                             continue;
                         }
                     }
-                    if(bag47.get(j).quantity <= 0)
+                    if (bag47.get(j).quantity <= 0)
                         bag47.remove(j);
                 }
                 break;
             }
         }
+        update((byte) type, (short) id);
     }
 
     public void remove_box(int type, short id, int quantity) {
@@ -497,8 +520,8 @@ public class Item {
                 int index_remove = -1;
                 for (int j = box47.size() - 1; j >= 0; j--) {
                     Item47 it = box47.get(j);
-                    if(it == null)continue;
-                    if (it.category == type && it.id == id && quantity >0) {
+                    if (it == null) continue;
+                    if (it.category == type && it.id == id && quantity > 0) {
                         if (it.quantity > quantity) {
                             box47.get(j).quantity -= quantity;
                             break;
@@ -508,7 +531,7 @@ public class Item {
                             continue;
                         }
                     }
-                    if(box47.get(j).quantity <= 0)
+                    if (box47.get(j).quantity <= 0)
                         box47.remove(j);
                 }
                 break;
@@ -622,6 +645,7 @@ public class Item {
         }
         return result;
     }
+
     public int total_item_book(int color, int id) {
         int quantity = 0;
         for (Item3 it : bag3) {

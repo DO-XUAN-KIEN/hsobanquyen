@@ -1,13 +1,15 @@
 package core;
 
-import Helps.medal;
 import History.His_DelItem;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import client.Clan;
 import client.Pet;
 import client.Player;
+import event_daily.st;
 import io.Message;
 import io.Session;
 import map.Eff_player_in_map;
@@ -17,6 +19,10 @@ import map.Mob_in_map;
 import template.*;
 
 public class Service {
+
+    public static final Byte SHOP_POTION = 0;
+    public static final Byte SHOP_ITEM = 1;
+    public static final Byte SHOP_MATERIRAL = 4;
 
     public static void send_msg_data(Session conn, int cmd, String name) throws IOException {
         Message m = new Message(cmd);
@@ -69,6 +75,7 @@ public class Service {
                 m.writer().writeShort(temp.getValue());
                 m.writer().writeByte(temp.getTrade());
                 m.writer().writeByte(temp.getColor());
+                //m.writer().writeByte(temp.getLamcoin());
             }
         } else {
             m.writer().writeShort(0);
@@ -86,6 +93,13 @@ public class Service {
         conn.addmsg(m2);
         m2.cleanup();
     }
+    public static void send_tab_chat(Player p,String title,String chat) throws IOException {
+        Message m = new Message(34);
+        m.writer().writeUTF(title);
+        m.writer().writeUTF(chat);
+        p.conn.addmsg(m);
+        m.cleanup();
+    }
 
     public static void send_quest(Session conn) throws IOException {
         Message m = new Message(52);
@@ -101,6 +115,25 @@ public class Service {
         m.writer().writeByte(5);
         m.writer().writeByte(0);
         conn.addmsg(m);
+        m.cleanup();
+    }
+    public static void eff_map(Map map, Player p, int idnpc, int id_eff, int x, int y, int b3, int b4, int b7) throws IOException {
+        byte[] data= Util.loadfile("data/msg_eff/" + id_eff);
+        Message m = new Message(-49);
+        m.writer().writeByte(1);
+        m.writer().writeShort(data.length);
+        m.writer().write(data);
+        m.writer().writeByte(b3);
+        m.writer().writeByte(b4);
+        m.writer().writeByte(id_eff);
+        m.writer().writeShort(x);
+        m.writer().writeShort(y);
+        m.writer().writeByte(0);
+        m.writer().writeByte(b7);
+        m.writer().writeShort(idnpc);
+        m.writer().writeShort(0);
+        m.writer().writeByte(2);
+        p.conn.addmsg(m);
         m.cleanup();
     }
 
@@ -127,7 +160,7 @@ public class Service {
         m.writer().writeByte(p.hair);
         //
         byte[] i1 = new byte[]{0, 1, 2, 3, 4, 53, 54, 55, 7, 8, 9, 10, 11, 14, 15, 16, 17, 18, 19, 20, 27, 28, 33, 34,
-            35, 36, 40, 112, -75, -74, -73};
+                35, 36, 40, 112, -75, -74, -73};
         m.writer().writeByte(i1.length);
         for (int i = 0; i < i1.length; i++) {
             m.writer().writeByte(i1[i]);
@@ -162,7 +195,7 @@ public class Service {
 //                    pointP --;
 //                }
 //            }
-            
+
             m.writer().writeByte(pointP);
         }
         m.writer().writeByte(p.typepk);
@@ -176,11 +209,20 @@ public class Service {
         } else {
             m.writer().writeShort(-1); // clan
         }
-        m.writer().writeUTF("k2: ");
-        m.writer().writeLong(0);
+        m.writer().writeUTF("Vĩnh lỏh-Khu 2: ");
+        if (p.get_EffDefault(-127) != null) {
+            long time = p.get_EffDefault(-127).time;
+            m.writer().writeLong(time);
+        } else {
+            m.writer().writeLong(0);
+        }
         m.writer().writeByte(p.fashion.length);
         for (int i = 0; i < p.fashion.length; i++) {
-            m.writer().writeByte(p.fashion[i]);
+            if (p.conn.version >= 280) {
+                m.writer().writeShort(p.fashion[i]);
+            } else {
+                m.writer().writeByte(p.fashion[i]);
+            }
         }
         m.writer().writeByte(3); // nap tien?
         m.writer().writeShort(get_id_mat_na(p)); // id mat na
@@ -264,53 +306,53 @@ public class Service {
                     result = 83;
                     break;
                 }
-                 case 4773: {
+                case 4773: {
                     result = 128;
                     break;
                 }
-                  case 4774: {
+                case 4774: {
                     result = 129;
                     break;
                 }
-                  case 4789: {
+                case 4789: {
                     result = 130;
                     break;
                 }
-                    case 4790: {
+                case 4790: {
                     result = 131;
                     break;
                 }
-                   
-                    case 4793: {
+
+                case 4793: {
                     result = 84;
                     break;
-                }  
-                     
-                   
-                    case 4794: {
+                }
+
+
+                case 4794: {
                     result = 85;
                     break;
-                }  
-                 
-                   
-                    case 4795: {
+                }
+
+
+                case 4795: {
                     result = 86;
                     break;
-                }  
-                 
-                   
-                    case 4796: {
+                }
+
+
+                case 4796: {
                     result = 87;
                     break;
-                }  
-                     
-                   
-                    case 4797: {
+                }
+
+
+                case 4797: {
                     result = 88;
                     break;
-                }  
- 
-                   
+                }
+
+
                 // default: {
                 // result = (short) (p.item.wear[14].part + 41);
                 // break;
@@ -330,23 +372,39 @@ public class Service {
 
     public static void send_skill(Player p) throws IOException {
         Message m = new Message(29);
-        switch (p.clazz) {
-            case 0: { // chien binh
-                m.writer().write(Util.loadfile("data/msg/msg_29_chienbinh"));
-                break;
+        m.writer().writeByte(p.skills.length);
+        for (int i = 0; i < p.skills.length; i++) {
+            Skill skill = p.skills[i];
+            m.writer().writeByte(skill.id);
+            m.writer().writeByte(skill.iconid);
+            m.writer().writeUTF(skill.name);
+            m.writer().writeByte(skill.type);
+            m.writer().writeShort(skill.range);
+            m.writer().writeUTF(skill.detail);
+            m.writer().writeByte(skill.typeBuff);
+            m.writer().writeByte(skill.subEff);
+            m.writer().writeByte(skill.mLvSkill.length);
+
+            for (int j = 0; j < skill.mLvSkill.length; j++) {
+                m.writer().writeShort(skill.mLvSkill[j].mpLost);
+                m.writer().writeShort(skill.mLvSkill[j].LvRe);
+                m.writer().writeInt(skill.mLvSkill[j].delay);
+                m.writer().writeInt(skill.mLvSkill[j].timeBuff);
+                m.writer().writeByte(skill.mLvSkill[j].per_Sub_Eff);
+                m.writer().writeShort(skill.mLvSkill[j].time_Sub_Eff);
+                m.writer().writeShort(skill.mLvSkill[j].plus_Hp);
+                m.writer().writeShort(skill.mLvSkill[j].plus_Mp);
+                m.writer().writeByte(skill.mLvSkill[j].minfo.length);
+
+                for (int k = 0; k < skill.mLvSkill[j].minfo.length; k++) {
+                    m.writer().writeByte(skill.mLvSkill[j].minfo[k].id);
+                    m.writer().writeInt(skill.mLvSkill[j].minfo[k].param);
+                }
+                m.writer().writeByte(skill.mLvSkill[j].nTarget);
+                m.writer().writeShort(skill.mLvSkill[j].range_lan);
             }
-            case 1: { // sat thu
-                m.writer().write(Util.loadfile("data/msg/msg_29_satthu"));
-                break;
-            }
-            case 2: { // phap su
-                m.writer().write(Util.loadfile("data/msg/msg_29_phapsu"));
-                break;
-            }
-            case 3: { // xa thu
-                m.writer().write(Util.loadfile("data/msg/msg_29_xathu"));
-                break;
-            }
+            m.writer().writeByte(skill.performDur);
+            m.writer().writeShort(skill.typePaint);
         }
         p.conn.addmsg(m);
         m.cleanup();
@@ -479,12 +537,12 @@ public class Service {
                         m.writer().writeInt(temp.op.get(i12).param);
                         m.writer().writeInt(temp.op.get(i12).maxdam);
                     }
-                    if(temp.expiry_date <= 0)
+                    if (temp.expiry_date <= 0)
                         m.writer().writeByte(0);
-                    else{ //hạn sử dụng
+                    else { //hạn sử dụng
                         m.writer().writeByte(1);
                         m.writer().writeInt(43200);
-                        m.writer().writeUTF(""+temp.expiry_date);
+                        m.writer().writeUTF("" + temp.expiry_date);
                     }
                     break;
                 }
@@ -494,7 +552,11 @@ public class Service {
         }
         m.writer().writeByte(p.fashion.length);
         for (int i = 0; i < p.fashion.length; i++) {
-            m.writer().writeByte(p.fashion[i]);
+            if (p.conn.version >= 280) {
+                m.writer().writeShort(p.fashion[i]);
+            } else {
+                m.writer().writeByte(p.fashion[i]);
+            }
         }
         p.conn.addmsg(m);
         m.cleanup();
@@ -533,24 +595,25 @@ public class Service {
 //            if(Manager.gI().event == 2 && id0==1150)
 //                m2.writer().write(Util.loadfile("data/icon/x" + conn.zoomlv + "/" + 1151 + ".png"));
 //            else 
-                m2.writer().write(Util.loadfile("data/icon/x" + conn.zoomlv + "/" + id0 + ".png"));
+            m2.writer().write(Util.loadfile("data/icon/x" + conn.zoomlv + "/" + id0 + ".png"));
             conn.addmsg(m2);
             m2.cleanup();
         } catch (IOException e) {
+            if (id0 == 361) return;
             System.err.println("Icon " + id0 + " not found!");
         }
     }
-    
-    
-    public static void SendEffMob(Session conn,Mob_in_map mob, int type)throws IOException{
+
+
+    public static void SendEffMob(Session conn, Mob_in_map mob, int type) throws IOException {
 //        System.out.println("core.Service.SendEffMob()"+Manager.gI().msg_eff_70.length);
         byte[] b = null;
-        if(type == 70)
+        if (type == 70)
             b = Manager.gI().msg_eff_70;
-        else if(type == 71)
+        else if (type == 71)
             b = Manager.gI().msg_eff_71;
         else return;
-        
+
         Message m = new Message(-49);
 //        m.writer().writeByte(1);
 //        
@@ -579,7 +642,7 @@ public class Service {
 //        m.writer().writeByte(1);
 //        m.writer().writeShort(mob.index);
 //        m.writer().writeByte(1);
-        
+
 //        m.writer().writeByte(0);
 //        m.writer().writeShort(b.length);
 //        m.writer().write(b);
@@ -596,109 +659,113 @@ public class Service {
         m.writer().writeByte(0);
         m.writer().writeShort(b.length);
         m.writer().write(b);
-        
+
         m.writer().writeByte(0);
         m.writer().writeByte(1);
         m.writer().writeByte(type);
-        
+
         m.writer().writeShort(mob.index);
         m.writer().writeByte(1);//tem mob
         m.writer().writeByte(0);
         m.writer().writeShort(8000);
         m.writer().writeByte(0);
-        
+
         conn.addmsg(m);
         m.cleanup();
     }
-public static int idxDame;
-    public static void mob_in4(Player p, int n) throws IOException {
-        Mob_in_map temp = MapService.get_mob_by_index(p.map, n);
-        if (temp != null) {
-            Message m = new Message(7);
-            m.writer().writeShort(n);
-            m.writer().writeByte((byte) temp.level);
-            m.writer().writeShort(temp.x);
-            m.writer().writeShort(temp.y);
-            m.writer().writeInt(temp.hp);
-            m.writer().writeInt(temp.get_HpMax());
-            //m.writer().writeByte(20); // id skill monster (Spec: 32, ...)
-            if(temp.template.mob_id >= 89 && temp.template.mob_id <= 92)
-                m.writer().writeByte(temp.template.mob_id- 43); // 46 set
-            else if(temp.template.mob_id == 151)
-                m.writer().writeByte(65);
-            else if(temp.template.mob_id == 152)
-                m.writer().writeByte(66);
-            else if(temp.template.mob_id == 154)
-                m.writer().writeByte(64);
-            else
-                m.writer().writeByte(20);
+
+    public static void mob_in4(Player p, int n) {
+        try {
+            Mob_in_map temp = MapService.get_mob_by_index(p.map, n);
+            if (temp != null && !temp.isDie && temp.hp > 0) {
+                Message m = new Message(7);
+                m.writer().writeShort(n);
+                m.writer().writeByte((byte) temp.level);
+                m.writer().writeShort(temp.x);
+                m.writer().writeShort(temp.y);
+                m.writer().writeInt(temp.hp);
+                m.writer().writeInt(temp.get_HpMax());
+                //m.writer().writeByte(20); // id skill monster (Spec: 32, ...)
+                if (temp.template.mob_id >= 89 && temp.template.mob_id <= 92)
+                    m.writer().writeByte(temp.template.mob_id - 43); // 46 set
+                else if (temp.template.mob_id == 151)
+                    m.writer().writeByte(65);
+                else if (temp.template.mob_id == 152)
+                    m.writer().writeByte(66);
+                else if (temp.template.mob_id == 154)
+                    m.writer().writeByte(64);
+                else
+                    m.writer().writeByte(20);
 //                m.writer().writeByte(idxDame);
-            m.writer().writeInt( temp.time_refresh );
-            m.writer().writeShort(-1); // clan monster
-            m.writer().writeByte(0);
-            m.writer().writeByte(2); // speed
-            m.writer().writeByte(0);
-            m.writer().writeUTF("");
-            m.writer().writeLong(-11111); 
-            m.writer().writeByte(temp.color_name); // color name 1: blue, 2: yellow
-            p.conn.addmsg(m);
-            m.cleanup();
-            if(temp.template.mob_id == 151 || temp.template.mob_id == 152)
-                SendEffMob(p.conn,temp,temp.template.mob_id-81);
-        } else if (p.map.zone_id == p.map.maxzone) {
-            Pet_di_buon temp2 = Pet_di_buon_manager.check(n);
-            if (temp2 != null) {
-                Message mm = new Message(7);
-                mm.writer().writeShort(n);
-                mm.writer().writeByte((byte) 120);
-                mm.writer().writeShort(temp2.x);
-                mm.writer().writeShort(temp2.y);
-                mm.writer().writeInt(temp2.hp);
-                mm.writer().writeInt(temp2.get_HpMax());
-                mm.writer().writeByte(0);
-                mm.writer().writeInt(-1);
-                mm.writer().writeShort(-1);
-                mm.writer().writeByte(1);
-                mm.writer().writeByte(temp2.speed);
-                mm.writer().writeByte(0);
-                mm.writer().writeUTF(temp2.name);
-                mm.writer().writeLong(-11111);
-                mm.writer().writeByte(4);
-                p.conn.addmsg(mm);
-                mm.cleanup();
-            }
-        } else if (Map.is_map_chiem_mo(p.map, true)) {
-            Mob_MoTaiNguyen temp2 = Manager.gI().chiem_mo.get_mob_in_map(p.map);
-            if (temp2 != null && temp2.index == n) {
-                Message mm = new Message(7);
-                mm.writer().writeShort(n);
-                mm.writer().writeByte((byte) temp2.level);
-                mm.writer().writeShort(temp2.x);
-                mm.writer().writeShort(temp2.y);
-                mm.writer().writeInt(temp2.hp);
-                mm.writer().writeInt(temp2.get_HpMax());
-                mm.writer().writeByte(0);
-                mm.writer().writeInt(4);
-                if (temp2.clan != null) {
-                    mm.writer().writeShort(temp2.clan.icon);
-                    mm.writer().writeInt(Clan.get_id_clan(temp2.clan));
-                    mm.writer().writeUTF(temp2.clan.name_clan_shorted);
-                    mm.writer().writeByte(122);
-                } else {
+                m.writer().writeInt(temp.time_refresh);
+                m.writer().writeShort(-1); // clan monster
+                m.writer().writeByte(0);
+                m.writer().writeByte(2); // speed
+                m.writer().writeByte(0);
+                m.writer().writeUTF("");
+                m.writer().writeLong(-11111);
+                m.writer().writeByte(temp.color_name); // color name 1: blue, 2: yellow
+                p.conn.addmsg(m);
+                m.cleanup();
+                if (temp.template.mob_id == 151 || temp.template.mob_id == 152)
+                    SendEffMob(p.conn, temp, temp.template.mob_id - 81);
+            } else if (p.map.zone_id == p.map.maxzone) {
+                Pet_di_buon temp2 = Pet_di_buon_manager.check(n);
+                if (temp2 != null) {
+                    Message mm = new Message(7);
+                    mm.writer().writeShort(n);
+                    mm.writer().writeByte(temp2.level);
+                    mm.writer().writeShort(temp2.x);
+                    mm.writer().writeShort(temp2.y);
+                    mm.writer().writeInt(temp2.hp);
+                    mm.writer().writeInt(temp2.get_HpMax());
+                    mm.writer().writeByte(0);
+                    mm.writer().writeInt(-1);
                     mm.writer().writeShort(-1);
+                    mm.writer().writeByte(1);
+                    mm.writer().writeByte(temp2.speed);
+                    mm.writer().writeByte(0);
+                    mm.writer().writeUTF(temp2.name);
+                    mm.writer().writeLong(-11111);
+                    mm.writer().writeByte(4);
+                    p.conn.addmsg(mm);
+                    mm.cleanup();
                 }
-                mm.writer().writeUTF(temp2.name_monster);
-                mm.writer().writeByte(0);
-                mm.writer().writeByte(2);
-                mm.writer().writeByte(0);
-                mm.writer().writeUTF("");
-                mm.writer().writeLong(-11111);
-                mm.writer().writeByte(4);
-                p.conn.addmsg(mm);
-                mm.cleanup();
-                //
-                Eff_player_in_map.add(p, temp2.index);
+            } else if (Map.is_map_chiem_mo(p.map, true)) {
+                Mob_MoTaiNguyen temp2 = Manager.gI().chiem_mo.get_mob_in_map(p.map);
+                if (temp2 != null && temp2.index == n) {
+                    Message mm = new Message(7);
+                    mm.writer().writeShort(n);
+                    mm.writer().writeByte((byte) temp2.level);
+                    mm.writer().writeShort(temp2.x);
+                    mm.writer().writeShort(temp2.y);
+                    mm.writer().writeInt(temp2.hp);
+                    mm.writer().writeInt(temp2.get_HpMax());
+                    mm.writer().writeByte(0);
+                    mm.writer().writeInt(4);
+                    if (temp2.clan != null) {
+                        mm.writer().writeShort(temp2.clan.icon);
+                        mm.writer().writeInt(Clan.get_id_clan(temp2.clan));
+                        mm.writer().writeUTF(temp2.clan.name_clan_shorted);
+                        mm.writer().writeByte(122);
+                    } else {
+                        mm.writer().writeShort(-1);
+                    }
+                    mm.writer().writeUTF(temp2.name_monster);
+                    mm.writer().writeByte(0);
+                    mm.writer().writeByte(2);
+                    mm.writer().writeByte(0);
+                    mm.writer().writeUTF("");
+                    mm.writer().writeLong(-11111);
+                    mm.writer().writeByte(4);
+                    p.conn.addmsg(mm);
+                    mm.cleanup();
+                    //
+                    Eff_player_in_map.add(p, temp2.index);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -720,7 +787,7 @@ public static int idxDame;
     }
 
     public static void usepotion(Player p, int type, long param) throws IOException {
-        if (p.isdie) {
+        if (p.isDie) {
             return;
         }
         Message m = new Message(32);
@@ -771,7 +838,11 @@ public static int idxDame;
     }
 
     public static void chat_KTG(Session conn, Message m2) throws IOException {
-        if (conn.p.get_ngoc() < 5) {
+        if(!Manager.isKTG){
+            Service.send_notice_nobox_white(conn,"Chức năng đang tạm khoá");
+            return;
+        }
+        if (conn.p.get_vang() < 50_000) {
             send_notice_box(conn, "Không đủ ngọc để thực hiện");
             return;
         }
@@ -785,7 +856,7 @@ public static int idxDame;
         // return;
         // }
         // conn.p.time_chat_ktg = System.currentTimeMillis() + 1000L * 60 * 5;
-        conn.p.update_ngoc(-5);
+        conn.p.update_vang(-50_000);
         conn.p.item.char_inventory(5);
         String text = m2.reader().readUTF();
 
@@ -930,12 +1001,19 @@ public static int idxDame;
     public static void send_box_UI(Session conn, int type) throws IOException {
         Message m = new Message(23);
         switch (type) {
-          
+
             case 33: {
-                if(conn.p.isCreateItemStar)
+                if (conn.p.isCreateItemStar) {
                     m.writer().writeUTF("Nâng cấp đồ tinh tú");
-                else
+                } else if (conn.p.isCreateArmor) {
+                    m.writer().writeUTF("Code by Vĩnh Lỏh");
+                } else if (conn.p.isdothan) {
+                    m.writer().writeUTF("Tiến hóa đồ tinh tú[VIP PRO]");
+                } else if (conn.p.ismdthan) {
+                    m.writer().writeUTF("Tiến hóa mề đay");
+                } else {
                     m.writer().writeUTF("Nâng cấp mề đay");
+                }
                 m.writer().writeByte(20);
                 m.writer().writeShort(0);
                 break;
@@ -964,8 +1042,7 @@ public static int idxDame;
             case 13:
             case 14:
             case 15:
-            case 16: 
-            {//  case 22:{
+            case 16: {//  case 22:{
                 m.writer().writeUTF("Cửa hàng trang bị");
                 m.writer().writeByte(1);
                 m.writer().writeShort(Manager.gI().itemsellTB.get(type - 1).length);
@@ -988,7 +1065,7 @@ public static int idxDame;
                 }
                 break;
             }
-          
+
             case 18: {
                 m.writer().writeUTF("Cường hóa trang bị");
                 m.writer().writeByte(5);
@@ -1039,8 +1116,8 @@ public static int idxDame;
             case 23: {
                 m.writer().writeUTF("Shop trứng");
                 m.writer().writeByte(1);
-                short[] id_egg = Manager.gI().event == 2?   new short[]{2943, 2944, 4762} :  new short[]{2943, 2944};
-                long[] price_egg = Manager.gI().event == 2? new long[]{150, 150, 500} :      new long[]{150, 150};
+                short[] id_egg = Manager.gI().event == 2 ? new short[]{2943, 2944} : new short[]{2943, 2944}; // thêm trứng  // , 4762, 4617, 4626, 4788
+                long[] price_egg = Manager.gI().event == 2 ? new long[]{150, 150} : new long[]{150, 150}; // giá tiền
                 m.writer().writeShort(id_egg.length);
                 for (int i = 0; i < id_egg.length; i++) {
                     ItemTemplate3 temp = ItemTemplate3.item.get(id_egg[i]);
@@ -1072,16 +1149,36 @@ public static int idxDame;
                 m.writer().writeShort(0);
                 m.writer().writeByte(5);
                 //
-                m.writer().writeShort(conn.p.medal_create_material[0 + 5 * (type - 25)]);
-                m.writer().writeByte(1);
+                m.writer().writeShort(conn.p.medal_create_material[5 * (type - 25)]);
+                if (conn.version >= 270) {
+                    m.writer().writeShort(1);
+                } else {
+                    m.writer().writeByte(1);
+                }
                 m.writer().writeShort(conn.p.medal_create_material[1 + 5 * (type - 25)]);
-                m.writer().writeByte(1);
+                if (conn.version >= 270) {
+                    m.writer().writeShort(1);
+                } else {
+                    m.writer().writeByte(1);
+                }
                 m.writer().writeShort(conn.p.medal_create_material[2 + 5 * (type - 25)]);
-                m.writer().writeByte(1);
+                if (conn.version >= 270) {
+                    m.writer().writeShort(1);
+                } else {
+                    m.writer().writeByte(1);
+                }
                 m.writer().writeShort(conn.p.medal_create_material[3 + 5 * (type - 25)]);
-                m.writer().writeByte(1);
+                if (conn.version >= 270) {
+                    m.writer().writeShort(1);
+                } else {
+                    m.writer().writeByte(1);
+                }
                 m.writer().writeShort(conn.p.medal_create_material[4 + 5 * (type - 25)]);
-                m.writer().writeByte(1);
+                if (conn.version >= 270) {
+                    m.writer().writeShort(1);
+                } else {
+                    m.writer().writeByte(1);
+                }
                 break;
             }
             case 29: {
@@ -1132,8 +1229,8 @@ public static int idxDame;
                 m.writer().writeShort(84);
                 break;
             }
-              case 39: {
-                m.writer().writeUTF("Pet Cướp");
+            case 38: {
+                m.writer().writeUTF("Pet cướp");
                 m.writer().writeByte(0);
                 m.writer().writeShort(1);
                 m.writer().writeShort(86);
@@ -1157,75 +1254,13 @@ public static int idxDame;
                 m.writer().writeShort(0);
                 break;
             }
-             case 38: {
-                m.writer().writeUTF("Shop trứng");
+
+            case 37: {
+                m.writer().writeUTF("Shop Coin");
                 m.writer().writeByte(1);
-                short[] id_egg = Manager.gI().event == 2?   new short[]{2943, 2944, 4762} :  new short[]{2943, 2944};
-                long[] price_egg = Manager.gI().event == 2? new long[]{150, 150, 500} :      new long[]{150, 150};
-                m.writer().writeShort(id_egg.length);
-                for (int i = 0; i < id_egg.length; i++) {
-                    ItemTemplate3 temp = ItemTemplate3.item.get(id_egg[i]);
-                    m.writer().writeShort(temp.getId());
-                    m.writer().writeUTF(temp.getName());
-                    m.writer().writeByte(temp.getClazz());
-                    m.writer().writeByte(temp.getType());
-                    m.writer().writeShort(temp.getIcon());
-                    m.writer().writeLong(price_egg[i]); // 150 ngoc
-                    m.writer().writeShort(temp.getLevel());
-                    m.writer().writeByte(temp.getColor());
-                    m.writer().writeByte(0); // op size
-                    m.writer().writeByte(1); // pricetype
-                }
-                break;
-            }
-           case 37: {
-				m.writer().writeUTF("Shop Coin");
-				m.writer().writeByte(1);
-				m.writer().writeShort(Itemsellcoin.entry.size());
-				for (int i = 0; i < Itemsellcoin.entry.size(); i++) {
-					Itemsellcoin temp = Itemsellcoin.entry.get(i);
-					m.writer().writeShort(temp.id);
-					m.writer().writeUTF(ItemTemplate3.item.get(temp.id).getName());
-					m.writer().writeByte(ItemTemplate3.item.get(temp.id).getClazz());
-					m.writer().writeByte(ItemTemplate3.item.get(temp.id).getType());
-					m.writer().writeShort(ItemTemplate3.item.get(temp.id).getIcon());
-					m.writer().writeLong(temp.price);
-					m.writer().writeShort(10);
-					m.writer().writeByte(0);
-					m.writer().writeByte(temp.op.size());
-					for (int j = 0; j < temp.op.size(); j++) {
-						m.writer().writeByte(temp.op.get(j).id);
-						m.writer().writeInt(temp.op.get(j).getParam(0));
-					}
-					m.writer().writeByte(1);
-				}
-				break;
-			}
-            case 40:
-            case 41:
-            case 42:
-            case 43:
-            case 44:
-            case 45:
-            case 46:
-            case 47:{
-                m.writer().writeUTF("Tạo trang bị tinh tú");
-                m.writer().writeByte(19);
-                m.writer().writeShort(0);
-                m.writer().writeByte(5);
-                for(int i= conn.p.TypeItemStarCreate * 5; i < conn.p.TypeItemStarCreate * 5 +5; i++)
-                {
-                    m.writer().writeShort(conn.p.MaterialItemStar[i]);
-                    m.writer().writeByte(1);
-                }
-                break;
-            }
-            case 48:{
-                m.writer().writeUTF("Shop siêu phẩm");
-                m.writer().writeByte(1);
-                m.writer().writeShort(Itemselldosieupham.entry.size());
-                for (int i = 0; i < Itemselldosieupham.entry.size(); i++) {
-                    Itemselldosieupham temp = Itemselldosieupham.entry.get(i);
+                m.writer().writeShort(Itemsellcoin.entry.size());
+                for (int i = 0; i < Itemsellcoin.entry.size(); i++) {
+                    Itemsellcoin temp = Itemsellcoin.entry.get(i);
                     m.writer().writeShort(temp.id);
                     m.writer().writeUTF(ItemTemplate3.item.get(temp.id).getName());
                     m.writer().writeByte(ItemTemplate3.item.get(temp.id).getClazz());
@@ -1243,7 +1278,75 @@ public static int idxDame;
                 }
                 break;
             }
-            
+            case 99: {
+                m.writer().writeUTF("Code by Vĩnh Lỏh");
+                m.writer().writeByte(4);
+                m.writer().writeShort(Manager.gI().item7sell1.length);
+                for (int i = 0; i < Manager.gI().item7sell1.length; i++) {
+                    m.writer().writeShort(Manager.gI().item7sell1[i]);
+                }
+                break;
+            }
+            case 40:
+            case 41:
+            case 42:
+            case 43:
+            case 44:
+            case 45:
+            case 46:
+            case 47: {
+                m.writer().writeUTF("Tạo trang bị tinh tú");
+                m.writer().writeByte(19);
+                m.writer().writeShort(0);
+                m.writer().writeByte(5);
+                for (int i = conn.p.TypeItemStarCreate * 5; i < conn.p.TypeItemStarCreate * 5 + 5; i++) {
+                    m.writer().writeShort(conn.p.MaterialItemStar[i]);
+                    if (conn.version >= 270) {
+                        m.writer().writeShort(1);
+                    } else {
+                        m.writer().writeByte(1);
+                    }
+                }
+                break;
+            }
+            case 48: {
+                m.writer().writeUTF("Shop Tinh Tú");
+                m.writer().writeByte(1);
+                m.writer().writeShort(Itemshoptt.entry.size());
+                for (int i = 0; i < Itemshoptt.entry.size(); i++) {
+                    Itemshoptt temp = Itemshoptt.entry.get(i);
+                    m.writer().writeShort(temp.id);
+                    m.writer().writeUTF(ItemTemplate3.item.get(temp.id).getName());
+                    m.writer().writeByte(ItemTemplate3.item.get(temp.id).getClazz());
+                    m.writer().writeByte(ItemTemplate3.item.get(temp.id).getType());
+                    m.writer().writeShort(ItemTemplate3.item.get(temp.id).getIcon());
+                    m.writer().writeLong(temp.price);
+                    m.writer().writeShort(10);
+                    m.writer().writeByte(0);
+                    m.writer().writeByte(temp.op.size());
+                    for (int j = 0; j < temp.op.size(); j++) {
+                        m.writer().writeByte(temp.op.get(j).id);
+                        m.writer().writeInt(temp.op.get(j).getParam(0));
+                    }
+                    m.writer().writeByte(1);
+                }
+                break;
+            }
+            case 49: {
+                if (!conn.p.isCreateArmor) return;
+                m.writer().writeUTF("Code by Vĩnh Lỏh");
+                m.writer().writeByte(19);
+                m.writer().writeShort(0);
+                m.writer().writeByte(1);
+                m.writer().writeShort(481 + conn.p.id_armor_create);
+                if (conn.version >= 270) {
+                    m.writer().writeShort(500);
+                } else {
+                    m.writer().writeByte(500);
+                }
+                break;
+            }
+
             default: {
                 send_notice_box(conn, "Lỗi, hãy thử lại sau");
                 break;
@@ -1255,7 +1358,7 @@ public static int idxDame;
 
     public static void revenge(Session conn, byte index) throws IOException {
         if (conn.p.get_ngoc() < 2) {
-            send_notice_box(conn, "2 ngọc còn không có nổi thì có mà báo đời à???");
+            send_notice_box(conn, "Không đủ ngọc");
             return;
         }
         String name = conn.p.list_enemies.get(conn.p.list_enemies.size() - index - 1);
@@ -1278,16 +1381,22 @@ public static int idxDame;
             }
         }
         if (p0 == null) {
-            send_notice_box(conn, "Kẻ thù đang offline");
         } else {
             EffTemplate ef = p0.get_EffDefault(-125);
-            if (p0.map.map_id != 0 && !p0.map.ismaplang) {
+            if (p0.map.zone_id == 1 && !Map.is_map_not_zone2(p0.map_id)) {
+                send_notice_box(conn, "Kẻ thù đang trong khu vực không thể đến");
+                return;
+            }
+            if (p0.map.isMapLangPhuSuong() || p0.map.isMapChienTruong() || p0.map.isMapChiemThanh() || p0.map.isMapLoiDai()) {
+                send_notice_box(conn, "Kẻ thù đang trong khu vực không thể đến");
+                return;
+            }
+            if (ef == null && p0.map.map_id != 0 && !p0.map.ismaplang) {
                 conn.p.update_ngoc(-2);
-                conn.p.item.char_inventory(5);
                 conn.p.is_changemap = false;
                 Map mbuffer2 = p0.map;
                 if (mbuffer2 != null) {
-                    if (conn.p.isdie) {
+                    if (conn.p.isDie) {
                         return;
                     }
                     MapService.leave(conn.p.map, conn.p);
@@ -1318,7 +1427,7 @@ public static int idxDame;
                     send_notice_box(conn, "Có lỗi xảy ra khi chuyển map");
                 }
             } else {
-                send_notice_box(conn, "Kẻ thù đang trong khu vực không thể pk");
+                send_notice_box(conn, "Kẻ thù đang trong khu vực không thể đến");
             }
         }
     }
@@ -1379,11 +1488,12 @@ public static int idxDame;
         m.writer().writeShort(it7.getValue());
         m.writer().writeByte(it7.getTrade());
         m.writer().writeByte(it7.getColor());
+        //m.writer().writeByte(it7.getLamcoin());
         p.conn.addmsg(m);
         m.cleanup();
     }
 
-    public static void chat_clan(Clan clan, String text)throws IOException{
+    public static void chat_clan(Clan clan, String text) throws IOException {
         Message m = new Message(34);
         m.writer().writeUTF("Bang Hội");
         m.writer().writeUTF("@Hệ thống : " + text);
@@ -1403,6 +1513,7 @@ public static int idxDame;
         }
         m.cleanup();
     }
+
     public static void chat_tab(Session conn, Message m2) throws IOException {
         String name = m2.reader().readUTF();
         String chat = m2.reader().readUTF();
@@ -1487,10 +1598,9 @@ public static int idxDame;
             }
         }
         Pet _ppp = conn.p.mypet.get(index_pet);
-        if(_ppp.grown < _ppp.maxgrown)
+        if (_ppp.grown < _ppp.maxgrown)
             _ppp.grown += 5;
-        if((_ppp.level == 9 || _ppp.level == 19 || _ppp.level == 29) && Math.abs(Level.entrys.get(_ppp.level - 1).exp - _ppp.exp) <10)
-        {
+        if ((_ppp.level == 9 || _ppp.level == 19 || _ppp.level == 29) && Math.abs(Level.entrys.get(_ppp.level - 1).exp - _ppp.exp) < 10) {
             send_notice_box(conn, "Bạn cần sử dụng thuốc tăng trưởng");
             return;
         }
@@ -1508,12 +1618,11 @@ public static int idxDame;
                 } else if (id_it == 48 && conn.p.mypet.get(index_pet).point2 < _ppp.maxpoint) {
                     conn.p.mypet.get(index_pet).point2 += 10;
                     send_notice_box(conn, "+10 điểm vào nhóm khéo léo");
-                }
-                else {
+                } else {
                     send_notice_box(conn, "Không thể cho ăn");
                     return;
                 }
-                conn.p.mypet.get(index_pet).update_exp(3250);// cũ 3250
+                conn.p.mypet.get(index_pet).update_exp(3250);
                 conn.p.item.remove(4, id_it, 1);
                 conn.p.item.char_inventory(4);
             } else {
@@ -1535,14 +1644,13 @@ public static int idxDame;
                 } else if ((type_ == 4 || type_ == 5) && _ppp.point2 < _ppp.maxpoint) {
                     conn.p.mypet.get(index_pet).point2 += 10;
                     send_notice_box(conn, "+10 điểm vào nhóm khéo léo");
-                }
-                else {
+                } else {
                     send_notice_box(conn, "Không thể cho ăn");
                     return;
                 }
-                His_DelItem hist = new His_DelItem(conn.p.name);
-                hist.Logger = "cho pet ăn";
-                hist.tem3 = conn.p.item.bag3[id_it];
+//                His_DelItem hist = new His_DelItem(conn.p.name);
+//                hist.Logger = "cho pet ăn";
+//                hist.tem3 = conn.p.item.bag3[id_it];
 //                hist.Flus();
                 conn.p.mypet.get(index_pet).update_exp(3250);
                 conn.p.item.bag3[id_it] = null;
@@ -1601,6 +1709,10 @@ public static int idxDame;
     }
 
     public static void pet_process(Session conn, Message m2) throws IOException {
+//        if (conn.p.level < 40) {
+//            Service.send_notice_nobox_white(conn, "Yêu cầu trình độ cấp 40");
+//            return;
+//        }
         byte type = m2.reader().readByte();
         short id = m2.reader().readShort();
         // System.out.println(type);
@@ -1643,7 +1755,7 @@ public static int idxDame;
                 m.writer().writeByte(it.islock ? 0 : 1);
                 m.writer().writeByte(it.islock ? 0 : 1);
                 m.writer().writeByte(0); // op size
-                m.writer().writeInt((int) ((temp.time_born - System.currentTimeMillis()) / 60000));
+                    m.writer().writeInt((int) ((temp.time_born - System.currentTimeMillis()) / 60000));
                 m.writer().writeByte(it.islock ? 1 : 0);
                 conn.addmsg(m);
                 m.cleanup();
@@ -1708,7 +1820,7 @@ public static int idxDame;
     }
 
     public static void sell_item(Session conn, Message m2) throws IOException {
-        if (conn.p.isdie) {
+        if (conn.p.isDie) {
             return;
         }
         byte type = m2.reader().readByte();
@@ -1725,12 +1837,9 @@ public static int idxDame;
                     case 4:
                     case 7: {
                         int quant = conn.p.item.total_item_by_id(type, id);
-                        conn.p.update_vang(quant * 0);
+                        conn.p.update_vang(0);
                         conn.p.item.remove(type, id, quant);
                         conn.p.item.char_inventory(type);
-//                        conn.p.item.char_inventory(4);
-//                        conn.p.item.char_inventory(7);
-//                        conn.p.item.char_inventory(3);
                         break;
                     }
                     default: {
@@ -1750,8 +1859,11 @@ public static int idxDame;
         // System.out.println(type);
         // System.out.println(idbuy);
         // System.out.println(quanity);
-        if (idbuy < 0 || quanity <= 0 || quanity > 1000) {
-            Service.send_notice_box(p.conn, " Mua tối đa số lượng 1000/ lần");
+        if ((type == 0 || type == 1 || type == 4) && !Manager.item_sell.get(type).contains(idbuy)) {
+            send_notice_nobox_white(p.conn, "Không thể mua");
+            return;
+        }
+        if (idbuy < 0 || quanity <= 0 || quanity > 32000) {
             return;
         }
         if (p.item.get_bag_able() < 1) {
@@ -1769,6 +1881,7 @@ public static int idxDame;
                         send_notice_box(p.conn, "Không đủ " + price + " vàng");
                         return;
                     }
+                    Log.gI().add_log(p.name, "Trừ " + price + " mua đồ lisa");
                     p.update_vang(-price);
                 } else {
                     if (p.get_ngoc() < price) {
@@ -1778,21 +1891,17 @@ public static int idxDame;
                     p.update_ngoc(-price);
                 }
                 int quant_add_bag = quanity + p.item.total_item_by_id(4, idbuy);
-                if (quant_add_bag > 10000) {
+                if (quant_add_bag > 32000) {
                     send_notice_box(p.conn, "không thể mua thêm");
                     return;
                 }
-                Item47 itbag = new Item47();
-                itbag.id = idbuy;
-                itbag.quantity = (short) quanity;
-                itbag.category = 4;
-                p.item.add_item_bag47(4, itbag);
+                p.item.add_item_bag47(idbuy, (short) quanity, (byte) 4);
                 p.item.char_inventory(4);
                 p.item.char_inventory(7);
                 p.item.char_inventory(3);
                 break;
             }
-               
+
             case 1: {
 
                 if (idbuy > (ItemTemplate3.item.size() - 1)) {
@@ -1801,37 +1910,6 @@ public static int idxDame;
                 if (Helps.CheckItem.isBuyItemCoin(idbuy))//mua bằng coin
                 {
                     for (Itemsellcoin itsell3 : Itemsellcoin.entry) {
-                       if (itsell3.id == idbuy) {
-                           if (!p.update_coin(-itsell3.price)) {
-                               send_notice_box(p.conn, "Bạn không đủ coin để mua!");
-                                return;
-                            }
-                            Item3 itbag = new Item3();
-                            itbag.id = idbuy;
-                            itbag.clazz = ItemTemplate3.item.get(idbuy).getClazz();
-                            itbag.type = ItemTemplate3.item.get(idbuy).getType();
-                            itbag.level = 10;
-                           itbag.icon = ItemTemplate3.item.get(idbuy).getIcon();
-                            itbag.color = itsell3.color;
-                            itbag.part = ItemTemplate3.item.get(idbuy).getPart();
-                            itbag.islock = true;
-                           itbag.name = ItemTemplate3.item.get(idbuy).getName();
-                            itbag.tier = 0;
-                            itbag.op = new ArrayList<>();
-                            itbag.op.addAll(itsell3.op);
-                            itbag.time_use = 0;
-                            p.item.add_item_bag3(itbag);
-                            p.item.char_inventory(3);
-                            send_notice_box(p.conn, "Mua thành công trang bị " + itbag.name);
-                            return;
-                        }
-                    }
-                    send_notice_box(p.conn, "Không tìm thấy vật phẩm!");
-                    return;
-                }
-                if (idbuy >= 4852 && idbuy <= 4902)
-                {
-                    for (Itemselldosieupham itsell3 : Itemselldosieupham.entry) {
                         if (itsell3.id == idbuy) {
                             if (!p.update_coin(-itsell3.price)) {
                                 send_notice_box(p.conn, "Bạn không đủ coin để mua!");
@@ -1860,7 +1938,38 @@ public static int idxDame;
                     send_notice_box(p.conn, "Không tìm thấy vật phẩm!");
                     return;
                 }
-                if(ev_he.Event_2.isBuyItemSK(p.conn, 3, idbuy, 1)){
+                if (idbuy >= 4831 && idbuy <= 4873)//mua bằng coin shop tt
+                {
+                    for (Itemshoptt itsell3 : Itemshoptt.entry) {
+                        if (itsell3.id == idbuy) {
+                            if (!p.update_coin(-itsell3.price)) {
+                                send_notice_box(p.conn, "Bạn không đủ coin để mua!");
+                                return;
+                            }
+                            Item3 itbag = new Item3();
+                            itbag.id = idbuy;
+                            itbag.clazz = ItemTemplate3.item.get(idbuy).getClazz();
+                            itbag.type = ItemTemplate3.item.get(idbuy).getType();
+                            itbag.level = 1;
+                            itbag.icon = ItemTemplate3.item.get(idbuy).getIcon();
+                            itbag.color = itsell3.color;
+                            itbag.part = ItemTemplate3.item.get(idbuy).getPart();
+                            itbag.islock = true;
+                            itbag.name = ItemTemplate3.item.get(idbuy).getName();
+                            itbag.tier = 15;
+                            itbag.op = new ArrayList<>();
+                            itbag.op.addAll(itsell3.op);
+                            itbag.time_use = 0;
+                            p.item.add_item_bag3(itbag);
+                            p.item.char_inventory(3);
+                            send_notice_box(p.conn, "Mua thành công trang bị " + itbag.name);
+                            return;
+                        }
+                    }
+                    send_notice_box(p.conn, "Không tìm thấy vật phẩm!");
+                    return;
+                }
+                if (ev_he.Event_2.isBuyItemSK(p.conn, 3, idbuy, 1)) {
                     return;
                 }
                 if (idbuy == 2943 || idbuy == 2944 || (idbuy == 4762 && Manager.gI().event == 2)) {
@@ -1868,7 +1977,7 @@ public static int idxDame;
                         send_notice_box(p.conn, "Không đủ ngọc");
                         return;
                     }
-                    if(idbuy == 4762)
+                    if (idbuy == 4762)
                         p.update_ngoc(-500);
                     else
                         p.update_ngoc(-150);
@@ -1901,7 +2010,7 @@ public static int idxDame;
                         return;
                     }
                     p.update_vang(-vang_quant);
-                    //
+                    Log.gI().add_log(p.name, "Trừ " + vang_quant + " mua kim cương đi buôn");
                     p.pet_di_buon.item.add(idbuy);
 
                 } else {
@@ -1915,72 +2024,72 @@ public static int idxDame;
                                 break;
                             }
                         }
-                   if (price == 0) {
-						Itemsellcoin itemsellcoin = null;
-						for (int i = 0; i < Itemsellcoin.entry.size(); i++) {
-							if (Itemsellcoin.entry.get(i).id == idbuy) {
-								itemsellcoin = Itemsellcoin.entry.get(i);
-								break;
-							}
-						}
-						if (itemsellcoin != null) {
-							if (p.update_coin(-itemsellcoin.price)) {
-								Item3 itbag = new Item3();
-								itbag.id = idbuy;
-								itbag.clazz = ItemTemplate3.item.get(idbuy).getClazz();
-								itbag.type = ItemTemplate3.item.get(idbuy).getType();
-								itbag.level = 10;
-								itbag.icon = ItemTemplate3.item.get(idbuy).getIcon();
-								itbag.color = itemsellcoin.color;
-								itbag.part = ItemTemplate3.item.get(idbuy).getPart();
-								itbag.islock = true;
-								itbag.name = ItemTemplate3.item.get(idbuy).getName();
-								itbag.tier = 0;
-								itbag.op = new ArrayList<>();
-								for (int i = 0; i < itemsellcoin.op.size(); i++) {
-						         	itbag.op.add(new Option(itemsellcoin.op.get(i).id, itemsellcoin.op.get(i).getParam(0)));
-								}
-								itbag.time_use = 0;
-								p.item.add_item_bag3(itbag);
-								p.item.char_inventory(3);
-								send_notice_box(p.conn, "Mua thành công " + ItemTemplate3.item.get(idbuy).getName());
-							} else {
-								send_notice_box(p.conn, "Không đủ " + itemsellcoin.price + " coin");
-							}
-						}
-						return;
-                   }
                         if (price == 0) {
-                            Itemselldosieupham itemselldosieupham = null;
-                            for (int i = 0; i < Itemselldosieupham.entry.size(); i++) {
-                                if (Itemselldosieupham.entry.get(i).id == idbuy) {
-                                    itemselldosieupham = Itemselldosieupham.entry.get(i);
+                            Itemsellcoin itemsellcoin = null;
+                            for (int i = 0; i < Itemsellcoin.entry.size(); i++) {
+                                if (Itemsellcoin.entry.get(i).id == idbuy) {
+                                    itemsellcoin = Itemsellcoin.entry.get(i);
                                     break;
                                 }
                             }
-                            if (itemselldosieupham != null) {
-                                if (p.update_coin(-itemselldosieupham.price)) {
+                            if (itemsellcoin != null) {
+                                if (p.update_coin(-itemsellcoin.price)) {
                                     Item3 itbag = new Item3();
                                     itbag.id = idbuy;
                                     itbag.clazz = ItemTemplate3.item.get(idbuy).getClazz();
                                     itbag.type = ItemTemplate3.item.get(idbuy).getType();
                                     itbag.level = 10;
                                     itbag.icon = ItemTemplate3.item.get(idbuy).getIcon();
-                                    itbag.color = itemselldosieupham.color;
+                                    itbag.color = itemsellcoin.color;
                                     itbag.part = ItemTemplate3.item.get(idbuy).getPart();
                                     itbag.islock = true;
                                     itbag.name = ItemTemplate3.item.get(idbuy).getName();
                                     itbag.tier = 0;
                                     itbag.op = new ArrayList<>();
-                                    for (int i = 0; i < itemselldosieupham.op.size(); i++) {
-                                        itbag.op.add(new Option(itemselldosieupham.op.get(i).id, itemselldosieupham.op.get(i).getParam(0)));
+                                    for (int i = 0; i < itemsellcoin.op.size(); i++) {
+                                        itbag.op.add(new Option(itemsellcoin.op.get(i).id, itemsellcoin.op.get(i).getParam(0)));
                                     }
                                     itbag.time_use = 0;
                                     p.item.add_item_bag3(itbag);
                                     p.item.char_inventory(3);
                                     send_notice_box(p.conn, "Mua thành công " + ItemTemplate3.item.get(idbuy).getName());
                                 } else {
-                                    send_notice_box(p.conn, "Không đủ " + itemselldosieupham.price + " coin");
+                                    send_notice_box(p.conn, "Không đủ " + itemsellcoin.price + " coin");
+                                }
+                            }
+                            return;
+                        }
+                        if (price == 0) {
+                            Itemshoptt itemshoptt = null;
+                            for (int i = 0; i < Itemshoptt.entry.size(); i++) {
+                                if (Itemshoptt.entry.get(i).id == idbuy) {
+                                    itemshoptt = Itemshoptt.entry.get(i);
+                                    break;
+                                }
+                            }
+                            if (itemshoptt != null) {
+                                if (p.update_coin(-itemshoptt.price)) {
+                                    Item3 itbag = new Item3();
+                                    itbag.id = idbuy;
+                                    itbag.clazz = ItemTemplate3.item.get(idbuy).getClazz();
+                                    itbag.type = ItemTemplate3.item.get(idbuy).getType();
+                                    itbag.level = 1;
+                                    itbag.icon = ItemTemplate3.item.get(idbuy).getIcon();
+                                    itbag.color = itemshoptt.color;
+                                    itbag.part = ItemTemplate3.item.get(idbuy).getPart();
+                                    itbag.islock = true;
+                                    itbag.name = ItemTemplate3.item.get(idbuy).getName();
+                                    itbag.tier = 15;
+                                    itbag.op = new ArrayList<>();
+                                    for (int i = 0; i < itemshoptt.op.size(); i++) {
+                                        itbag.op.add(new Option(itemshoptt.op.get(i).id, itemshoptt.op.get(i).getParam(0)));
+                                    }
+                                    itbag.time_use = 0;
+                                    p.item.add_item_bag3(itbag);
+                                    p.item.char_inventory(3);
+                                    send_notice_box(p.conn, "Mua thành công " + ItemTemplate3.item.get(idbuy).getName());
+                                } else {
+                                    send_notice_box(p.conn, "Không đủ " + itemshoptt.price + " coin");
                                 }
                             }
                             return;
@@ -1992,6 +2101,7 @@ public static int idxDame;
                             return;
                         }
                         p.update_vang(-price);
+                        Log.gI().add_log(p.name, "Trừ " + price + " mua đồ shop trang bị");
                     } else {
                         if (p.get_ngoc() < price) {
                             send_notice_box(p.conn, "Không đủ " + price + " ngọc");
@@ -2058,6 +2168,12 @@ public static int idxDame;
                     p.update_vang(-price);
                     Log.gI().add_log(p.name, "mua " + quanity + " item " + ItemTemplate7.item.get(idbuy).getName() + " hết"
                             + Util.number_format(price) + " vàng");
+                }else if(ItemTemplate7.item.get(idbuy).getPricetype() == 1 && ((idbuy >= 246 && idbuy <= 345) || (idbuy >= 384 && idbuy <= 409))){
+                    if (p.checkcoin() < price){
+                        send_notice_box(p.conn, "Không đủ " + price + " coin.");
+                        return;
+                    }
+                    p.update_coin((int) -price);
                 } else {
                     if (p.get_ngoc() < price) {
                         send_notice_box(p.conn, "Không đủ " + price + " ngọc");
@@ -2087,7 +2203,7 @@ public static int idxDame;
                 if (idbuy >= 500 && idbuy <= 816) {
                     value = 500;
                 } else if (idbuy >= 817 && idbuy <= 826) {
-                    value = 1000;
+                    value = 100000;
                 }
                 if (p.myclan.icon == 0) {
                     if (value > 200 && p.get_ngoc() < (value - 200)) {
@@ -2213,102 +2329,18 @@ public static int idxDame;
                         } else {
                             send_notice_box(conn, "Tối thiểu 5 ngọc!");
                         }
-                    }else if(it != null && it.id >= 4850){
-                        try {
-                            if (conn.p.item.total_item_by_id(4, 244) <= 0) {
-                                Service.send_notice_box(conn, "Không đủ vật phẩm nâng cấp");
-                                return;
-                            }
-                            if (it.tierStar >=15){
-                                Service.send_notice_box(conn,"Vật phẩm đã được nâng cấp tối đa");
-                                return;
-                            }
-                            conn.p.item.remove(4, 244, 1);
-                            it.tierStar++;
-                            it.UpdateName();
-                            it = Helps.medal.nangcap(it);
-                            conn.p.item.char_inventory(4);
-                            conn.p.item.char_inventory(7);
-                            conn.p.item.char_inventory(3);
-                            Service.send_notice_box(conn, "Nâng cấp thành công " + it.name);
-                            for (int i = 0; i < it.op.size(); i++) {
-                                m2.writer().writeByte(it.op.get(i).id);
-                                if (it.op.get(i).id == 96) {
-                                    m2.writer().writeInt(it.op.get(i).getParam(0));
-                                } else {
-                                    m2.writer().writeInt(it.op.get(i).getParam(it.tier));
-                                }
-                            }
-                        }catch (Exception e){}
-                    } else if ((it.type >= 21 && it.type <= 28) || it.type == 55 || it.type == 102) {
-                        try {
-                            if (conn.p.item.total_item_by_id(4, 262) < 100) {
-                                Service.send_notice_box(conn, "Không đủ vật phẩm nâng cấp");
-                                return;
-                            }
-                            if (it.tier >=15){
-                                Service.send_notice_box(conn,"Vật phẩm đã được nâng cấp tối đa");
-                                return;
-                            }
-                            conn.p.item.remove(4, 262, 100);
-                            it.tier++;
-                            it.UpdateName();
-                            conn.p.item.char_inventory(4);
-                            conn.p.item.char_inventory(7);
-                            conn.p.item.char_inventory(3);
-                            Service.send_notice_box(conn, "Nâng cấp thành công " + it.name);
-                        }catch (Exception e){}
-                    }else if(it.id == 4591){
-                        try{
-                            short nl_t1, nl_t2, nl_x, nl_v, nl_t;
-                            nl_t1 = 255;
-                            nl_t2 = 274;
-                            nl_x = 324;
-                            nl_v = 331;
-                            nl_t = 342;
-                            if((conn.p.item.total_item_by_id(7,nl_t1) < 5 ||
-                                    conn.p.item.total_item_by_id(7,nl_t2) < 5 ||
-                                    conn.p.item.total_item_by_id(7,nl_x) < 5 ||
-                                    conn.p.item.total_item_by_id(7,nl_v) < 5 ||
-                                    conn.p.item.total_item_by_id(7,nl_t) < 5) && conn.ac_admin < 3){
-                                Service.send_notice_box(conn,"Cần 5c Vỏ trai hồng, 5c tổ ong, 5c tay gấu, 5c bọ pha lê and 5c đuôi trăn gấm");
-                                return;
-                            }
-                            if (it.tier >= 15) {
-                                Service.send_notice_box(conn, "Vật phẩm đã được nâng cấp tối đa");
-                                return;
-                            }
-                            int suc = Util.random(100);
-                            if ((suc > 50 && it.tier > 0 ||
-                                    suc > 30 && it.tier > 3 ||
-                                    suc > 10 && it.tier > 6 ||
-                                    suc > 5 && it.tier > 9 ||
-                                    suc > 1 && it.tier > 12) && conn.ac_admin < 3 ) {
-                                conn.p.item.remove(7, nl_t1, 5);
-                                conn.p.item.remove(7, nl_t2, 5);
-                                conn.p.item.remove(7, nl_x, 5);
-                                conn.p.item.remove(7, nl_v, 5);
-                                conn.p.item.remove(7, nl_t, 5);
-                                conn.p.item.char_inventory(7);
-                                Service.send_notice_box(conn,"Nâng cấp thất bại" +it.name);
-                            }else {
-                                conn.p.item.remove(7, nl_t1, 5);
-                                conn.p.item.remove(7, nl_t2, 5);
-                                conn.p.item.remove(7, nl_x, 5);
-                                conn.p.item.remove(7, nl_v, 5);
-                                conn.p.item.remove(7, nl_t, 5);
-                                it.tier++;
-                                it = medal.Upgare_Medal(it);
-                                it.UpdateName();
-                                conn.p.item.char_inventory(4);
-                                conn.p.item.char_inventory(7);
-                                conn.p.item.char_inventory(3);
-                                Service.send_notice_box(conn, "Nâng cấp thành công " + it.name);
-                            }
-                        }catch (Exception e){}
-                        //Service.send_box_input_yesno(conn, 120,"Bạn có chắc chắn muốn nâng cấp vật phẩm" + it.name);
-                    }else {
-                        Service.send_notice_box(conn,"Vật phẩm nâng cấp không phù hợp");
+                    }else if (it != null && it.id >= 4831 && it.id <= 4873 && it.color == 5 && it.tierStar <= 15){
+                        Player p = conn.p;
+                        conn.p.id_than = (byte) iditem;
+                        Item3 it_change = conn.p.item.bag3[iditem];
+                        int[] values = {10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40};
+                        int tierStar = it_change.tierStar >= 0 && it_change.tierStar < values.length ? values[it_change.tierStar] : it_change.tierStar;
+                        Service.send_box_input_yesno(conn, -12, "Nâng cấp " + it_change.name + "\n"
+                                + (tierStar) + "/" + conn.p.item.total_item_by_id(7, st.id[p.st_ran[0]]) + " " + ItemTemplate7.item.get(st.id[p.st_ran[0]]).getName() + "\n"
+                                + (tierStar) + "/" + conn.p.item.total_item_by_id(7, st.st1.id[p.st_ran[1]]) + " " + ItemTemplate7.item.get(st.st1.id[p.st_ran[1]]).getName() + "\n"
+                                + (tierStar) + "/" + conn.p.item.total_item_by_id(7, st.st2.id[p.st_ran[2]]) + " " + ItemTemplate7.item.get(st.st2.id[p.st_ran[2]]).getName() + "\n"
+                                + (tierStar) + "/" + conn.p.item.total_item_by_id(7, st.st3.id[p.st_ran[3]]) + " " + ItemTemplate7.item.get(st.st3.id[p.st_ran[3]]).getName() + "\n"
+                                + (tierStar) + "/" + conn.p.item.total_item_by_id(7, st.st4.id[p.st_ran[4]]) + " " + ItemTemplate7.item.get(st.st4.id[p.st_ran[4]]).getName());
                     }
                     break;
                 }
@@ -2353,7 +2385,6 @@ public static int idxDame;
                     if (id[i] == -1) {
                         m.writer().writeUTF("Vàng"); // name
                         m.writer().writeShort(0); // icon
-                        p.update_vang(Util.random(50, 150));
                     } else {
                         m.writer().writeUTF(ItemTemplate4.item.get(id[i]).getName()); // name
                         m.writer().writeShort(ItemTemplate4.item.get(id[i]).getIcon()); // icon
@@ -2396,6 +2427,7 @@ public static int idxDame;
         p.item.char_inventory(7);
         p.item.char_inventory(3);
     }
+
     public static void Show_open_box_notice_item(Player p, String notice, short[] id, int[] quant, short[] type)
             throws IOException {
         Message m = new Message(78);
@@ -2416,13 +2448,10 @@ public static int idxDame;
                     if (id[i] == -1) {
                         m.writer().writeUTF("Vàng"); // name
                         m.writer().writeShort(0); // icon
-                    }
-                    else if(id[i] == -2)
-                    {
+                    } else if (id[i] == -2) {
                         m.writer().writeUTF("Kim cương"); // name
                         m.writer().writeShort(246); // icon
-                    }
-                    else {
+                    } else {
                         m.writer().writeUTF(ItemTemplate4.item.get(id[i]).getName()); // name
                         m.writer().writeShort(ItemTemplate4.item.get(id[i]).getIcon()); // icon
                     }
@@ -2452,12 +2481,13 @@ public static int idxDame;
         p.item.char_inventory(7);
         p.item.char_inventory(3);
     }
+
     public static void Show_open_box_notice_item(Player p, String notice, List<box_item_template> items)
             throws IOException {
         Message m = new Message(78);
         m.writer().writeUTF(notice);
         m.writer().writeByte(items.size());
-        for(box_item_template tem: items){
+        for (box_item_template tem : items) {
             switch (tem.catagory) {
                 case 3: {
                     m.writer().writeUTF(ItemTemplate3.item.get(tem.id).getName()); // name
@@ -2472,13 +2502,10 @@ public static int idxDame;
                     if (tem.id == -1) {
                         m.writer().writeUTF("Vàng"); // name
                         m.writer().writeShort(0); // icon
-                    }
-                    else if(tem.id == -2)
-                    {
+                    } else if (tem.id == -2) {
                         m.writer().writeUTF("Kim cương"); // name
                         m.writer().writeShort(246); // icon
-                    }
-                    else {
+                    } else {
                         m.writer().writeUTF(ItemTemplate4.item.get(tem.id).getName()); // name
                         m.writer().writeShort(ItemTemplate4.item.get(tem.id).getIcon()); // icon
                     }
@@ -2507,6 +2534,65 @@ public static int idxDame;
         p.item.char_inventory(3);
         p.item.char_inventory(4);
         p.item.char_inventory(7);
-        
+
+    }
+
+    public static void send_time_box(Player p, final byte size, final short[] time, final String[] tile) throws IOException {
+        Message m = new Message(-104);
+        m.writer().writeByte(1);
+        m.writer().writeByte(size);
+        if (size > 0) {
+            for (int i = 0; i < size; i++) {
+                m.writer().writeShort(time[i]);
+                m.writer().writeUTF(tile[i]);
+            }
+        }
+        p.conn.addmsg(m);
+        m.cleanup();
+    }
+
+    public static void npcChat(Map map, int idNpc, String chat) throws IOException {
+        Message m = new Message(23);
+        m.writer().writeUTF(chat);
+        m.writer().writeByte(idNpc);
+        for (int i = 0; i < map.players.size(); i++) {
+            Player p = map.players.get(i);
+            if (p != null) {
+                p.conn.addmsg(m);
+            }
+        }
+        m.cleanup();
+    }
+
+    public static void send_eff_auto(Session conn, List<MainObject> objects, int id_eff) throws IOException {
+        byte[] data = Util.loadfile("data/part_char/imgver/x" + conn.zoomlv + "/Data/" + (111 + "_" + id_eff));
+        Message m = new Message(-49);
+        m.writer().writeByte(4);
+        m.writer().writeShort(data.length);
+        m.writer().write(data);
+        m.writer().writeShort(id_eff);
+        m.writer().writeByte(objects.size());
+        for (MainObject object : objects) {
+            m.writer().writeShort(object.index);
+            m.writer().writeByte(object.get_TypeObj());
+        }
+        for (int i = 0; i < conn.p.map.players.size(); i++) {
+            Player p = conn.p.map.players.get(i);
+            if (p != null) {
+                p.conn.addmsg(m);
+            }
+        }
+        m.cleanup();
+    }
+
+    public static void send_eff_intrinsic(Map map, MainObject object, int id, int time) throws IOException {
+        // 0 vật lý, 1 băng, 2 lửa, 3 điện, 4 độc, 5 bóng tối, 6 ánh sáng
+        Message msg = new Message(50);
+        msg.writer().writeByte(object.get_TypeObj());
+        msg.writer().writeShort(object.index);
+        msg.writer().writeByte(id);
+        msg.writer().writeByte(time);
+        MapService.send_msg_player_inside(map, object, msg, true);
+        msg.cleanup();
     }
 }

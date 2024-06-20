@@ -1,4 +1,7 @@
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package core;
 
 import client.MessageHandler;
@@ -10,13 +13,16 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-
+/**
+ *
+ * @author chien
+ */
 public class CheckDDOS {
 
     static private Map<String, Byte> ipErrorCount = new HashMap<>();
 
     static private Map<String, Long> ipLastAccessTime = new HashMap<>();
-    private static volatile Set<String> ips = new HashSet<>();
+    public static volatile Set<String> ips = new HashSet<>();
     private static final Lock lock = new ReentrantLock();
 
     public static void blockIP(String ipAddress, String logger) {

@@ -17,6 +17,7 @@ public class Item3 {
     public String name;
     public byte tier;
     public byte tierStar;
+    public byte dothan;
     public List<Option> op;
     public List<Option> opMedal;
     public long time_use;
@@ -62,13 +63,15 @@ public class Item3 {
         if (islock) {
             name += " [Khóa]";
         }
-        if (tierStar > 0) {
+        if (tierStar > 0 && (id >= 4587 && id <= 4590) && (id >= 4831 && id <= 4873)){
+            name += "[Siêu cấp " + tierStar +"]";
+        } else if (tierStar > 0) {
             name += " [Cấp " + tierStar + "]";
         }
     }
 
     public boolean isTT() {
-        return (id >= 3732 && id <= 3736) || id >= 3807 && id <= 3811 || id >= 3897 && id <= 3901 || id >= 4656 && id <= 4675;
+        return (id >= 3732 && id <= 3736) || id >= 3807 && id <= 3811 || id >= 3897 && id <= 3901 || id >= 4656 && id <= 4675|| (id >= 4831 && id <= 4873);
     }
 
     public void UpdateOption() {
@@ -205,8 +208,8 @@ public class Item3 {
                 }
             }
         }
-
     }
+
     public boolean hasOption(int id) {
         for (Option o : op) {
             if (o.id == id) {
@@ -214,5 +217,14 @@ public class Item3 {
             }
         }
         return false;
+    }
+    
+    public int getParamOption(int id) {
+        for (Option o : op) {
+            if (o.id == id) {
+                return o.param;
+            }
+        }
+        return 0;
     }
 }

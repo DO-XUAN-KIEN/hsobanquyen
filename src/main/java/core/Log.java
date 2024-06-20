@@ -35,25 +35,27 @@ public class Log implements Runnable {
     @Override
     public void run() {
         while (this.running) {
+            Log_template temp = list.poll();
+            if (temp != null) {
+                try {
+                    this.save_log(temp.name, temp.text);
+                } catch (IOException e) {
+                    System.err.println("save log err at " + temp.name + " !");
+                }
+            }
+            temp =null;
+            temp = Logs_Server.poll();
+            if (temp != null) {
+                try {
+                    this.save_log_Server(temp.name, temp.text);
+                } catch (IOException e) {
+                    System.err.println("save log err at " + temp.name + " !");
+                }
+            }
             try {
-                Log_template temp = list.take();
-                if (temp != null) {
-                    try {
-                        this.save_log(temp.name, temp.text);
-                    } catch (IOException e) {
-                        System.err.println("save log err at " + temp.name + " !");
-                    }
-                }
-                temp =null;
-                temp = Logs_Server.take();
-                if (temp != null) {
-                    try {
-                        this.save_log_Server(temp.name, temp.text);
-                    } catch (IOException e) {
-                        System.err.println("save log err at " + temp.name + " !");
-                    }
-                }
+                Thread.sleep(20000L);
             } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }

@@ -4,14 +4,10 @@ import ai.NhanBan;
 import client.Clan;
 import client.Player;
 import core.Manager;
-import core.SQL;
 import io.Message;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.List;
+
 import map.Eff_player_in_map;
 import map.Map;
 import map.MapService;
@@ -19,7 +15,8 @@ import map.MapService;
 public class Mob_MoTaiNguyen extends MainObject{
     public Map map;
     public String name_monster;
-    public static NhanBan nhanban;
+    public List<NhanBan> nhanBans;
+    public NhanBan nhanban;
     public NhanBan nhanban_save;
     public Clan clan;
     public boolean is_atk;
@@ -39,11 +36,6 @@ public class Mob_MoTaiNguyen extends MainObject{
         this.is_atk = false;
         this.isbuff_hp = false;
     }
-
-    public Mob_MoTaiNguyen() {
-
-    }
-
     @Override
     public boolean isMoTaiNguyen() {
         return true;
@@ -51,7 +43,7 @@ public class Mob_MoTaiNguyen extends MainObject{
     
     @Override
     public int get_DefBase(){
-        return nhanban!= null && !nhanban.isdie ? nhanban.get_DefBase():0;
+        return nhanban!= null && !nhanban.isDie ? nhanban.get_DefBase():0;
     }
     
     @Override
@@ -92,7 +84,7 @@ public class Mob_MoTaiNguyen extends MainObject{
             MapService.send_msg_player_inside(map, this, m12, true);
             m12.cleanup();
             
-            this.hp = this.hp_max = 4_000_000;
+            this.hp = this.hp_max = 10_000_000;
             //
             Message mm = new Message(7);
             mm.writer().writeShort(this.index);
@@ -121,7 +113,7 @@ public class Mob_MoTaiNguyen extends MainObject{
             final int a = this.index;
             new Thread(() -> {
                 try {
-                    Thread.sleep(5500);
+                    Thread.sleep(5500L);
                     MapService.send_msg_player_inside(map, this, mm, true);
                     mm.cleanup();
                     if(mainAtk.isPlayer())
@@ -134,7 +126,4 @@ public class Mob_MoTaiNguyen extends MainObject{
             }).start();
         }catch(Exception e){}
     }
-
-
-
 }

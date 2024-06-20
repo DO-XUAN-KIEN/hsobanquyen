@@ -1,9 +1,11 @@
 package core;
 
 import History.His_KMB;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import client.Player;
 import io.Message;
 import io.Session;
@@ -78,14 +80,9 @@ public class GameSrc {
         } else {
             Message m = new Message(67);
             Message m12 = null;
-            boolean next =false;
-            if(conn.ac_admin == 5 || conn.ac_admin == 12 || conn.ac_admin == 13 || conn.ac_admin == 14 || conn.ac_admin == 15 || conn.ac_admin == 16 || conn.ac_admin == 17 || conn.ac_admin == 33 || conn.ac_admin == 34 || conn.ac_admin == 35 ||
-                    conn.ac_admin == 36 || conn.ac_admin == 37 || conn.ac_admin == 38 || conn.ac_admin == 39 || conn.ac_admin == 40 || conn.ac_admin == 41 || conn.ac_admin == 42 || conn.ac_admin == 43 || conn.ac_admin == 44 || conn.ac_admin == 45 || conn.ac_admin == 46 ||
-                    conn.ac_admin == 47 || conn.ac_admin == 68 || conn.ac_admin == 69 || conn.ac_admin == 70 || conn.ac_admin == 71 || conn.ac_admin == 72 || conn.ac_admin == 73 || conn.ac_admin == 74 || conn.ac_admin == 75 || conn.ac_admin == 76 || conn.ac_admin == 77 ||
-                    conn.ac_admin == 78 || conn.ac_admin == 79 || conn.ac_admin == 80 || conn.ac_admin == 81 || conn.ac_admin == 82 || conn.ac_admin == 83 || conn.ac_admin == 84 || conn.ac_admin == 85 || conn.ac_admin == 86 || conn.ac_admin == 87 || conn.ac_admin == 103 ||
-                    conn.ac_admin == 104 || conn.ac_admin == 105 || conn.ac_admin == 106 || conn.ac_admin == 107 || conn.ac_admin == 108 || conn.ac_admin == 109 || conn.ac_admin == 110 || conn.ac_admin == 111 || conn.ac_admin == 112 || conn.ac_admin == 113 || conn.ac_admin == 114 ||
-                    conn.ac_admin == 115 || conn.ac_admin == 116 || conn.ac_admin == 117 || conn.ac_admin == 124 || conn.ac_admin == 125 || conn.ac_admin == 126 || conn.ac_admin == 127 || conn.ac_admin == 128 || conn.ac_admin == 129 || conn.ac_admin == 131 || conn.ac_admin >= 135  && Manager.BuffAdminMaterial){// cường hóa
-                next =true;
+            boolean next = false;
+            if (conn.ac_admin > 3 && Manager.BuffAdminMaterial) {
+                next = true;
             }
             if (type == 2 && !checkmaterial(conn, conn.p.id_item_rebuild, tem) && !next) {
                 m.writer().writeByte(3);
@@ -161,14 +158,9 @@ public class GameSrc {
                         if (it_upgrade.tier < 7) {
                             get_percent += 30;
                         }
-                        if(conn.ac_admin == 5 || conn.ac_admin == 12 || conn.ac_admin == 13 || conn.ac_admin == 14 || conn.ac_admin == 15 || conn.ac_admin == 16 || conn.ac_admin == 17 || conn.ac_admin == 33 || conn.ac_admin == 34 || conn.ac_admin == 35 ||
-                                conn.ac_admin == 36 || conn.ac_admin == 37 || conn.ac_admin == 38 || conn.ac_admin == 39 || conn.ac_admin == 40 || conn.ac_admin == 41 || conn.ac_admin == 42 || conn.ac_admin == 43 || conn.ac_admin == 44 || conn.ac_admin == 45 || conn.ac_admin == 46 ||
-                                conn.ac_admin == 47 || conn.ac_admin == 68 || conn.ac_admin == 69 || conn.ac_admin == 70 || conn.ac_admin == 71 || conn.ac_admin == 72 || conn.ac_admin == 73 || conn.ac_admin == 74 || conn.ac_admin == 75 || conn.ac_admin == 76 || conn.ac_admin == 77 ||
-                                conn.ac_admin == 78 || conn.ac_admin == 79 || conn.ac_admin == 80 || conn.ac_admin == 81 || conn.ac_admin == 82 || conn.ac_admin == 83 || conn.ac_admin == 84 || conn.ac_admin == 85 || conn.ac_admin == 86 || conn.ac_admin == 87 || conn.ac_admin == 103 ||
-                                conn.ac_admin == 104 || conn.ac_admin == 105 || conn.ac_admin == 106 || conn.ac_admin == 107 || conn.ac_admin == 108 || conn.ac_admin == 109 || conn.ac_admin == 110 || conn.ac_admin == 111 || conn.ac_admin == 112 || conn.ac_admin == 113 || conn.ac_admin == 114 ||
-                                conn.ac_admin == 115 || conn.ac_admin == 116 || conn.ac_admin == 117 || conn.ac_admin == 124 || conn.ac_admin == 125 || conn.ac_admin == 126 || conn.ac_admin == 127 || conn.ac_admin == 128 || conn.ac_admin == 129 || conn.ac_admin == 131 || conn.ac_admin >= 135 && Manager.BuffAdmin)//cường hóa
-                            percent =true;
-                        else if (conn.p.is_use_mayman && (conn.p.id_use_mayman == 14 || conn.p.id_use_mayman == 13)) {
+                        if (conn.ac_admin > 3 && Manager.BuffAdmin) {
+                            percent = true;
+                        } else if (conn.p.is_use_mayman && (conn.p.id_use_mayman == 14 || conn.p.id_use_mayman == 13)) {
                             percent = (get_percent + 15) > Util.random(0, 106); //cũ là 120
                         } else {
                             percent = get_percent > Util.random(0, 106);
@@ -285,10 +277,11 @@ public class GameSrc {
     private static boolean checkmaterial(Session conn, short id, byte tem) throws IOException {
         if (conn.p.get_vang() < 10_000 || conn.p.get_ngoc() < 10) {
             return false;
-         }
+        }
         if (!conn.p.item.bag3[id].islock) {
             conn.p.item.bag3[id].islock = true;
-            conn.p.item.bag3[id].name = ItemTemplate3.item.get(conn.p.item.bag3[id].id).getName() + " [Khóa]";
+            //conn.p.item.bag3[id].name = ItemTemplate3.item.get(conn.p.item.bag3[id].id).getName() + " [Khóa]";
+            conn.p.item.bag3[id].name = ItemTemplate3.item.get(conn.p.item.bag3[id].id).getName();
         }
         Item3 it3 = conn.p.item.bag3[id];
         switch (it3.tier) {
@@ -298,7 +291,7 @@ public class GameSrc {
                 if (tem == 0) {
                     conn.p.update_vang(-3000);
                 } else {
-                    conn.p.update_ngoc(-4);
+                    conn.p.update_ngoc(-10);
                 }
                 if (conn.p.item.total_item_by_id(7, 0) > 0 && conn.p.item.total_item_by_id(7, 1) > 0) {
                     conn.p.item.remove(7, 0, 1);
@@ -403,174 +396,69 @@ public class GameSrc {
 
     public synchronized static void trade_process(Session conn, Message m2) throws IOException {
         if (!Manager.isGiaoDich) {
-            Service.send_notice_box(conn, "Chưa mở giao dịch");
+            Service.send_notice_box(conn, "Không thể giao dịch");
+            return;
+        }
+        if (conn.p.level < 20) {
+            Service.send_notice_box(conn, "Yêu cầu trình độ cấp 20");
+            return;
+        }
+        if (conn.status != 0) {
+            Service.send_notice_box(conn, "Tài khoản chưa được kích hoạt, hãy kích hoạt");
             return;
         }
         byte type = m2.reader().readByte();
-
         if (type == 0) {
-//             if (conn.p.time_trade > System.currentTimeMillis()) {
-//             Service.send_notice_nobox_white(conn,
-//             "Chờ " + (conn.p.time_trade - System.currentTimeMillis()) / 1000 + "s nữa");
-//             return;
-//             }
-//             conn.p.time_trade = System.currentTimeMillis() + 1000L * 15;
+            // if (conn.p.time_trade > System.currentTimeMillis()) {
+            // Service.send_notice_nobox_white(conn,
+            // "Chờ " + (conn.p.time_trade - System.currentTimeMillis()) / 1000 + "s nữa");
+            // return;
+            // }
+            // conn.p.time_trade = System.currentTimeMillis() + 1000L * 15;
         }
         switch (type) {
             case 0: {
-                if (conn.p.banclone == 1) {
-                    if (conn.p.checkcoin() < 10_000_000) {
-                        Service.send_notice_box(conn, "Hãy bỏ 10tr coin để mở khóa giao dịch");
-                        return;
-                    }
-                    conn.p.banclone = 0;
-                    int coin_ = 10_000_000;
-                    conn.p.update_coin(-coin_);
-                    conn.p.item.char_inventory(5);
-                    Player p0 = Map.get_player_by_name(m2.reader().readUTF());
-                    if (p0 != null) {
-                        if (p0.list_item_trade == null) {
-                            Message m = new Message(36);
-                            m.writer().writeByte(0);
-                            m.writer().writeUTF(conn.p.name);
-                            p0.conn.addmsg(m);
-                            m.cleanup();
-                        } else {
-                            Service.send_notice_box(conn, "Đối phương đang có giao dịch");
-                        }
+                Player p0 = Map.get_player_by_name(m2.reader().readUTF());
+                if (p0 != null) {
+                    if (p0.list_item_trade == null) {
+                        Message m = new Message(36);
+                        m.writer().writeByte(0);
+                        m.writer().writeUTF(conn.p.name);
+                        p0.conn.addmsg(m);
+                        m.cleanup();
                     } else {
-                        Service.send_notice_box(conn, "Xảy ra lỗi");
+                        Service.send_notice_box(conn, "Đối phương đang có giao dịch");
                     }
-                    break;
-
                 } else {
-                    if (conn.p.checkcoin() < 100_000) {
-                        Service.send_notice_box(conn, "Không đủ điều kiện 100k coin để giao dịch");
-                        return;
-                    }
-                    Player p0 = Map.get_player_by_name(m2.reader().readUTF());
-                    if (p0 != null) {
-                        if (p0.list_item_trade == null) {
-                            Message m = new Message(36);
-                            m.writer().writeByte(0);
-                            m.writer().writeUTF(conn.p.name);
-                            p0.conn.addmsg(m);
-                            m.cleanup();
-                        } else {
-                            Service.send_notice_box(conn, "Đối phương đang có giao dịch");
-                        }
-                    } else {
-                        Service.send_notice_box(conn, "Xảy ra lỗi");
-                    }
-                    break;
-
+                    Service.send_notice_box(conn, "Xảy ra lỗi");
                 }
-//                Player p0 = Map.get_player_by_name(m2.reader().readUTF());
-//                if (p0 != null) {
-//                    if (p0.list_item_trade == null) {
-//                        Message m = new Message(36);
-//                        m.writer().writeByte(0);
-//                        m.writer().writeUTF(conn.p.name);
-//                        p0.conn.addmsg(m);
-//                        m.cleanup();
-//                    } else {
-//                        Service.send_notice_box(conn, "Đối phương đang có giao dịch");
-//                    }
-//                } else {
-//                    Service.send_notice_box(conn, "Xảy ra lỗi");
-//                }
-//                break;
+                break;
             }
             case 1: {
-                if (conn.p.banclone == 1) {
-                    if (conn.p.checkcoin() < 10_000_000) {
-                        Service.send_notice_box(conn, "Hãy bỏ 10tr coin để mở khóa giao dịch");
-                        return;
-                    }
-                    conn.p.banclone = 0;
-                    int coin_ = 10_000_000;
-                    conn.p.update_coin(-coin_);
-                    conn.p.item.char_inventory(5);
-
-                    Message m = new Message(36);
-                    m.writer().writeByte(1);
-                    Player p0 = Map.get_player_by_name(m2.reader().readUTF());
-                    if (p0 == null) {
-                        return;
-                    }
-                    m.writer().writeUTF(p0.name);
-                    conn.p.name_trade = p0.name;
-                    p0.name_trade = conn.p.name;
-                    conn.addmsg(m);
-                    m.cleanup();
-                    //
-                    m = new Message(36);
-                    m.writer().writeByte(1);
-                    m.writer().writeUTF(conn.p.name);
-                    p0.conn.addmsg(m);
-                    m.cleanup();
-                    p0.list_item_trade = new short[9];
-                    conn.p.list_item_trade = new short[9];
-                    for (int i = 0; i < conn.p.list_item_trade.length; i++) {
-                        conn.p.list_item_trade[i] = -1;
-                        p0.list_item_trade[i] = -1;
-                    }
-                    break;
-
-                } else {
-                    if (conn.p.checkcoin() < 100_000) {
-                        Service.send_notice_box(conn, "Không đủ điều kiện 100k coin để giao dịch");
-                        return;
-                    }
-                    Message m = new Message(36);
-                    m.writer().writeByte(1);
-                    Player p0 = Map.get_player_by_name(m2.reader().readUTF());
-                    if (p0 == null) {
-                        return;
-                    }
-                    m.writer().writeUTF(p0.name);
-                    conn.p.name_trade = p0.name;
-                    p0.name_trade = conn.p.name;
-                    conn.addmsg(m);
-                    m.cleanup();
-                    //
-                    m = new Message(36);
-                    m.writer().writeByte(1);
-                    m.writer().writeUTF(conn.p.name);
-                    p0.conn.addmsg(m);
-                    m.cleanup();
-                    p0.list_item_trade = new short[9];
-                    conn.p.list_item_trade = new short[9];
-                    for (int i = 0; i < conn.p.list_item_trade.length; i++) {
-                        conn.p.list_item_trade[i] = -1;
-                        p0.list_item_trade[i] = -1;
-                    }
-                    break;
+                Message m = new Message(36);
+                m.writer().writeByte(1);
+                Player p0 = Map.get_player_by_name(m2.reader().readUTF());
+                if (p0 == null) {
+                    return;
                 }
-//                Message m = new Message(36);
-//                m.writer().writeByte(1);
-//                Player p0 = Map.get_player_by_name(m2.reader().readUTF());
-//                if (p0 == null) {
-//                    return;
-//                }
-//                m.writer().writeUTF(p0.name);
-//                conn.p.name_trade = p0.name;
-//                p0.name_trade = conn.p.name;
-//                conn.addmsg(m);
-//                m.cleanup();
-//                //
-//                m = new Message(36);
-//                m.writer().writeByte(1);
-//                m.writer().writeUTF(conn.p.name);
-//                p0.conn.addmsg(m);
-//                m.cleanup();
-//                p0.list_item_trade = new short[9];
-//                conn.p.list_item_trade = new short[9];
-//                for (int i = 0; i < conn.p.list_item_trade.length; i++) {
-//                    conn.p.list_item_trade[i] = -1;
-//                    p0.list_item_trade[i] = -1;
-//                }
-//                break;
+                m.writer().writeUTF(p0.name);
+                conn.p.name_trade = p0.name;
+                p0.name_trade = conn.p.name;
+                conn.addmsg(m);
+                m.cleanup();
+                //
+                m = new Message(36);
+                m.writer().writeByte(1);
+                m.writer().writeUTF(conn.p.name);
+                p0.conn.addmsg(m);
+                m.cleanup();
+                p0.list_item_trade = new short[9];
+                conn.p.list_item_trade = new short[9];
+                for (int i = 0; i < conn.p.list_item_trade.length; i++) {
+                    conn.p.list_item_trade[i] = -1;
+                    p0.list_item_trade[i] = -1;
+                }
+                break;
             }
             case 2: {
                 Player p0 = Map.get_player_by_name(conn.p.name_trade);
@@ -714,8 +602,7 @@ public class GameSrc {
                 if (conn.p.accept_trade && p0.accept_trade) {
                     //
                     if (conn.p.money_trade > 0) {
-                        if(conn.p.get_vang() < conn.p.money_trade)
-                        {
+                        if (conn.p.get_vang() < conn.p.money_trade) {
                             Service.send_notice_box(conn, "Không đủ vàng");
                             return;
                         }
@@ -726,8 +613,7 @@ public class GameSrc {
                         conn.p.money_trade = 0;
                     }
                     if (p0.money_trade > 0) {
-                        if(p0.get_vang() < p0.money_trade)
-                        {
+                        if (p0.get_vang() < p0.money_trade) {
                             Service.send_notice_box(p0.conn, "Không đủ vàng");
                             return;
                         }
@@ -881,7 +767,7 @@ public class GameSrc {
         }
     }
 
-    public static void replace_item_process(Player p, Message m2) throws IOException {
+    public static void replace_item_process(Player p, Message m2) throws IOException { // chuyển hoá vật phẩm
         byte type = m2.reader().readByte();
         short id = m2.reader().readShort();
         if (type == 0) {
@@ -891,6 +777,14 @@ public class GameSrc {
             }
             if (p.item.bag3[id] != null && Part_fashion.fashions.contains(p.item.bag3[id].id)) {
                 Service.send_notice_box(p.conn, "Trang bị không phù hợp!");
+                return;
+            }
+            if (p.item.bag3[id].type == 7) {
+                Service.send_notice_box(p.conn, "Không chuyển hoá được cánh");
+                return;
+            }
+            if (p.item.bag3[id].type == 16) {
+                Service.send_notice_box(p.conn, "Không chuyển hoá mề đay");
                 return;
             }
             if (p.item_replace == -1) {
@@ -908,10 +802,16 @@ public class GameSrc {
                     Service.send_notice_box(p.conn, "Chỉ có thể bỏ vật phẩm +0 vào");
                     return;
                 }
+
                 if (p.item.bag3[p.item_replace].type != p.item.bag3[id].type) {
                     Service.send_notice_box(p.conn, "Chỉ có thể chuyển hóa trang bị cùng loại");
                     return;
                 }
+                if (p.item.bag3[id].type == 7) {
+                    Service.send_notice_box(p.conn, "Không chuyển hoá được cánh");
+                    return;
+                }
+
                 if (p.item.bag3[p.item_replace].level > p.item.bag3[id].level) {
                     Service.send_notice_box(p.conn, "Chỉ có thể chuyển hóa trang bị level cao hơn");
                     return;
@@ -945,7 +845,7 @@ public class GameSrc {
                 p.item.char_inventory(7);
                 p.item.char_inventory(3);
             }
-            int fee = 100 * p.item.bag3[p.item_replace].tier;
+            int fee = 50 * p.item.bag3[p.item_replace].tier;
             Service.send_box_input_yesno(p.conn, 122,
                     "Chuyển hóa sẽ mất phí " + fee + " ngọc, bạn có chắc chắn muốn chuyển hóa?");
         }
@@ -961,8 +861,7 @@ public class GameSrc {
     }
 
     public static void Create_Medal(Session conn, Message m2) throws IOException {
-        
-            
+
         byte type = m2.reader().readByte();
         short id = -1;
         byte tem = -1;
@@ -1009,7 +908,11 @@ public class GameSrc {
                         m_send.writer().writeByte(5);
                         for (int i = 5 * (it_temp.id - 4587); i < 5 * (it_temp.id - 4587) + 5; i++) {
                             m_send.writer().writeShort(conn.p.medal_create_material[i]);
-                            m_send.writer().writeByte(get_quant_material_medal_upgrade(it_temp.tier));
+                            if (conn.version >= 270) {
+                                m_send.writer().writeShort(get_quant_material_medal_upgrade(it_temp.tier));
+                            } else {
+                                m_send.writer().writeByte(get_quant_material_medal_upgrade(it_temp.tier));
+                            }
                         }
                         conn.addmsg(m_send);
                         m_send.cleanup();
@@ -1020,7 +923,7 @@ public class GameSrc {
                 break;
             }
             case 2: {
-                if(conn.p.item.get_bag_able()<1){
+                if (conn.p.item.get_bag_able() < 1) {
                     Service.send_notice_box(conn, "Hành trang đầy!");
                     return;
                 }
@@ -1036,7 +939,7 @@ public class GameSrc {
                 break;
             }
             case 3: { // create
-                if(conn.p.item.get_bag_able()<1){
+                if (conn.p.item.get_bag_able() < 1) {
                     Service.send_notice_box(conn, "Hành trang đầy!");
                     return;
                 }
@@ -1045,14 +948,8 @@ public class GameSrc {
                     return;
                 }
                 if (conn.p.id_medal_is_created != -1) {
-                    if(Manager.BuffAdminMaterial && conn.ac_admin == 8 || conn.ac_admin == 27 || conn.ac_admin == 28 || conn.ac_admin == 29 || conn.ac_admin == 64 || conn.ac_admin == 65 || conn.ac_admin == 66 || conn.ac_admin == 102 || conn.ac_admin == 14 ||
-                            conn.ac_admin == 19 || conn.ac_admin == 23 || conn.ac_admin == 42 || conn.ac_admin == 43 || conn.ac_admin == 44 || conn.ac_admin == 52 || conn.ac_admin == 53 || conn.ac_admin == 54 || conn.ac_admin == 58 || conn.ac_admin == 59 ||
-                            conn.ac_admin == 60 || conn.ac_admin == 84 || conn.ac_admin == 85 || conn.ac_admin == 86 || conn.ac_admin == 94 || conn.ac_admin == 95 || conn.ac_admin == 96 || conn.ac_admin == 98 || conn.ac_admin == 99 || conn.ac_admin == 100 ||
-                            conn.ac_admin == 117 || conn.ac_admin == 122 || conn.ac_admin == 123 || conn.ac_admin == 34 || conn.ac_admin == 38 || conn.ac_admin == 48 || conn.ac_admin == 72 || conn.ac_admin == 73 || conn.ac_admin == 74 || conn.ac_admin == 78 ||
-                            conn.ac_admin == 79 || conn.ac_admin == 80 || conn.ac_admin == 88 || conn.ac_admin == 89 || conn.ac_admin == 90 || conn.ac_admin == 109 || conn.ac_admin == 110 || conn.ac_admin == 111 || conn.ac_admin == 113 || conn.ac_admin == 114 ||
-                            conn.ac_admin == 115 || conn.ac_admin == 118 || conn.ac_admin == 119 || conn.ac_admin == 120 || conn.ac_admin == 128 || conn.ac_admin == 129 || conn.ac_admin == 130 || conn.ac_admin == 68 || conn.ac_admin == 103 || conn.ac_admin == 104 ||
-                            conn.ac_admin == 105 || conn.ac_admin == 124 || conn.ac_admin == 125 || conn.ac_admin == 126 || conn.ac_admin == 131 || conn.ac_admin >= 135){}//tạo md
-                    else if (conn.p.item.total_item_by_id(7,
+                    if (Manager.BuffAdminMaterial && conn.ac_admin > 3) {
+                    } else if (conn.p.item.total_item_by_id(7,
                             conn.p.medal_create_material[0 + 5 * conn.p.id_medal_is_created]) < 1) {
                         Service.send_notice_box(conn, "Chưa đủ nguyên liệu!");
                         return;
@@ -1096,23 +993,18 @@ public class GameSrc {
                     m.writer().writeByte(3);
                     ItemTemplate3 temp = ItemTemplate3.item.get(conn.p.id_medal_is_created + 4587);
                     //byte color_ = (byte) Util.random(0, 5);
-                    byte ran_ = (byte) Util.random(0, 101);
+                    byte ran_ = (byte) Util.random(100);
                     byte color_ = 0;
-                    if (conn.ac_admin == 8 || conn.ac_admin == 27 || conn.ac_admin == 28 || conn.ac_admin == 29 || conn.ac_admin == 64 || conn.ac_admin == 65 || conn.ac_admin == 66 || conn.ac_admin == 102 || conn.ac_admin == 14 ||
-                            conn.ac_admin == 19 || conn.ac_admin == 23 || conn.ac_admin == 42 || conn.ac_admin == 43 || conn.ac_admin == 44 || conn.ac_admin == 52 || conn.ac_admin == 53 || conn.ac_admin == 54 || conn.ac_admin == 58 || conn.ac_admin == 59 ||
-                            conn.ac_admin == 60 || conn.ac_admin == 84 || conn.ac_admin == 85 || conn.ac_admin == 86 || conn.ac_admin == 94 || conn.ac_admin == 95 || conn.ac_admin == 96 || conn.ac_admin == 98 || conn.ac_admin == 99 || conn.ac_admin == 100 ||
-                            conn.ac_admin == 117 || conn.ac_admin == 122 || conn.ac_admin == 123 || conn.ac_admin == 34 || conn.ac_admin == 38 || conn.ac_admin == 48 || conn.ac_admin == 72 || conn.ac_admin == 73 || conn.ac_admin == 74 || conn.ac_admin == 78 ||
-                            conn.ac_admin == 79 || conn.ac_admin == 80 || conn.ac_admin == 88 || conn.ac_admin == 89 || conn.ac_admin == 90 || conn.ac_admin == 109 || conn.ac_admin == 110 || conn.ac_admin == 111 || conn.ac_admin == 113 || conn.ac_admin == 114 ||
-                            conn.ac_admin == 115 || conn.ac_admin == 118 || conn.ac_admin == 119 || conn.ac_admin == 120 || conn.ac_admin == 128 || conn.ac_admin == 129 || conn.ac_admin == 130 || conn.ac_admin == 68 || conn.ac_admin == 103 || conn.ac_admin == 104 ||
-                            conn.ac_admin == 105 || conn.ac_admin == 124 || conn.ac_admin == 125 || conn.ac_admin == 126 || conn.ac_admin == 131 || conn.ac_admin >= 135 && Manager.BuffAdmin) {// tạo md
+                    // open
+                    if (conn.ac_admin > 3 && Manager.BuffAdmin) {
                         color_ = 4;
-                    } else if (ran_ <= 10) {
+                    } else if (ran_ <= 2) {
                         color_ = 4;
-                    } else if (ran_ <= 25) {
+                    } else if (ran_ < 10) {
                         color_ = 3;
-                    } else if (ran_ <= 45) {
+                    } else if (ran_ <= 25) {
                         color_ = 2;
-                    } else if (ran_ <= 70) {
+                    } else if (ran_ <= 55) {
                         color_ = 1;
                     } else {
                         color_ = 0;
@@ -1205,38 +1097,33 @@ public class GameSrc {
                     return;
                 }
                 Item3 it_temp = conn.p.item.bag3[id];
-                if(it_temp != null && it_temp.id >= 4587 && it_temp.id <= 4590 && it_temp.tier < 15)
-                {
+                if (it_temp != null && it_temp.id >= 4587 && it_temp.id <= 4590 && it_temp.tier < 15) {
                     conn.p.id_Upgrade_Medal_Star = id;
-                    if(it_temp.tier < 6)
-                    {
-                        UpgradeMedal(conn, (byte)0);
-                    }else{
-                        MenuController.send_menu_select(conn,-101,new String[]{"Không = " + (Ratio_Upgrade_Medal[it_temp.tier] / 100) + "%",
-                            "Đá krypton cấp 1 = " + ((Ratio_Upgrade_Medal[it_temp.tier] + Ratio_Upgrade_Medal[it_temp.tier] * 0.05) / 100) + "%",
-                            "Đá krypton cấp 2 = " + ((Ratio_Upgrade_Medal[it_temp.tier] + Ratio_Upgrade_Medal[it_temp.tier] * 0.1) / 100) + "%",
-                            "Đá krypton cấp 3 = " + ((Ratio_Upgrade_Medal[it_temp.tier] + Ratio_Upgrade_Medal[it_temp.tier] * 0.3) / 100) + "%"},(byte)0);
-                    }  
-                }
-                else 
+                    if (it_temp.tier < 6) {
+                        UpgradeMedal(conn, (byte) 0);
+                    } else {
+                        MenuController.send_menu_select(conn, 998, new String[]{"Không",
+                            "Đá krypton cấp 1",
+                            "Đá krypton cấp 2",
+                            "Đá krypton cấp 3"}, (byte) 0);
+                    }
+                } else {
                     Service.send_notice_box(conn, "Trang bị không phù hợp hoặc đã đạt cấp tối đa!");
+                }
                 break;
             }
         }
     }
-    
-    public static short[] Ratio_Upgrade_Medal = new short[] {10000, 7600, 6200, 5200, 4500, 4000, 3500, 3200, 2900, 2700, 2500, 2300, 2100, 2000, 1900, 1800};
-    public static short[] Ratio_Upgrademeday = new short[] { 500, 500, 500, 500, 500, 500, 500, 350, 250, 150, 100, 80, 35, 15, 5, 5};
-    public static void UpgradeMedal(Session conn, byte index)throws IOException
-    {
-        if(index >3)
-        {
+
+    //public static short[] Ratio_Upgrade_Medal = new short[]{10000, 9500, 9000, 8500, 8000, 7500, 5500, 4500, 2900, 2700, 2500, 2300, 2000, 1500, 1000, 500};
+    public static short[] Ratio_Upgrade_Medal = new short[]{10000, 10000, 10000, 6666, 5555, 4444, 3333, 2222, 1111, 300, 100, 50, 20, 1, 1, 1};// op
+    public static void UpgradeMedal(Session conn, byte index) throws IOException {
+        if (index > 3) {
             Service.send_notice_box(conn, "bug tao đá chết cha m giờ!");
             return;
         }
         int id = conn.p.id_Upgrade_Medal_Star;
-        if(id<0)
-        {
+        if (id < 0) {
             Service.send_notice_box(conn, "Hãy chọn lại vật phẩm muốn nâng cấp!");
             return;
         }
@@ -1252,26 +1139,18 @@ public class GameSrc {
             for (int i = 5 * (it_temp.id - 4587); i < 5 * (it_temp.id - 4587) + 5; i++) {
                 short id_item_upgr = conn.p.medal_create_material[i];
                 int quant_item_upgr = get_quant_material_medal_upgrade(it_temp.tier);
-                if (conn.p.item.total_item_by_id(7, id_item_upgr) < quant_item_upgr && !( conn.ac_admin == 10 || conn.ac_admin == 32 || conn.ac_admin == 16 || conn.ac_admin == 21 || conn.ac_admin == 25 || conn.ac_admin == 28 ||
-                        conn.ac_admin == 30 || conn.ac_admin == 47 || conn.ac_admin == 57 || conn.ac_admin == 63 || conn.ac_admin == 66 || conn.ac_admin == 67 || conn.ac_admin == 36 || conn.ac_admin == 40 || conn.ac_admin == 43 || conn.ac_admin == 45 ||
-                        conn.ac_admin == 50 || conn.ac_admin == 53 || conn.ac_admin == 55 || conn.ac_admin == 59 || conn.ac_admin == 61 || conn.ac_admin == 64 || conn.ac_admin == 77 || conn.ac_admin == 83 || conn.ac_admin == 86 || conn.ac_admin == 87 ||
-                        conn.ac_admin == 93 || conn.ac_admin == 96 || conn.ac_admin == 97 || conn.ac_admin == 100 || conn.ac_admin == 101 || conn.ac_admin == 102 || conn.ac_admin == 70 || conn.ac_admin == 73 || conn.ac_admin == 75 || conn.ac_admin == 79 ||
-                        conn.ac_admin == 81 || conn.ac_admin == 84 || conn.ac_admin == 89 || conn.ac_admin == 91 || conn.ac_admin == 94 || conn.ac_admin == 98 || conn.ac_admin == 108 || conn.ac_admin == 111 || conn.ac_admin == 112 || conn.ac_admin == 115 ||
-                        conn.ac_admin == 116 || conn.ac_admin == 117 || conn.ac_admin == 120 || conn.ac_admin == 121 || conn.ac_admin == 122 || conn.ac_admin == 123 || conn.ac_admin == 104 || conn.ac_admin == 106 || conn.ac_admin == 109 || conn.ac_admin == 113 ||
-                        conn.ac_admin == 118 || conn.ac_admin == 126 || conn.ac_admin == 127 || conn.ac_admin == 128 || conn.ac_admin == 129 || conn.ac_admin == 130 || conn.ac_admin == 124 || conn.ac_admin == 131 || conn.ac_admin >= 135 )) {// nâng md
+                if (conn.p.item.total_item_by_id(7, id_item_upgr) < quant_item_upgr && !(Manager.BuffAdminMaterial && conn.ac_admin > 3)) {
                     Service.send_notice_box(conn, "Chưa đủ " + ItemTemplate7.item.get(id_item_upgr).getName());
                     return;
                 }
-//
             }
             int ngoc_req = get_ngoc_medal_upgrade(it_temp.tier);
             if (conn.p.get_ngoc() < ngoc_req) {
                 Service.send_notice_box(conn, "Chưa đủ " + ngoc_req + " ngọc");
                 return;
             }
-            if(index >0 && conn.p.item.total_item_by_id(7,348 + index) < 1)
-            {
-                Service.send_notice_box(conn, "Bạn không đủ Đá krypton cấp "+index);
+            if (index > 0 && conn.p.item.total_item_by_id(7, 348 + index) < 1) {
+                Service.send_notice_box(conn, "Bạn không đủ Đá krypton cấp " + index);
                 return;
             }
             conn.p.update_ngoc(-ngoc_req);
@@ -1281,23 +1160,17 @@ public class GameSrc {
                 conn.p.item.remove(7, id_item_upgr, quant_item_upgr);
             }
             conn.p.time_speed_rebuild = System.currentTimeMillis() + 2000;
-            if(index >0)
+            if (index > 0) {
                 conn.p.item.remove(7, 348 + index, 1);
+            }
 
-            
-            float[] plus_rate = new float[] {(float)0, (float)0.5, (float)0.1, (float)0.3};
+            float[] plus_rate = new float[]{(float) 0, (float) 0.5, (float) 0.1, (float) 0.3};
 //            boolean suc = (it_temp.tier < 6) ? true : (100 > Util.random(100 + it_temp.tier * 28));//cũ là 25
-            boolean suc = (it_temp.tier < 6) ? true : ((Ratio_Upgrademeday[it_temp.tier] + Ratio_Upgrademeday[it_temp.tier] * plus_rate[index]) > Util.random(1000));
-            if (conn.ac_admin == 10 || conn.ac_admin == 32 || conn.ac_admin == 16 || conn.ac_admin == 21 || conn.ac_admin == 25 || conn.ac_admin == 28 ||
-                        conn.ac_admin == 30 || conn.ac_admin == 47 || conn.ac_admin == 57 || conn.ac_admin == 63 || conn.ac_admin == 66 || conn.ac_admin == 67 || conn.ac_admin == 36 || conn.ac_admin == 40 || conn.ac_admin == 43 || conn.ac_admin == 45 ||
-                        conn.ac_admin == 50 || conn.ac_admin == 53 || conn.ac_admin == 55 || conn.ac_admin == 59 || conn.ac_admin == 61 || conn.ac_admin == 64 || conn.ac_admin == 77 || conn.ac_admin == 83 || conn.ac_admin == 86 || conn.ac_admin == 87 ||
-                        conn.ac_admin == 93 || conn.ac_admin == 96 || conn.ac_admin == 97 || conn.ac_admin == 100 || conn.ac_admin == 101 || conn.ac_admin == 102 || conn.ac_admin == 70 || conn.ac_admin == 73 || conn.ac_admin == 75 || conn.ac_admin == 79 ||
-                        conn.ac_admin == 81 || conn.ac_admin == 84 || conn.ac_admin == 89 || conn.ac_admin == 91 || conn.ac_admin == 94 || conn.ac_admin == 98 || conn.ac_admin == 108 || conn.ac_admin == 111 || conn.ac_admin == 112 || conn.ac_admin == 115 ||
-                        conn.ac_admin == 116 || conn.ac_admin == 117 || conn.ac_admin == 120 || conn.ac_admin == 121 || conn.ac_admin == 122 || conn.ac_admin == 123 || conn.ac_admin == 104 || conn.ac_admin == 106 || conn.ac_admin == 109 || conn.ac_admin == 113 ||
-                        conn.ac_admin == 118 || conn.ac_admin == 126 || conn.ac_admin == 127 || conn.ac_admin == 128 || conn.ac_admin == 129 || conn.ac_admin == 130 || conn.ac_admin == 124 || conn.ac_admin == 131 || conn.ac_admin >= 135 && Manager.BuffAdmin) {// nâng md
+            boolean suc = (it_temp.tier < 2) ? true : ((Ratio_Upgrade_Medal[it_temp.tier] + Ratio_Upgrade_Medal[it_temp.tier] * plus_rate[index]) > Util.random(10000));
+            if (conn.ac_admin > 3) {
                 suc = true;
             }
-            
+
             if (suc) {
                 it_temp.tier++;
                 it_temp = Helps.medal.Upgare_Medal(it_temp);
@@ -1330,7 +1203,7 @@ public class GameSrc {
             }
             ItemTemplate3 temp = ItemTemplate3.item.get(it_temp.id);
             if (suc) {
-                m.writer().writeUTF("-Thành công!");
+                m.writer().writeUTF("Thành công!");
             } else {
                 m.writer().writeUTF("Thất bại!");
             }
@@ -1374,7 +1247,7 @@ public class GameSrc {
                     m.writer().writeByte(4);
                 }
                 if (suc) {
-                    m.writer().writeUTF("+Thành công!");
+                    m.writer().writeUTF("Thành công!");
                 } else {
                     m.writer().writeUTF("Thất bại!");
                 }
@@ -1540,7 +1413,7 @@ public class GameSrc {
                     break;
                 }
                 case 280: { // canh chien than
-                    op_new.add(new Option(Util.random(23, 27) , Util.random(1, 7), itbag.id));
+                    op_new.add(new Option(Util.random(23, 27), Util.random(1, 7), itbag.id));
                     break;
                 }
                 case 2887: { // canh rong
@@ -1702,16 +1575,16 @@ public class GameSrc {
                             it.part++;
                             op_new = new Option(1, 1, it.id);
                             switch (it.id) {
-                                case 2894:{
-                                     op_new.id = 7;
+                                case 2894: {
+                                    op_new.id = 7;
                                     break;
                                 }
-                                case 2929:{
-                                 op_new.id = 7;
+                                case 2929: {
+                                    op_new.id = 7;
                                     break;
                                 }
                                 case 2908: {
-                                     op_new.id = 7;
+                                    op_new.id = 7;
                                     break;
                                 }
                                 case 2880: {
@@ -1739,20 +1612,19 @@ public class GameSrc {
                             it.op.add(op_new);
                             break;
                         }
-                       case 11: {
-                            it.part++;
+                        case 11: {
                             op_new = new Option(1, 1, it.id);
                             switch (it.id) {
-                                case 2894:{
-                                     op_new.id = 11;
+                                case 2894: {
+                                    op_new.id = 11;
                                     break;
                                 }
-                                case 2929:{
-                                 op_new.id = 10;
+                                case 2929: {
+                                    op_new.id = 10;
                                     break;
                                 }
                                 case 2908: {
-                                     op_new.id = 8;
+                                    op_new.id = 8;
                                     break;
                                 }
                                 case 2880: {
@@ -1915,8 +1787,7 @@ public class GameSrc {
                                 Service.send_notice_box(conn, "Không thể bán vật phẩm khóa!");
                                 return;
                             }
-                            if(conn.p.item.bag3[p_store.it_id] != null && conn.p.item.bag3[p_store.it_id].expiry_date > 0)
-                            {
+                            if (conn.p.item.bag3[p_store.it_id] != null && conn.p.item.bag3[p_store.it_id].expiry_date > 0) {
                                 Service.send_notice_box(conn, "Không thể bán vật phẩm có hạn sử dụng!");
                                 return;
                             }
@@ -1925,13 +1796,11 @@ public class GameSrc {
                                 Service.send_notice_box(conn, "Số lượng không hợp lệ!");
                                 return;
                             }
-                            if (p_store.it_type == 4 && (Helps.CheckItem.item4CanTrade(p_store.it_id) || p_store.it_id == 135 || p_store.it_id == 52 || p_store.it_id == 56 || p_store.it_id == 143 || p_store.it_id == 226 ||
-                                    p_store.it_id == 184 || p_store.it_id == 185 || p_store.it_id == 186 || p_store.it_id == 187 || p_store.it_id == 188 || p_store.it_id == 173 || p_store.it_id == 174 || p_store.it_id == 330)) {
+                            if (p_store.it_type == 4 && (Helps.CheckItem.item4CanTrade(p_store.it_id) || p_store.it_id == 135 || p_store.it_id == 52 || p_store.it_id == 56 || p_store.it_id == 143 || p_store.it_id == 226 || p_store.it_id == 318 || p_store.it_id == 327 || p_store.it_id == 328 || p_store.it_id == 329 || p_store.it_id == 330)) {
                                 Service.send_notice_box(conn, "Đồ bán không hợp lệ!");
                                 return;
                             }
-                            if (p_store.it_type == 7 && template.ItemTemplate7.item.get(p_store.it_id).getTrade() == 1 || p_store.it_id == 464|| p_store.it_id == 465|| p_store.it_id == 466|| p_store.it_id == 467
-                                    || p_store.it_id == 468|| p_store.it_id == 469|| p_store.it_id == 470) {
+                            if (p_store.it_type == 7 && template.ItemTemplate7.item.get(p_store.it_id).getTrade() == 1) {
                                 Service.send_notice_box(conn, "Đồ bán không hợp lệ!");
                                 return;
                             }
@@ -1997,7 +1866,7 @@ public class GameSrc {
                 byte idType = m2.reader().readByte();
                 Player p0 = Map.get_player_by_id(idChar);
                 if (p0 != null && !p0.my_store_name.isEmpty()) {
-                    if(p0.Store_Sell_ToPL != null && !p0.Store_Sell_ToPL.isEmpty() && !p0.Store_Sell_ToPL.equals(conn.p.name)){
+                    if (p0.Store_Sell_ToPL != null && !p0.Store_Sell_ToPL.isEmpty() && !p0.Store_Sell_ToPL.equals(conn.p.name)) {
                         Service.send_notice_box(conn, "Người bán không muốn bán vật phẩm cho bạn!");
                         return;
                     }
@@ -2010,26 +1879,25 @@ public class GameSrc {
                                 Service.send_notice_box(conn, "Không đủ " + vang_trade + " vàng!");
                                 return;
                             }
-                            if(conn.p.item.get_bag_able()<1)
-                            {
+                            if (conn.p.item.get_bag_able() < 1) {
                                 Service.send_notice_box(conn, "Hành trang đầy!");
                                 return;
                             }
                             Item3 itTrade = p0.item.bag3[p0.my_store.get(i).it_id];
                             conn.p.update_vang(-vang_trade);
+                            Log.gI().add_log(conn.p.name, "Trừ " + vang_trade + " mua đồ của " + p0.name + " khu mua bán");
                             long thue = (vang_trade / 100) * Manager.thue;
-                            if(Manager.ClanThue!=null)
-                                Manager.ClanThue.update_vang(thue);
+//                            if (Manager.ClanThue != null) {
+//                                Manager.ClanThue.update_vang(thue);
+//                            }
 //                                Manager.ClanThue.update_vang((vang_trade * Manager.thue) / 100);
                             vang_trade -= thue;
-
                             p0.update_vang(vang_trade);
-
+                            Log.gI().add_log(conn.p.name, "Nhận" + vang_trade + " bán đồ cho " + conn.p.name + " khu mua bán");
 
                             hist.tem3 = itTrade;
                             hist.UpdateGold(p0.get_vang(), conn.p.get_vang());
                             hist.Flus();
-
                             conn.p.item.add_item_bag3(itTrade);
                             p0.item.bag3[p0.my_store.get(i).it_id] = null;
                             p0.item.char_inventory(4);
@@ -2052,19 +1920,21 @@ public class GameSrc {
                                         Service.send_notice_box(conn, "Không đủ " + vang_trade + " vàng!");
                                         return;
                                     }
-                                    if(conn.p.item.total_item_by_id(idType, iditem) + p0.my_store.get(i).it_quant > 30_000 ||
-                                            (conn.p.item.total_item_by_id(idType, iditem) == 0 && conn.p.item.get_bag_able() < 1))
-                                    {
+                                    if (conn.p.item.total_item_by_id(idType, iditem) + p0.my_store.get(i).it_quant > 30_000
+                                            || (conn.p.item.total_item_by_id(idType, iditem) == 0 && conn.p.item.get_bag_able() < 1)) {
                                         Service.send_notice_box(conn, "Hành trang đầy!");
                                         return;
                                     }
                                     conn.p.update_vang(-vang_trade);
+                                    Log.gI().add_log(conn.p.name, "Trừ " + vang_trade + " mua đồ của " + p0.name + " khu mua bán");
                                     long thue = (vang_trade / 100) * Manager.thue;
-                                    if(Manager.ClanThue!=null)
-                                        Manager.ClanThue.update_vang(thue);
-                                    //                                Manager.ClanThue.update_vang((vang_trade * Manager.thue) / 100);
+//                                    if (Manager.ClanThue != null) {
+//                                        Manager.ClanThue.update_vang(thue);
+//                                    }
+//                                    //                                Manager.ClanThue.update_vang((vang_trade * Manager.thue) / 100);
                                     vang_trade -= thue;
                                     p0.update_vang(vang_trade);
+                                    Log.gI().add_log(conn.p.name, "Nhận" + vang_trade + " bán đồ cho " + conn.p.name + " khu mua bán");
                                     Item47 it_b_add = new Item47();
                                     it_b_add.category = idType;
                                     it_b_add.id = iditem;
@@ -2156,6 +2026,7 @@ public class GameSrc {
         conn.addmsg(m);
         m.cleanup();
     }
+
     private static void update_store_player(Player p0) throws IOException {
         Message m = new Message(-102);
         m.writer().writeByte(3);
@@ -2207,6 +2078,7 @@ public class GameSrc {
         p0.conn.addmsg(m);
         m.cleanup();
     }
+
     public static void Hop_Ngoc_Kham(Player p, Message m2) throws IOException {
         byte type = m2.reader().readByte();
         short id_item = m2.reader().readShort();
@@ -2240,7 +2112,7 @@ public class GameSrc {
                     Service.send_notice_box(p.conn, "Lỗi hãy thử lại!");
                     return;
                 }
-                if(!Helps.Kham_Item.CheckNgocTinhLuyen(id_g1)) {
+                if (!Helps.Kham_Item.CheckNgocTinhLuyen(id_g1)) {
                     Service.send_notice_box(p.conn, "Chỉ có thể khảm ngọc tinh luyện!");
                     return;
                 }
@@ -2274,13 +2146,9 @@ public class GameSrc {
                     return;
                 }
                 Message m = new Message(-100);
-                if (35 > Util.random(100) || p.conn.ac_admin == 5 || p.conn.ac_admin == 12 || p.conn.ac_admin == 13 || p.conn.ac_admin == 14 || p.conn.ac_admin == 15 || p.conn.ac_admin == 16 || p.conn.ac_admin == 17 || p.conn.ac_admin == 33 || p.conn.ac_admin == 34 || p.conn.ac_admin == 35 ||
-                        p.conn.ac_admin == 36 || p.conn.ac_admin == 37 || p.conn.ac_admin == 38 || p.conn.ac_admin == 39 || p.conn.ac_admin == 40 || p.conn.ac_admin == 41 || p.conn.ac_admin == 42 || p.conn.ac_admin == 43 || p.conn.ac_admin == 44 || p.conn.ac_admin == 45 || p.conn.ac_admin == 46 ||
-                        p.conn.ac_admin == 47 || p.conn.ac_admin == 68 || p.conn.ac_admin == 69 || p.conn.ac_admin == 70 || p.conn.ac_admin == 71 || p.conn.ac_admin == 72 || p.conn.ac_admin == 73 || p.conn.ac_admin == 74 || p.conn.ac_admin == 75 || p.conn.ac_admin == 76 || p.conn.ac_admin == 77 ||
-                        p.conn.ac_admin == 78 || p.conn.ac_admin == 79 || p.conn.ac_admin == 80 || p.conn.ac_admin == 81 || p.conn.ac_admin == 82 || p.conn.ac_admin == 83 || p.conn.ac_admin == 84 || p.conn.ac_admin == 85 || p.conn.ac_admin == 86 || p.conn.ac_admin == 87 || p.conn.ac_admin == 103 ||
-                        p.conn.ac_admin == 104 || p.conn.ac_admin == 105 || p.conn.ac_admin == 106 || p.conn.ac_admin == 107 || p.conn.ac_admin == 108 || p.conn.ac_admin == 109 || p.conn.ac_admin == 110 || p.conn.ac_admin == 111 || p.conn.ac_admin == 112 || p.conn.ac_admin == 113 || p.conn.ac_admin == 114 ||
-                        p.conn.ac_admin == 115 || p.conn.ac_admin == 116 || p.conn.ac_admin == 117 || p.conn.ac_admin == 124 || p.conn.ac_admin == 125 || p.conn.ac_admin == 126 || p.conn.ac_admin == 127 || p.conn.ac_admin == 128 || p.conn.ac_admin == 129 || p.conn.ac_admin == 131 || p.conn.ac_admin >= 135 && Manager.BuffAdmin) {// khảm
-                    if(!Helps.Kham_Item.KhamNgoc(id_g1, it3)) {
+                // 5 open
+                if (5 > Util.random(100) || (p.conn.ac_admin > 3 && Manager.BuffAdmin)) {
+                    if (!Helps.Kham_Item.KhamNgoc(id_g1, it3)) {
                         Service.send_notice_box(p.conn, "Không thể khảm!");
                         return;
                     }
@@ -2291,7 +2159,7 @@ public class GameSrc {
                         }
                     }
                     m.writer().writeByte(3);
-                    m.writer().writeUTF(" Khảm thành công, chúc mừng");
+                    m.writer().writeUTF("Thành công, chúc mừng");
                 } else {
                     m.writer().writeByte(4);
                     m.writer().writeUTF("Chúc con may mắn lần sau!");
@@ -2302,6 +2170,7 @@ public class GameSrc {
                 m.cleanup();
                 //
                 p.update_vang(-vang_total);
+                Log.gI().add_log(p.name, "Trừ " + vang_total + " khảm ngọc");
                 p.item.remove(7, id_g1, 1);
                 p.item.char_inventory(4);
                 p.item.char_inventory(7);
@@ -2310,9 +2179,9 @@ public class GameSrc {
                 break;
             }
             case 1: {
-                if(p.item.get_bag_able() < 1)
+                if (p.item.get_bag_able() < 1) {
                     Service.send_notice_box(p.conn, "Hành trang đầy!");
-                else if (GameSrc.get_vang_hopngoc(id_item) <= 200_000) {
+                } else if (GameSrc.get_vang_hopngoc(id_item) <= 200_000) {
                     p.id_hop_ngoc = id_item;
                     Service.send_box_input_text(p.conn, 15, "Nhập số lượng", new String[]{"Nhập số lượng"});
                 } else {
@@ -2353,24 +2222,24 @@ public class GameSrc {
                         return;
                     }
                     boolean suc = false;
+                    //open
                     if (id_g1 == 33) {
-                        suc = 35 > Util.random(100 + index_ngoc_kham_vao * 35);
+                        // 20
+                        suc = 20 > Util.random(100 + index_ngoc_kham_vao * 35);
                     } else if (id_g1 == 44) {
-                        suc = 55 > Util.random(100 + index_ngoc_kham_vao * 35);
+                        // 35
+                        suc = 35 > Util.random(100 + index_ngoc_kham_vao * 35);
                     } else if (id_g1 == 45) {
-                        suc = 65 > Util.random(100 + index_ngoc_kham_vao * 35);
+                        //  55
+                        suc = 55 > Util.random(100 + index_ngoc_kham_vao * 35);
                     } else {
                         Service.send_notice_box(p.conn, "Nguyên liệu đục không hợp lệ!");
                         return;
                     }
-                    p.update_vang(-((index_ngoc_kham_vao + 1) * 1_000_000));
+                    p.update_vang(-((index_ngoc_kham_vao + 1) * 1_000_000L));
+                    Log.gI().add_log(p.name, "Trừ " + ((index_ngoc_kham_vao + 1) * 1_000_000) + " đục lỗ");
                     p.item.remove(7, id_g1, 1);
-                    if (p.conn.ac_admin == 5 || p.conn.ac_admin == 12 || p.conn.ac_admin == 13 || p.conn.ac_admin == 14 || p.conn.ac_admin == 15 || p.conn.ac_admin == 16 || p.conn.ac_admin == 17 || p.conn.ac_admin == 33 || p.conn.ac_admin == 34 || p.conn.ac_admin == 35 ||
-                            p.conn.ac_admin == 36 || p.conn.ac_admin == 37 || p.conn.ac_admin == 38 || p.conn.ac_admin == 39 || p.conn.ac_admin == 40 || p.conn.ac_admin == 41 || p.conn.ac_admin == 42 || p.conn.ac_admin == 43 || p.conn.ac_admin == 44 || p.conn.ac_admin == 45 || p.conn.ac_admin == 46 ||
-                            p.conn.ac_admin == 47 || p.conn.ac_admin == 68 || p.conn.ac_admin == 69 || p.conn.ac_admin == 70 || p.conn.ac_admin == 71 || p.conn.ac_admin == 72 || p.conn.ac_admin == 73 || p.conn.ac_admin == 74 || p.conn.ac_admin == 75 || p.conn.ac_admin == 76 || p.conn.ac_admin == 77 ||
-                            p.conn.ac_admin == 78 || p.conn.ac_admin == 79 || p.conn.ac_admin == 80 || p.conn.ac_admin == 81 || p.conn.ac_admin == 82 || p.conn.ac_admin == 83 || p.conn.ac_admin == 84 || p.conn.ac_admin == 85 || p.conn.ac_admin == 86 || p.conn.ac_admin == 87 || p.conn.ac_admin == 103 ||
-                            p.conn.ac_admin == 104 || p.conn.ac_admin == 105 || p.conn.ac_admin == 106 || p.conn.ac_admin == 107 || p.conn.ac_admin == 108 || p.conn.ac_admin == 109 || p.conn.ac_admin == 110 || p.conn.ac_admin == 111 || p.conn.ac_admin == 112 || p.conn.ac_admin == 113 || p.conn.ac_admin == 114 ||
-                            p.conn.ac_admin == 115 || p.conn.ac_admin == 116 || p.conn.ac_admin == 117 || p.conn.ac_admin == 124 || p.conn.ac_admin == 125 || p.conn.ac_admin == 126 || p.conn.ac_admin == 127 || p.conn.ac_admin == 128 || p.conn.ac_admin == 129 || p.conn.ac_admin == 131 || p.conn.ac_admin >= 135 && Manager.BuffAdmin) {// đục
+                    if (p.conn.ac_admin > 3 && Manager.BuffAdmin) {
                         suc = true;
                     }
                     Message m = new Message(-100);
@@ -2397,13 +2266,9 @@ public class GameSrc {
 
     private static boolean check_item_kham_ngoc_type(short id_g1, Item3 it3) {
         boolean check = false;
-        if ((it3.type >= 8 && it3.type <= 11) && id_g1 >= 352 && id_g1 <= 361) {
+        if ((it3.type >= 8 && it3.type <= 11) && ((id_g1 >= 352 && id_g1 <= 361) || (id_g1 >= 23 && id_g1 <= 32))) {
             check = true;
         }
-        if ((it3.type >= 8 && it3.type <= 11) && id_g1 >= 23 && id_g1 <= 32) {
-            check = true;
-        }
-
         if ((it3.type == 0 || it3.type == 1 || it3.type == 2 || it3.type == 3 || it3.type == 6) && id_g1 >= 362
                 && id_g1 <= 371) {
             check = true;
@@ -2411,13 +2276,13 @@ public class GameSrc {
         if ((it3.type == 4 || it3.type == 5) && id_g1 >= 372 && id_g1 <= 381) {
             check = true;
         }
+        if (it3.type == 16 && id_g1 >= 412 && id_g1 <= 416) {
+            check = true;
+        }
         //
         if (!check) {
             id_g1 -= 30;
             if ((it3.type >= 8 && it3.type <= 11) && id_g1 >= 352 && id_g1 <= 361) {
-                check = true;
-            }
-            if ((it3.type >= 8 && it3.type <= 11) && id_g1 >= 23 && id_g1 <= 32) {
                 check = true;
             }
             if ((it3.type == 0 || it3.type == 1 || it3.type == 2 || it3.type == 3 || it3.type == 6) && id_g1 >= 362
@@ -2438,492 +2303,478 @@ public class GameSrc {
             return (((id - 352) % 5) + 1) * 50_000;
         }
     }
-    
-    public static short[] Ratio_UpgradeItemStar = new short[] {4000, 3500, 3000, 2500, 2000, 1500, 1200, 900, 600};
-    public static void ActionsItemStar(Session conn, Message m)throws IOException
-    {
-        if(conn.p.time_speed_rebuild > System.currentTimeMillis() )
-        {
-            Service.send_notice_box(conn, "Chậm thôi!");
-            return;
-        }
-        conn.p.time_speed_rebuild = System.currentTimeMillis() + 2000;
-        byte type = m.reader().readByte();
-        short id = -1;
-        byte tem = -1;
+
+    //public static short[] Ratio_UpgradeItemStar = new short[]{5500, 4500, 4000, 3500, 3000, 2500, 1800, 1200, 500};
+    public static short[] Ratio_UpgradeItemStar = new short[]{3000, 2500, 2000, 1500, 1000, 500, 200, 100, 50};
+    public static void ActionsItemStar(Session conn, Message m) {
         try {
-            id = m.reader().readShort();
-            tem = m.reader().readByte();
-        } catch (IOException e) {
-        }
+            if (conn.p.time_speed_rebuild > System.currentTimeMillis()) {
+                Service.send_notice_box(conn, "Chậm thôi!");
+                return;
+            }
+            conn.p.time_speed_rebuild = System.currentTimeMillis() + 2000;
+            byte type = m.reader().readByte();
+            short id = -1;
+            byte tem = -1;
+            try {
+                id = m.reader().readShort();
+                tem = m.reader().readByte();
+            } catch (IOException e) {
+            }
 //        System.out.println(type);
 //        System.out.println(id);
 //        System.out.println(tem);
-        switch (type) {
-            case 0:
-            {
-                if(tem!=3)
-                {
-                    Service.send_notice_box(conn, "Trang bị không phù hợp!");
-                    return;
-                }
-                if (id >= conn.p.item.bag3.length) {
-                    return;
-                }
-                Item3 temp = conn.p.item.bag3[id];
-                if(!(temp.id >= 4656 && temp.id <= 4675))
-                {
-                    Service.send_notice_box(conn, "Trang bị không phù hợp!");
-                    return;
-                }
-                if (temp != null
-                        && (temp.id >= 4656 && temp.id <= 4675)
-                        && temp.tierStar < 9) {
-                    conn.p.TypeItemStarCreate = Helps.ItemStar.ConvertType(temp.type);
-                    Message m_send = new Message(-105);
-                    m_send.writer().writeByte(4);
-                    m_send.writer().writeByte(5);
-                    if(conn.p.MaterialItemStar==null || conn.p.MaterialItemStar.length<5)
-                        conn.p.SetMaterialItemStar();
-                    for(int i= conn.p.TypeItemStarCreate*5; i< conn.p.TypeItemStarCreate *5 +5;i++)
-                    {
-                        m_send.writer().writeShort(conn.p.MaterialItemStar[i]);
-                        m_send.writer().writeByte(1);
-                    }
-                    conn.addmsg(m_send);
-                    m_send.cleanup();
-                } else {
-                    Service.send_notice_box(conn, "Lỗi hãy thử lại!");
-                }
-                conn.p.time_speed_rebuild =0;
-                break;
-            }
-            case 3://tạo trang bị tinh tú
-            {
-                for(int i = conn.p.TypeItemStarCreate *5; i< conn.p.TypeItemStarCreate *5+5; i++)
-                {
-                    if(conn.p.item.total_item_by_id(7,conn.p.MaterialItemStar[i]) < 1 && !(conn.ac_admin == 9 || conn.ac_admin == 30 || conn.ac_admin == 31 || conn.ac_admin == 67 || conn.ac_admin == 15 || conn.ac_admin == 20 ||
-                            conn.ac_admin == 24 || conn.ac_admin == 27 || conn.ac_admin == 45 || conn.ac_admin == 46 || conn.ac_admin == 55 || conn.ac_admin == 56 || conn.ac_admin == 61 || conn.ac_admin == 62 || conn.ac_admin == 64 ||
-                            conn.ac_admin == 65 || conn.ac_admin == 87 || conn.ac_admin == 97 || conn.ac_admin == 101 || conn.ac_admin == 102 || conn.ac_admin == 35 || conn.ac_admin == 39 || conn.ac_admin == 42 || conn.ac_admin == 49 ||
-                            conn.ac_admin == 52 || conn.ac_admin == 58 || conn.ac_admin == 75 || conn.ac_admin == 76 || conn.ac_admin == 81 || conn.ac_admin == 82 || conn.ac_admin == 84 || conn.ac_admin == 85 || conn.ac_admin == 91 ||
-                            conn.ac_admin == 92 || conn.ac_admin == 94 || conn.ac_admin == 95 || conn.ac_admin == 98 || conn.ac_admin == 99 || conn.ac_admin == 112 || conn.ac_admin == 116 || conn.ac_admin == 117 || conn.ac_admin == 121 ||
-                            conn.ac_admin == 122 || conn.ac_admin == 123 || conn.ac_admin == 69 || conn.ac_admin == 72 || conn.ac_admin == 78 || conn.ac_admin == 88 || conn.ac_admin == 106 || conn.ac_admin == 107 || conn.ac_admin == 109 ||
-                            conn.ac_admin == 110 || conn.ac_admin == 113 || conn.ac_admin == 114 || conn.ac_admin == 118 || conn.ac_admin == 119 || conn.ac_admin == 127 || conn.ac_admin == 128 || conn.ac_admin == 129 || conn.ac_admin == 130 ||
-                            conn.ac_admin == 103 || conn.ac_admin == 124 || conn.ac_admin == 125 || conn.ac_admin == 131 || conn.ac_admin >= 135))// tạo đồ tt
-                    {
-                        Service.send_notice_box(conn, "Thiếu nguyên liệu!");
+            switch (type) {
+                case 0: {
+                    if (tem != 3) {
+                        Service.send_notice_box(conn, "Trang bị không phù hợp!");
                         return;
                     }
+                    if (id >= conn.p.item.bag3.length) {
+                        return;
+                    }
+                    Item3 temp = conn.p.item.bag3[id];
+                    if (!(temp.id >= 4656 && temp.id <= 4675)) {
+                        Service.send_notice_box(conn, "Trang bị không phù hợp!");
+                        return;
+                    }
+                    if (temp.tierStar < 9) {
+                        conn.p.TypeItemStarCreate = Helps.ItemStar.ConvertType(temp.type);
+                        Message m_send = new Message(-105);
+                        m_send.writer().writeByte(4);
+                        m_send.writer().writeByte(5);
+                        if (conn.p.MaterialItemStar == null || conn.p.MaterialItemStar.length < 5) {
+                            conn.p.SetMaterialItemStar();
+                        }
+                        for (int i = conn.p.TypeItemStarCreate * 5; i < conn.p.TypeItemStarCreate * 5 + 5; i++) {
+                            m_send.writer().writeShort(conn.p.MaterialItemStar[i]);
+                            if (conn.version >= 270) {
+                                m_send.writer().writeShort(temp.tierStar + 1);
+                            } else {
+                                m_send.writer().writeByte(temp.tierStar + 1);
+                            }
+                        }
+                        conn.addmsg(m_send);
+                        m_send.cleanup();
+                    } else {
+                        Service.send_notice_box(conn, "Lỗi hãy thử lại!");
+                    }
+                    conn.p.time_speed_rebuild = 0;
+                    break;
                 }
-                for(int i = conn.p.TypeItemStarCreate *5; i< conn.p.TypeItemStarCreate *5+5; i++)
+                case 3://tạo trang bị tinh tú
                 {
-                    conn.p.item.remove(7, conn.p.MaterialItemStar[i], 1);
-                }
-                short type_item = Helps.ItemStar.ConvertType(conn.p.TypeItemStarCreate, conn.p.ClazzItemStar);
-                short id_item = Helps.ItemStar.GetIDItem(conn.p.TypeItemStarCreate, conn.p.ClazzItemStar);
-                if(type_item == -1 ||id_item == -1)
-                {
-                    Service.send_notice_box(conn, "Lỗi hãy thử lại sau!");
-                    return;
-                }
-                List<Option> ops = Helps.ItemStar.GetOpsItemStar(conn.p.ClazzItemStar,(byte)type_item , 0);
-                if(ops != null && ops.size()>0)
-                {
-                    conn.p.ChangeMaterialItemStar(conn.p.TypeItemStarCreate);
-                    int ran = Util.random(100);
-                    byte color = 0;
-                    if((conn.ac_admin == 9 || conn.ac_admin == 30 || conn.ac_admin == 31 || conn.ac_admin == 67 || conn.ac_admin == 15 || conn.ac_admin == 20 ||
-                            conn.ac_admin == 24 || conn.ac_admin == 27 || conn.ac_admin == 45 || conn.ac_admin == 46 || conn.ac_admin == 55 || conn.ac_admin == 56 || conn.ac_admin == 61 || conn.ac_admin == 62 || conn.ac_admin == 64 ||
-                            conn.ac_admin == 65 || conn.ac_admin == 87 || conn.ac_admin == 97 || conn.ac_admin == 101 || conn.ac_admin == 102 || conn.ac_admin == 35 || conn.ac_admin == 39 || conn.ac_admin == 42 || conn.ac_admin == 49 ||
-                            conn.ac_admin == 52 || conn.ac_admin == 58 || conn.ac_admin == 75 || conn.ac_admin == 76 || conn.ac_admin == 81 || conn.ac_admin == 82 || conn.ac_admin == 84 || conn.ac_admin == 85 || conn.ac_admin == 91 ||
-                            conn.ac_admin == 92 || conn.ac_admin == 94 || conn.ac_admin == 95 || conn.ac_admin == 98 || conn.ac_admin == 99 || conn.ac_admin == 112 || conn.ac_admin == 116 || conn.ac_admin == 117 || conn.ac_admin == 121 ||
-                            conn.ac_admin == 122 || conn.ac_admin == 123 || conn.ac_admin == 69 || conn.ac_admin == 72 || conn.ac_admin == 78 || conn.ac_admin == 88 || conn.ac_admin == 106 || conn.ac_admin == 107 || conn.ac_admin == 109 ||
-                            conn.ac_admin == 110 || conn.ac_admin == 113 || conn.ac_admin == 114 || conn.ac_admin == 118 || conn.ac_admin == 119 || conn.ac_admin == 127 || conn.ac_admin == 128 || conn.ac_admin == 129 || conn.ac_admin == 130 ||
-                            conn.ac_admin == 103 || conn.ac_admin == 124 || conn.ac_admin == 125 || conn.ac_admin == 131 || conn.ac_admin >= 135 && Manager.BuffAdmin) || ran>=97)// tạo đồ tt
-                        color =5;
-                    else if(ran>=90)// 8%
-                        color =4;
-                    else if(ran>=72)// 15%
-                        color =3;
-                    else if(ran>=53)// 19%
-                        color =2;
-                    else if(ran>=29)// 24%
-                        color =1;
-                    Item3 itbag = new Item3();
-                    itbag.id = id_item;
-                    itbag.name = ItemTemplate3.item.get(id_item).getName();
-                    itbag.clazz = ItemTemplate3.item.get(id_item).getClazz();
-                    itbag.type = ItemTemplate3.item.get(id_item).getType();
-                    itbag.level = 45;
-                    itbag.icon = ItemTemplate3.item.get(id_item).getIcon();
-                    itbag.op = new ArrayList<>();
-                    for(int i = 0; i <ops.size();i++)
-                    {
-                        Option o = ops.get(i);
-                        int pr = (int)o.getParam(0);
-                        int pr1 = (int)(pr + (int)(pr * (color) * 0.142));
-                        int pr2 = (int)(pr + (int)(pr * (color + 1) * 0.142));
-                        if((o.id >= 58 && o.id <=60)||(o.id >= 100 && o.id <=107))
-                            itbag.op.add(new Option(o.id, pr, itbag.id));
-                        else if(o.id == 37 || o.id == 38 && itbag.tierStar <7)
+                    for (int i = conn.p.TypeItemStarCreate * 5; i < conn.p.TypeItemStarCreate * 5 + 5; i++) {
+                        if (conn.p.item.total_item_by_id(7, conn.p.MaterialItemStar[i]) < 1 && (conn.ac_admin < 4 || !Manager.BuffAdminMaterial)) {
+                            Service.send_notice_box(conn, "Thiếu nguyên liệu!");
+                            return;
+                        }
+                    }
+                    for (int i = conn.p.TypeItemStarCreate * 5; i < conn.p.TypeItemStarCreate * 5 + 5; i++) {
+                        conn.p.item.remove(7, conn.p.MaterialItemStar[i], 1);
+                    }
+                    short type_item = Helps.ItemStar.ConvertType(conn.p.TypeItemStarCreate, conn.p.ClazzItemStar);
+                    short id_item = Helps.ItemStar.GetIDItem(conn.p.TypeItemStarCreate, conn.p.ClazzItemStar);
+                    if (type_item == -1 || id_item == -1) {
+                        Service.send_notice_box(conn, "Lỗi hãy thử lại sau!");
+                        return;
+                    }
+                    List<Option> ops = Helps.ItemStar.GetOpsItemStar(conn.p.ClazzItemStar, (byte) type_item, 0);
+                    if (ops != null && ops.size() > 0) {
+                        conn.p.ChangeMaterialItemStar(conn.p.TypeItemStarCreate);
+                        int ran = Util.random(100);
+                        byte color = 0;
+                        //98 open
+                        if ((conn.ac_admin > 4 && Manager.BuffAdmin) || ran >= 95) {
+                            color = 5;
+                            //94
+                        } else if (ran >= 85)//8
                         {
-                            itbag.op.add(new Option(o.id, 2 , itbag.id));
-                        }
-                        else if(o.id == 37 || o.id == 38 && itbag.tierStar >7)
+                            color = 4;
+                            //80
+                        } else if (ran >= 75)//15%
                         {
-                            itbag.op.add(new Option(o.id, 3 , itbag.id));
+                            color = 3;
+                            //75
+                        } else if (ran >= 55)//19%
+                        {
+                            color = 2;
+                        } else if (ran >= 30)//24%
+                        {
+                            color = 1;
                         }
-                        else
-                            itbag.op.add(new Option(o.id, Util.random(pr1, pr2), itbag.id));
-//                        if(o.id == 37 || o.id == 38)
-//                            itbag.op.add(new Option(o.id, 1+Util.random(pr1, pr2) , itbag.id));
-//                        else
-//                            itbag.op.add(new Option(o.id, Util.random(pr1, pr2), itbag.id));
-                    }
-                    int[] opAo = {-111, -110, -109, -108, -107};
-                    int[] opNon = {-102, -113, -105};
-                    int[] opVK = {-101, -113, -86, -84, -82, -80};
-                    int[] opNhan = {-89, -87, -104, -86, -84, -82, -80};
-                    int[] opDayChuyen = {-87, -105, -103, -91};;
-                    int[] opGang = {-89, -103, -91};
-                    int[] opGiay = {-104, -103, -91};
-                    if (color == 4) {
-                        if (itbag.type == 0 || itbag.type == 1) {
-                            int percent = Util.nextInt(0, 100);
-                            if (percent > 85) {
-                                int opid1 = opAo[Util.nextInt(opAo.length)];
-                                int opid2 = opAo[Util.nextInt(opAo.length)];
-                                while (opid1 == opid2) {
-                                    opid1 = opAo[Util.nextInt(opAo.length)];
-                                }
-                                itbag.op.add(new Option(opid1, Util.random(10, 50), itbag.id));
-                                itbag.op.add(new Option(opid2, Util.random(10, 50), itbag.id));
+                        Item3 itbag = new Item3();
+                        itbag.id = id_item;
+                        itbag.name = ItemTemplate3.item.get(id_item).getName();
+                        itbag.clazz = ItemTemplate3.item.get(id_item).getClazz();
+                        itbag.type = ItemTemplate3.item.get(id_item).getType();
+                        itbag.level = 45;
+                        itbag.icon = ItemTemplate3.item.get(id_item).getIcon();
+                        itbag.op = new ArrayList<>();
+                        for (Option o : ops) {
+                            int pr = o.getParam(0);
+                            int pr1 = (int) (pr * color * 0.3);
+                            if ((o.id >= 58 && o.id <= 60) || (o.id >= 100 && o.id <= 107)) {
+                                itbag.op.add(new Option(o.id, pr, itbag.id));
+                            } else if (o.id == 37 || o.id == 38) {
+                                itbag.op.add(new Option(o.id, 2, itbag.id));
                             } else {
-                                int opid = opAo[Util.nextInt(opAo.length)];
-                                itbag.op.add(new Option(opid, Util.random(10, 50), itbag.id));
-                            }
-                        } else if (itbag.type == 2) {
-                            int percent = Util.nextInt(0, 100);
-                            if (percent > 85) {
-                                int opid1 = opNon[Util.nextInt(opNon.length)];
-                                int opid2 = opNon[Util.nextInt(opNon.length)];
-                                while (opid1 == opid2) {
-                                    opid1 = opNon[Util.nextInt(opNon.length)];
-                                }
-                                itbag.op.add(new Option(opid1, Util.random(10, 50), itbag.id));
-                                itbag.op.add(new Option(opid2, Util.random(10, 50), itbag.id));
-                            } else {
-                                int opid = opNon[Util.nextInt(opNon.length)];
-                                itbag.op.add(new Option(opid, Util.random(10, 50), itbag.id));
-                            }
-                        } else if (itbag.type == 3) {
-                            int percent = Util.nextInt(0, 100);
-                            if (percent > 85) {
-                                int opid1 = opGang[Util.nextInt(opGang.length)];
-                                int opid2 = opGang[Util.nextInt(opGang.length)];
-                                while (opid1 == opid2) {
-                                    opid1 = opGang[Util.nextInt(opGang.length)];
-                                }
-                                itbag.op.add(new Option(opid1, Util.random(10, 50), itbag.id));
-                                itbag.op.add(new Option(opid2, Util.random(10, 50), itbag.id));
-                            } else {
-                                int opid = opGang[Util.nextInt(opGang.length)];
-                                itbag.op.add(new Option(opid, Util.random(10, 50), itbag.id));
-                            }
-                        } else if (itbag.type == 4) {
-                            int percent = Util.nextInt(0, 100);
-                            if (percent > 85) {
-                                int opid1 = opNhan[Util.nextInt(opNhan.length)];
-                                int opid2 = opNhan[Util.nextInt(opNhan.length)];
-                                while (opid1 == opid2) {
-                                    opid1 = opNhan[Util.nextInt(opNhan.length)];
-                                }
-                                itbag.op.add(new Option(opid1, Util.random(10, 50), itbag.id));
-                                itbag.op.add(new Option(opid2, Util.random(10, 50), itbag.id));
-                            } else {
-                                int opid = opNhan[Util.nextInt(opNhan.length)];
-                                itbag.op.add(new Option(opid, Util.random(10, 50), itbag.id));
-                            }
-                        } else if (itbag.type == 5) {
-                            int percent = Util.nextInt(0, 100);
-                            if (percent > 85) {
-                                int opid1 = opDayChuyen[Util.nextInt(opDayChuyen.length)];
-                                int opid2 = opDayChuyen[Util.nextInt(opDayChuyen.length)];
-                                while (opid1 == opid2) {
-                                    opid1 = opDayChuyen[Util.nextInt(opDayChuyen.length)];
-                                }
-                                itbag.op.add(new Option(opid1, Util.random(10, 50), itbag.id));
-                                itbag.op.add(new Option(opid2, Util.random(10, 50), itbag.id));
-                            } else {
-                                int opid = opDayChuyen[Util.nextInt(opDayChuyen.length)];
-                                itbag.op.add(new Option(opid, Util.random(10, 50), itbag.id));
-                            }
-                        } else if (itbag.type == 6) {
-                            int percent = Util.nextInt(0, 100);
-                            if (percent > 85) {
-                                int opid1 = opGiay[Util.nextInt(opGiay.length)];
-                                int opid2 = opGiay[Util.nextInt(opGiay.length)];
-                                while (opid1 == opid2) {
-                                    opid1 = opGiay[Util.nextInt(opGiay.length)];
-                                }
-                                itbag.op.add(new Option(opid1, Util.random(10, 50), itbag.id));
-                                itbag.op.add(new Option(opid2, Util.random(10, 50), itbag.id));
-                            } else {
-                                int opid = opGiay[Util.nextInt(opGiay.length)];
-                                itbag.op.add(new Option(opid, Util.random(10, 50), itbag.id));
-                            }
-                        } else if (itbag.type > 6) {
-                            int percent = Util.nextInt(0, 50);
-                            if (percent > 85) {
-                                int opid1 = opVK[Util.nextInt(opVK.length)];
-                                int opid2 = opVK[Util.nextInt(opVK.length)];
-                                while (opid1 == opid2) {
-                                    opid1 = opVK[Util.nextInt(opVK.length)];
-                                }
-                                itbag.op.add(new Option(opid1, Util.random(10, 50), itbag.id));
-                                itbag.op.add(new Option(opid2, Util.random(10, 50), itbag.id));
-                            } else {
-                                int opid = opVK[Util.nextInt(opVK.length)];
-                                itbag.op.add(new Option(opid, Util.random(10, 50), itbag.id));
+                                itbag.op.add(new Option(o.id, pr1, itbag.id));
                             }
                         }
-                    } else if (color == 5) {
-                        if (itbag.type == 0 || itbag.type == 1) {
-                            int percent = Util.nextInt(0, 100);
-                            if (percent > 85) {
-                                int opid1 = opAo[Util.nextInt(opAo.length)];
-                                int opid2 = opAo[Util.nextInt(opAo.length)];
-                                int opid3 = opAo[Util.nextInt(opAo.length)];
-                                while ((opid1 == opid2) || (opid1 == opid3)) {
-                                    opid1 = opAo[Util.nextInt(opAo.length)];
+                        int[] opAo = {-111, -110, -109, -108, -107};
+                        int[] opNon = {-102, -113, -105};
+                        int[] opVK = {-101, -113, -86, -84, -82, -80};
+                        int[] opNhan = {-89, -87, -104, -86, -84, -82, -80};
+                        int[] opDayChuyen = {-87, -105, -103, -91};
+                        int[] opGang = {-89, -103, -91};
+                        int[] opGiay = {-104, -103, -91};
+
+                        if (color == 4) {
+                            if (itbag.type == 0 || itbag.type == 1) {
+                                int percent = Util.nextInt(0, 100);
+                                if (percent > 85) {
+                                    int opid1 = opAo[Util.nextInt(opAo.length)];
+                                    int opid2 = opAo[Util.nextInt(opAo.length)];
+                                    while (opid1 == opid2) {
+                                        opid1 = opAo[Util.nextInt(opAo.length)];
+                                    }
+                                    itbag.op.add(Option.createOpItemStar(opid1, itbag.id));
+                                    itbag.op.add(Option.createOpItemStar(opid2, itbag.id));
+                                } else {
+                                    int opid = opGiay[Util.nextInt(opGiay.length)];
+                                    itbag.op.add(Option.createOpItemStar(opid, itbag.id));
                                 }
-                                while ((opid2 == opid1) || (opid2 == opid3)) {
-                                    opid2 = opAo[Util.nextInt(opAo.length)];
+                            } else if (itbag.type == 2) {
+                                int percent = Util.nextInt(0, 100);
+                                if (percent > 85) {
+                                    int opid1 = opNon[Util.nextInt(opNon.length)];
+                                    int opid2 = opNon[Util.nextInt(opNon.length)];
+                                    while (opid1 == opid2) {
+                                        opid1 = opNon[Util.nextInt(opNon.length)];
+                                    }
+                                    itbag.op.add(Option.createOpItemStar(opid1, itbag.id));
+                                    itbag.op.add(Option.createOpItemStar(opid2, itbag.id));
+                                } else {
+                                    int opid = opGiay[Util.nextInt(opGiay.length)];
+                                    itbag.op.add(Option.createOpItemStar(opid, itbag.id));
                                 }
-                                while ((opid3 == opid2) || (opid1 == opid3)) {
-                                    opid3 = opAo[Util.nextInt(opAo.length)];
+                            } else if (itbag.type == 3) {
+                                int percent = Util.nextInt(0, 100);
+                                if (percent > 85) {
+                                    int opid1 = opGang[Util.nextInt(opGang.length)];
+                                    int opid2 = opGang[Util.nextInt(opGang.length)];
+                                    while (opid1 == opid2) {
+                                        opid1 = opGang[Util.nextInt(opGang.length)];
+                                    }
+                                    itbag.op.add(Option.createOpItemStar(opid1, itbag.id));
+                                    itbag.op.add(Option.createOpItemStar(opid2, itbag.id));
+                                } else {
+                                    int opid = opGiay[Util.nextInt(opGiay.length)];
+                                    itbag.op.add(Option.createOpItemStar(opid, itbag.id));
                                 }
-                                if (percent > 87) {
-                                    itbag.op.add(new Option(opid3, Util.random(10, 50), itbag.id));
+                            } else if (itbag.type == 4) {
+                                int percent = Util.nextInt(0, 100);
+                                if (percent > 85) {
+                                    int opid1 = opNhan[Util.nextInt(opNhan.length)];
+                                    int opid2 = opNhan[Util.nextInt(opNhan.length)];
+                                    while (opid1 == opid2) {
+                                        opid1 = opNhan[Util.nextInt(opNhan.length)];
+                                    }
+                                    itbag.op.add(Option.createOpItemStar(opid1, itbag.id));
+                                    itbag.op.add(Option.createOpItemStar(opid2, itbag.id));
+                                } else {
+                                    int opid = opGiay[Util.nextInt(opGiay.length)];
+                                    itbag.op.add(Option.createOpItemStar(opid, itbag.id));
                                 }
-                                itbag.op.add(new Option(opid1, Util.random(10, 50), itbag.id));
-                                itbag.op.add(new Option(opid2, Util.random(10, 50), itbag.id));
-                            } else {
-                                int opid = opAo[Util.nextInt(opAo.length)];
-                                itbag.op.add(new Option(opid, Util.random(10, 50), itbag.id));
+                            } else if (itbag.type == 5) {
+                                int percent = Util.nextInt(0, 100);
+                                if (percent > 85) {
+                                    int opid1 = opDayChuyen[Util.nextInt(opDayChuyen.length)];
+                                    int opid2 = opDayChuyen[Util.nextInt(opDayChuyen.length)];
+                                    while (opid1 == opid2) {
+                                        opid1 = opDayChuyen[Util.nextInt(opDayChuyen.length)];
+                                    }
+                                    itbag.op.add(Option.createOpItemStar(opid1, itbag.id));
+                                    itbag.op.add(Option.createOpItemStar(opid2, itbag.id));
+                                } else {
+                                    int opid = opGiay[Util.nextInt(opGiay.length)];
+                                    itbag.op.add(Option.createOpItemStar(opid, itbag.id));
+                                }
+                            } else if (itbag.type == 6) {
+                                int percent = Util.nextInt(0, 100);
+                                if (percent > 85) {
+                                    int opid1 = opGiay[Util.nextInt(opGiay.length)];
+                                    int opid2 = opGiay[Util.nextInt(opGiay.length)];
+                                    while (opid1 == opid2) {
+                                        opid1 = opGiay[Util.nextInt(opGiay.length)];
+                                    }
+                                    itbag.op.add(Option.createOpItemStar(opid1, itbag.id));
+                                    itbag.op.add(Option.createOpItemStar(opid2, itbag.id));
+                                } else {
+                                    int opid = opGiay[Util.nextInt(opGiay.length)];
+                                    itbag.op.add(Option.createOpItemStar(opid, itbag.id));
+                                }
+                            } else if (itbag.type > 6) {
+                                int percent = Util.nextInt(0, 100);
+                                if (percent > 85) {
+                                    int opid1 = opVK[Util.nextInt(opVK.length)];
+                                    int opid2 = opVK[Util.nextInt(opVK.length)];
+                                    while (opid1 == opid2) {
+                                        opid1 = opVK[Util.nextInt(opVK.length)];
+                                    }
+                                    itbag.op.add(Option.createOpItemStar(opid1, itbag.id));
+                                    itbag.op.add(Option.createOpItemStar(opid2, itbag.id));
+                                } else {
+                                    int opid = opGiay[Util.nextInt(opGiay.length)];
+                                    itbag.op.add(Option.createOpItemStar(opid, itbag.id));
+                                }
                             }
-                        } else if (itbag.type == 2) {
-                            int percent = Util.nextInt(0, 100);
-                            if (percent > 72) {
-                                int opid1 = opNon[Util.nextInt(opNon.length)];
-                                int opid2 = opNon[Util.nextInt(opNon.length)];
-                                int opid3 = opNon[Util.nextInt(opNon.length)];
-                                while ((opid1 == opid2) || (opid1 == opid3)) {
-                                    opid1 = opNon[Util.nextInt(opNon.length)];
+                        } else if (color == 5) {
+                            if (itbag.type == 0 || itbag.type == 1) {
+                                int percent = Util.nextInt(0, 100);
+                                if (percent > 85) {
+                                    int opid1 = opAo[Util.nextInt(opAo.length)];
+                                    int opid2 = opAo[Util.nextInt(opAo.length)];
+                                    int opid3 = opAo[Util.nextInt(opAo.length)];
+                                    while ((opid1 == opid2) || (opid1 == opid3)) {
+                                        opid1 = opAo[Util.nextInt(opAo.length)];
+                                    }
+                                    while ((opid2 == opid1) || (opid2 == opid3)) {
+                                        opid2 = opAo[Util.nextInt(opAo.length)];
+                                    }
+                                    while ((opid3 == opid2) || (opid1 == opid3)) {
+                                        opid3 = opAo[Util.nextInt(opAo.length)];
+                                    }
+                                    if (percent > 95) {
+                                        itbag.op.add(Option.createOpItemStar(opid3, itbag.id));
+                                    }
+                                    itbag.op.add(Option.createOpItemStar(opid1, itbag.id));
+                                    itbag.op.add(Option.createOpItemStar(opid2, itbag.id));
+                                } else {
+                                    int opid = opGiay[Util.nextInt(opGiay.length)];
+                                    itbag.op.add(Option.createOpItemStar(opid, itbag.id));
                                 }
-                                while ((opid2 == opid1) || (opid2 == opid3)) {
-                                    opid2 = opNon[Util.nextInt(opNon.length)];
+                            } else if (itbag.type == 2) {
+                                int percent = Util.nextInt(0, 100);
+                                if (percent > 85) {
+                                    int opid1 = opNon[Util.nextInt(opNon.length)];
+                                    int opid2 = opNon[Util.nextInt(opNon.length)];
+                                    int opid3 = opNon[Util.nextInt(opNon.length)];
+                                    while ((opid1 == opid2) || (opid1 == opid3)) {
+                                        opid1 = opNon[Util.nextInt(opNon.length)];
+                                    }
+                                    while ((opid2 == opid1) || (opid2 == opid3)) {
+                                        opid2 = opNon[Util.nextInt(opNon.length)];
+                                    }
+                                    while ((opid3 == opid2) || (opid1 == opid3)) {
+                                        opid3 = opNon[Util.nextInt(opNon.length)];
+                                    }
+                                    if (percent > 95) {
+                                        itbag.op.add(Option.createOpItemStar(opid3, itbag.id));
+                                    }
+                                    itbag.op.add(Option.createOpItemStar(opid1, itbag.id));
+                                    itbag.op.add(Option.createOpItemStar(opid2, itbag.id));
+                                } else {
+                                    int opid = opGiay[Util.nextInt(opGiay.length)];
+                                    itbag.op.add(Option.createOpItemStar(opid, itbag.id));
                                 }
-                                while ((opid3 == opid2) || (opid1 == opid3)) {
-                                    opid3 = opNon[Util.nextInt(opNon.length)];
+                            } else if (itbag.type == 3) {
+                                int percent = Util.nextInt(0, 100);
+                                if (percent > 85) {
+                                    int opid1 = opGang[Util.nextInt(opGang.length)];
+                                    int opid2 = opGang[Util.nextInt(opGang.length)];
+                                    int opid3 = opGang[Util.nextInt(opGang.length)];
+                                    while ((opid1 == opid2) || (opid1 == opid3)) {
+                                        opid1 = opGang[Util.nextInt(opGang.length)];
+                                    }
+                                    while ((opid2 == opid1) || (opid2 == opid3)) {
+                                        opid2 = opGang[Util.nextInt(opGang.length)];
+                                    }
+                                    while ((opid3 == opid2) || (opid1 == opid3)) {
+                                        opid3 = opGang[Util.nextInt(opGang.length)];
+                                    }
+                                    if (percent > 95) {
+                                        itbag.op.add(Option.createOpItemStar(opid3, itbag.id));
+                                    }
+                                    itbag.op.add(Option.createOpItemStar(opid1, itbag.id));
+                                    itbag.op.add(Option.createOpItemStar(opid2, itbag.id));
+                                } else {
+                                    int opid = opGiay[Util.nextInt(opGiay.length)];
+                                    itbag.op.add(Option.createOpItemStar(opid, itbag.id));
                                 }
-                                if (percent > 87) {
-                                    itbag.op.add(new Option(opid3, Util.random(10, 50), itbag.id));
+                            } else if (itbag.type == 4) {
+                                int percent = Util.nextInt(0, 100);
+                                if (percent > 85) {
+                                    int opid1 = opNhan[Util.nextInt(opNhan.length)];
+                                    int opid2 = opNhan[Util.nextInt(opNhan.length)];
+                                    int opid3 = opNhan[Util.nextInt(opNhan.length)];
+                                    while ((opid1 == opid2) || (opid1 == opid3)) {
+                                        opid1 = opNhan[Util.nextInt(opNhan.length)];
+                                    }
+                                    while ((opid2 == opid1) || (opid2 == opid3)) {
+                                        opid2 = opNhan[Util.nextInt(opNhan.length)];
+                                    }
+                                    while ((opid3 == opid2) || (opid1 == opid3)) {
+                                        opid3 = opNhan[Util.nextInt(opNhan.length)];
+                                    }
+                                    if (percent > 95) {
+                                        itbag.op.add(Option.createOpItemStar(opid3, itbag.id));
+                                    }
+                                    itbag.op.add(Option.createOpItemStar(opid1, itbag.id));
+                                    itbag.op.add(Option.createOpItemStar(opid2, itbag.id));
+                                } else {
+                                    int opid = opGiay[Util.nextInt(opGiay.length)];
+                                    itbag.op.add(Option.createOpItemStar(opid, itbag.id));
                                 }
-                                itbag.op.add(new Option(opid1, Util.random(10, 50), itbag.id));
-                                itbag.op.add(new Option(opid2, Util.random(10, 50), itbag.id));
-                            } else {
-                                int opid = opNon[Util.nextInt(opNon.length)];
-                                itbag.op.add(new Option(opid, Util.random(10, 50), itbag.id));
-                            }
-                        } else if (itbag.type == 3) {
-                            int percent = Util.nextInt(0, 100);
-                            if (percent > 72) {
-                                int opid1 = opGang[Util.nextInt(opGang.length)];
-                                int opid2 = opGang[Util.nextInt(opGang.length)];
-                                int opid3 = opGang[Util.nextInt(opGang.length)];
-                                while ((opid1 == opid2) || (opid1 == opid3)) {
-                                    opid1 = opGang[Util.nextInt(opGang.length)];
+                            } else if (itbag.type == 5) {
+                                int percent = Util.nextInt(0, 100);
+                                if (percent > 85) {
+                                    int opid1 = opDayChuyen[Util.nextInt(opDayChuyen.length)];
+                                    int opid2 = opDayChuyen[Util.nextInt(opDayChuyen.length)];
+                                    int opid3 = opDayChuyen[Util.nextInt(opDayChuyen.length)];
+                                    while ((opid1 == opid2) || (opid1 == opid3)) {
+                                        opid1 = opDayChuyen[Util.nextInt(opDayChuyen.length)];
+                                    }
+                                    while ((opid2 == opid1) || (opid2 == opid3)) {
+                                        opid2 = opDayChuyen[Util.nextInt(opDayChuyen.length)];
+                                    }
+                                    while ((opid3 == opid2) || (opid1 == opid3)) {
+                                        opid3 = opDayChuyen[Util.nextInt(opDayChuyen.length)];
+                                    }
+                                    if (percent > 95) {
+                                        itbag.op.add(Option.createOpItemStar(opid3, itbag.id));
+                                    }
+                                    itbag.op.add(Option.createOpItemStar(opid1, itbag.id));
+                                    itbag.op.add(Option.createOpItemStar(opid2, itbag.id));
+                                } else {
+                                    int opid = opGiay[Util.nextInt(opGiay.length)];
+                                    itbag.op.add(Option.createOpItemStar(opid, itbag.id));
                                 }
-                                while ((opid2 == opid1) || (opid2 == opid3)) {
-                                    opid2 = opGang[Util.nextInt(opGang.length)];
+                            } else if (itbag.type == 6) {
+                                int percent = Util.nextInt(0, 100);
+                                if (percent > 85) {
+                                    int opid1 = opGiay[Util.nextInt(opGiay.length)];
+                                    int opid2 = opGiay[Util.nextInt(opGiay.length)];
+                                    int opid3 = opGiay[Util.nextInt(opGiay.length)];
+                                    while ((opid1 == opid2) || (opid1 == opid3)) {
+                                        opid1 = opGiay[Util.nextInt(opGiay.length)];
+                                    }
+                                    while ((opid2 == opid1) || (opid2 == opid3)) {
+                                        opid2 = opGiay[Util.nextInt(opGiay.length)];
+                                    }
+                                    while ((opid3 == opid2) || (opid1 == opid3)) {
+                                        opid3 = opGiay[Util.nextInt(opGiay.length)];
+                                    }
+                                    if (percent > 95) {
+                                        itbag.op.add(Option.createOpItemStar(opid3, itbag.id));
+                                    }
+                                    itbag.op.add(Option.createOpItemStar(opid1, itbag.id));
+                                    itbag.op.add(Option.createOpItemStar(opid2, itbag.id));
+                                } else {
+                                    int opid = opGiay[Util.nextInt(opGiay.length)];
+                                    itbag.op.add(Option.createOpItemStar(opid, itbag.id));
                                 }
-                                while ((opid3 == opid2) || (opid1 == opid3)) {
-                                    opid3 = opGang[Util.nextInt(opGang.length)];
+                            } else if (itbag.type > 7) {
+                                int percent = Util.nextInt(0, 100);
+                                if (percent > 90) {
+                                    int opid1 = opVK[Util.nextInt(opVK.length)];
+                                    int opid2 = opVK[Util.nextInt(opVK.length)];
+                                    int opid3 = opVK[Util.nextInt(opVK.length)];
+                                    while ((opid1 == opid2) || (opid1 == opid3)) {
+                                        opid1 = opVK[Util.nextInt(opVK.length)];
+                                    }
+                                    while ((opid2 == opid1) || (opid2 == opid3)) {
+                                        opid2 = opVK[Util.nextInt(opVK.length)];
+                                    }
+                                    while ((opid3 == opid2) || (opid1 == opid3)) {
+                                        opid3 = opVK[Util.nextInt(opVK.length)];
+                                    }
+                                    if (percent > 95) {
+                                        itbag.op.add(Option.createOpItemStar(opid3, itbag.id));
+                                    }
+                                    itbag.op.add(Option.createOpItemStar(opid1, itbag.id));
+                                    itbag.op.add(Option.createOpItemStar(opid2, itbag.id));
+                                } else {
+                                    int opid = opGiay[Util.nextInt(opGiay.length)];
+                                    itbag.op.add(Option.createOpItemStar(opid, itbag.id));
                                 }
-                                if (percent > 87) {
-                                    itbag.op.add(new Option(opid3, Util.random(10, 50), itbag.id));
-                                }
-                            } else {
-                                int opid = opGang[Util.nextInt(opGang.length)];
-                                itbag.op.add(new Option(opid, Util.random(10, 50), itbag.id));
-                            }
-                        } else if (itbag.type == 4) {
-                            int percent = Util.nextInt(0, 100);
-                            if (percent > 72) {
-                                int opid1 = opNhan[Util.nextInt(opNhan.length)];
-                                int opid2 = opNhan[Util.nextInt(opNhan.length)];
-                                int opid3 = opNhan[Util.nextInt(opNhan.length)];
-                                while ((opid1 == opid2) || (opid1 == opid3)) {
-                                    opid1 = opNhan[Util.nextInt(opNhan.length)];
-                                }
-                                while ((opid2 == opid1) || (opid2 == opid3)) {
-                                    opid2 = opNhan[Util.nextInt(opNhan.length)];
-                                }
-                                while ((opid3 == opid2) || (opid1 == opid3)) {
-                                    opid3 = opNhan[Util.nextInt(opNhan.length)];
-                                }
-                                if (percent > 87) {
-                                    itbag.op.add(new Option(opid3, Util.random(10, 50), itbag.id));
-                                }
-                                itbag.op.add(new Option(opid1, Util.random(10, 50), itbag.id));
-                                itbag.op.add(new Option(opid2, Util.random(10, 50), itbag.id));
-                            } else {
-                                int opid = opNhan[Util.nextInt(opNhan.length)];
-                                itbag.op.add(new Option(opid, Util.random(10, 50), itbag.id));
-                            }
-                        } else if (itbag.type == 5) {
-                            int percent = Util.nextInt(0, 100);
-                            if (percent > 72) {
-                                int opid1 = opDayChuyen[Util.nextInt(opDayChuyen.length)];
-                                int opid2 = opDayChuyen[Util.nextInt(opDayChuyen.length)];
-                                int opid3 = opDayChuyen[Util.nextInt(opDayChuyen.length)];
-                                while ((opid1 == opid2) || (opid1 == opid3)) {
-                                    opid1 = opDayChuyen[Util.nextInt(opDayChuyen.length)];
-                                }
-                                while ((opid2 == opid1) || (opid2 == opid3)) {
-                                    opid2 = opDayChuyen[Util.nextInt(opDayChuyen.length)];
-                                }
-                                while ((opid3 == opid2) || (opid1 == opid3)) {
-                                    opid3 = opDayChuyen[Util.nextInt(opDayChuyen.length)];
-                                }
-                                if (percent > 87) {
-                                    itbag.op.add(new Option(opid3, Util.random(10, 50), itbag.id));
-                                }
-                                itbag.op.add(new Option(opid1, Util.random(10, 50), itbag.id));
-                                itbag.op.add(new Option(opid2, Util.random(10, 50), itbag.id));
-                            } else {
-                                int opid = opDayChuyen[Util.nextInt(opDayChuyen.length)];
-                                itbag.op.add(new Option(opid, Util.random(10, 50), itbag.id));
-                            }
-                        } else if (itbag.type == 6) {
-                            int percent = Util.nextInt(0, 100);
-                            if (percent > 72) {
-                                int opid1 = opGiay[Util.nextInt(opGiay.length)];
-                                int opid2 = opGiay[Util.nextInt(opGiay.length)];
-                                int opid3 = opGiay[Util.nextInt(opGiay.length)];
-                                while ((opid1 == opid2) || (opid1 == opid3)) {
-                                    opid1 = opGiay[Util.nextInt(opGiay.length)];
-                                }
-                                while ((opid2 == opid1) || (opid2 == opid3)) {
-                                    opid2 = opGiay[Util.nextInt(opGiay.length)];
-                                }
-                                while ((opid3 == opid2) || (opid1 == opid3)) {
-                                    opid3 = opGiay[Util.nextInt(opGiay.length)];
-                                }
-                                if (percent > 87) {
-                                    itbag.op.add(new Option(opid3, Util.random(10, 50), itbag.id));
-                                }
-                                itbag.op.add(new Option(opid1, Util.random(10, 50), itbag.id));
-                                itbag.op.add(new Option(opid2, Util.random(10, 50), itbag.id));
-                            } else {
-                                int opid = opGiay[Util.nextInt(opGiay.length)];
-                                itbag.op.add(new Option(opid, Util.random(10, 50), itbag.id));
-                            }
-                        } else if (itbag.type > 7) {
-                            int percent = Util.nextInt(0, 100);
-                            if (percent > 72) {
-                                int opid1 = opVK[Util.nextInt(opVK.length)];
-                                int opid2 = opVK[Util.nextInt(opVK.length)];
-                                int opid3 = opVK[Util.nextInt(opVK.length)];
-                                while ((opid1 == opid2) || (opid1 == opid3)) {
-                                    opid1 = opVK[Util.nextInt(opVK.length)];
-                                }
-                                while ((opid2 == opid1) || (opid2 == opid3)) {
-                                    opid2 = opVK[Util.nextInt(opVK.length)];
-                                }
-                                while ((opid3 == opid2) || (opid1 == opid3)) {
-                                    opid3 = opVK[Util.nextInt(opVK.length)];
-                                }
-                                if (percent > 87) {
-                                    itbag.op.add(new Option(opid3, Util.random(10, 50), itbag.id));
-                                }
-                                itbag.op.add(new Option(opid1, Util.random(10, 50), itbag.id));
-                                itbag.op.add(new Option(opid2, Util.random(10, 50), itbag.id));
-                            } else {
-                                int opid = opVK[Util.nextInt(opVK.length)];
-                                itbag.op.add(new Option(opid, Util.random(10, 50), itbag.id));
                             }
                         }
+                        if (color >= 3) {
+                            itbag.op.add(Option.createOpItemStar(129, itbag.id));
+                            itbag.op.add(Option.createOpItemStar(130, itbag.id));
+                        }
+
+                        itbag.color = color;
+                        itbag.part = ItemTemplate3.item.get(id_item).getPart();
+                        itbag.tier = 0;
+                        itbag.time_use = 0;
+                        itbag.islock = false;
+                        conn.p.item.add_item_bag3(itbag);
+                        conn.p.item.char_inventory(3);
+                        conn.p.item.char_inventory(4);
+                        conn.p.item.char_inventory(7);
+                        m.cleanup();
+                        m = new Message(-105);
+                        m.writer().writeByte(3);
+                        m.writer().writeByte(3);
+                        m.writer().writeUTF("Chúc mừng bạn nhận được " + itbag.name);
+                        m.writer().writeByte(3);
+                        m.writer().writeUTF(itbag.name);
+                        m.writer().writeByte(itbag.clazz);
+                        m.writer().writeShort(itbag.id);
+                        m.writer().writeByte(itbag.type);
+                        m.writer().writeShort(itbag.icon);
+                        m.writer().writeByte(0); // tier
+                        m.writer().writeShort(1); // level required
+                        m.writer().writeByte(itbag.color); // color
+                        m.writer().writeByte(0); // can sell
+                        m.writer().writeByte(0); // can trade
+                        m.writer().writeByte(itbag.op.size());
+                        for (int i = 0; i < itbag.op.size(); i++) {
+                            m.writer().writeByte(itbag.op.get(i).id);
+                            m.writer().writeInt(itbag.op.get(i).getParam(0));
+                        }
+                        m.writer().writeInt(0); // time use
+                        m.writer().writeByte(0);
+                        m.writer().writeByte(0);
+                        m.writer().writeByte(0);
+                        conn.addmsg(m);
+                        m.cleanup();
+                        conn.p.ResetCreateItemStar();
+                    } else {
+                        Service.send_notice_box(conn, "không tìm thấy chỉ số trang bị phù hợp!");
+                        return;
                     }
-                    itbag.color = color;
-                    itbag.part = ItemTemplate3.item.get(id_item).getPart();
-                    itbag.tier = 0;
-                    itbag.time_use = 0;
-                    itbag.islock = false;
-                    conn.p.item.add_item_bag3(itbag);
-                    conn.p.item.char_inventory(3);
-                    conn.p.item.char_inventory(4);
-                    conn.p.item.char_inventory(7);
-                    m.cleanup();
-                    m = new Message(-105);
-                    m.writer().writeByte(3);
-                    m.writer().writeByte(3);
-                    m.writer().writeUTF("Chúc mừng bạn nhận được " + itbag.name);
-                    m.writer().writeByte(3);
-                    m.writer().writeUTF(itbag.name);
-                    m.writer().writeByte(itbag.clazz);
-                    m.writer().writeShort(itbag.id);
-                    m.writer().writeByte(itbag.type);
-                    m.writer().writeShort(itbag.icon);
-                    m.writer().writeByte(0); // tier
-                    m.writer().writeShort(1); // level required
-                    m.writer().writeByte(itbag.color); // color
-                    m.writer().writeByte(0); // can sell
-                    m.writer().writeByte(0); // can trade
-                    m.writer().writeByte(itbag.op.size());
-                    for (int i = 0; i < itbag.op.size(); i++) {
-                        m.writer().writeByte(itbag.op.get(i).id);
-                        m.writer().writeInt(itbag.op.get(i).getParam(0));
+                    break;
+                }
+                case 4: {//nâng cấp tbtt
+                    if (id >= conn.p.item.bag3.length || id < 0) {
+                        return;
                     }
-                    m.writer().writeInt(0); // time use
-                    m.writer().writeByte(0);
-                    m.writer().writeByte(0);
-                    m.writer().writeByte(0);
-                    conn.addmsg(m);
-                    m.cleanup();
-                    conn.p.ResetCreateItemStar();
+                    Item3 temp = conn.p.item.bag3[id];
+                    if (temp != null && temp.id >= 4656 && temp.id <= 4675 && temp.tierStar < 9) {
+                        if (temp.getParamOption((byte) 129) == 0) {
+                            Service.send_notice_box(conn, "Trang bị đã hết độ bền không thể nâng");
+                            return;
+                        }
+                        conn.p.id_Upgrade_Medal_Star = id;
+                        MenuController.send_menu_select(conn, 998, new String[]{"Không", "Đá hỏa tinh"}, (byte) 1);
+                    } else {
+                        Service.send_notice_box(conn, "Trang bị không phù hợp hoặc đã đạt cấp tối đa!");
+                    }
+                    break;
                 }
-                else
-                {
-                    Service.send_notice_box(conn, "không tìm thấy chỉ số trang bị phù hợp!");
-                    return;
+                default: {
+                    Service.send_notice_box(conn, "Chưa có chức năng!");
                 }
-                break;
+
             }
-            case 4:{//nâng cấp tbtt
-                if (id >= conn.p.item.bag3.length || id <0) {
-                    return;
-                }
-                Item3 temp = conn.p.item.bag3[id];
-                if(temp != null && temp.id >= 4656 && temp.id <= 4675 && temp.tierStar <9)
-                {
-                    conn.p.id_Upgrade_Medal_Star = id;
-                    MenuController.send_menu_select(conn,-101,new String[]{"Không = " + (Ratio_UpgradeItemStar[temp.tierStar] / 100) + "%",
-                            "Đá hỏa tinh = " + ((Ratio_UpgradeItemStar[temp.tierStar] + 500) / 100) + "%"},(byte)1);
-                }
-                else{
-                    Service.send_notice_box(conn, "Trang bị không phù hợp hoặc đã đạt cấp tối đa!");
-                    return;
-                }
-                break;
-            }
-            default:
-            {
-                Service.send_notice_box(conn, "Chưa có chức năng!");
-                return;
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
     }
 
     public static void UpgradeItemStar(Session conn, byte index) throws IOException { // nâng cấp tt
@@ -2937,16 +2788,10 @@ public class GameSrc {
             Service.send_notice_box(conn, "Trang bị không phù hợp!");
             return;
         }
+        int material = temp.tierStar + 1;
         for (int i = conn.p.TypeItemStarCreate * 5; i < conn.p.TypeItemStarCreate * 5 + 5; i++) {
-            if (conn.p.item.total_item_by_id(7, conn.p.MaterialItemStar[i]) < 1 && !(conn.ac_admin == 11 || conn.ac_admin == 17 || conn.ac_admin == 22 || conn.ac_admin == 26 || conn.ac_admin == 29 ||
-                    conn.ac_admin == 31 || conn.ac_admin == 32 || conn.ac_admin == 37 || conn.ac_admin == 41 || conn.ac_admin == 44 || conn.ac_admin == 46 || conn.ac_admin == 47 || conn.ac_admin == 51 ||
-                    conn.ac_admin == 54 || conn.ac_admin == 56 || conn.ac_admin == 57 || conn.ac_admin == 60 || conn.ac_admin == 62 || conn.ac_admin == 63 || conn.ac_admin == 65 || conn.ac_admin == 66 ||
-                    conn.ac_admin == 67 || conn.ac_admin == 71 || conn.ac_admin == 74 || conn.ac_admin == 76 || conn.ac_admin == 77 || conn.ac_admin == 80 || conn.ac_admin == 82 || conn.ac_admin == 83 ||
-                    conn.ac_admin == 85 || conn.ac_admin == 86 || conn.ac_admin == 87 || conn.ac_admin == 90 || conn.ac_admin == 92 || conn.ac_admin == 93 || conn.ac_admin == 95 || conn.ac_admin == 96 ||
-                    conn.ac_admin == 97 || conn.ac_admin == 99 || conn.ac_admin == 100 || conn.ac_admin == 101 || conn.ac_admin == 102 || conn.ac_admin == 105 || conn.ac_admin == 107 || conn.ac_admin == 108 ||
-                    conn.ac_admin == 110 || conn.ac_admin == 111 || conn.ac_admin == 112 || conn.ac_admin == 114 || conn.ac_admin == 115 || conn.ac_admin == 116 || conn.ac_admin == 117 || conn.ac_admin == 119 ||
-                    conn.ac_admin == 120 || conn.ac_admin == 121 || conn.ac_admin == 122 || conn.ac_admin == 123 || conn.ac_admin == 125 || conn.ac_admin == 126 || conn.ac_admin == 127 || conn.ac_admin == 128 ||
-                    conn.ac_admin == 129 || conn.ac_admin == 130 || conn.ac_admin == 131 || conn.ac_admin >= 135)) {// nâng đồ tt
+            if (conn.p.item.total_item_by_id(7, conn.p.MaterialItemStar[i]) < material
+                    && conn.ac_admin < 4) {
                 Service.send_notice_box(conn, "Thiếu nguyên liệu!");
                 return;
             }
@@ -2960,18 +2805,14 @@ public class GameSrc {
             Service.send_notice_box(conn, "Bạn không đủ đá hỏa tinh!");
             return;
         }
-        boolean suc = Ratio_UpgradeItemStar[temp.tierStar] + (index == 1 ? 500 : 0) > Util.random(10000) || (conn.ac_admin == 11 || conn.ac_admin == 17 || conn.ac_admin == 22 || conn.ac_admin == 26 || conn.ac_admin == 29 ||
-                conn.ac_admin == 31 || conn.ac_admin == 32 || conn.ac_admin == 37 || conn.ac_admin == 41 || conn.ac_admin == 44 || conn.ac_admin == 46 || conn.ac_admin == 47 || conn.ac_admin == 51 ||
-                conn.ac_admin == 54 || conn.ac_admin == 56 || conn.ac_admin == 57 || conn.ac_admin == 60 || conn.ac_admin == 62 || conn.ac_admin == 63 || conn.ac_admin == 65 || conn.ac_admin == 66 ||
-                conn.ac_admin == 67 || conn.ac_admin == 71 || conn.ac_admin == 74 || conn.ac_admin == 76 || conn.ac_admin == 77 || conn.ac_admin == 80 || conn.ac_admin == 82 || conn.ac_admin == 83 ||
-                conn.ac_admin == 85 || conn.ac_admin == 86 || conn.ac_admin == 87 || conn.ac_admin == 90 || conn.ac_admin == 92 || conn.ac_admin == 93 || conn.ac_admin == 95 || conn.ac_admin == 96 ||
-                conn.ac_admin == 97 || conn.ac_admin == 99 || conn.ac_admin == 100 || conn.ac_admin == 101 || conn.ac_admin == 102 || conn.ac_admin == 105 || conn.ac_admin == 107 || conn.ac_admin == 108 ||
-                conn.ac_admin == 110 || conn.ac_admin == 111 || conn.ac_admin == 112 || conn.ac_admin == 114 || conn.ac_admin == 115 || conn.ac_admin == 116 || conn.ac_admin == 117 || conn.ac_admin == 119 ||
-                conn.ac_admin == 120 || conn.ac_admin == 121 || conn.ac_admin == 122 || conn.ac_admin == 123 || conn.ac_admin == 125 || conn.ac_admin == 126 || conn.ac_admin == 127 || conn.ac_admin == 128 ||
-                conn.ac_admin == 129 || conn.ac_admin == 130 || conn.ac_admin == 131 || conn.ac_admin >= 135 && Manager.BuffAdmin);// nâng đồ tt
+        boolean suc = Ratio_UpgradeItemStar[temp.tierStar] + (index == 1 ? 500 : 0) + temp.getParamOption((byte) 130)
+                > Util.random(10000);
+        if (conn.ac_admin > 3) {
+            suc = true;
+        }
         if (suc) {
             List<Option> ops = Helps.ItemStar.GetOpsItemStarUpgrade(temp.clazz, temp.type, temp.id, temp.tierStar + 1, temp.op);
-            if (ops == null || ops.size() < 1) {
+            if (ops == null || ops.isEmpty()) {
                 Service.send_notice_box(conn, "Lỗi không tìm thấy chỉ số, hãy chụp lại chỉ số và báo ngay cho ad \"Nhắn riêng\"");
                 return;
             }
@@ -2980,33 +2821,44 @@ public class GameSrc {
             temp.level = Helps.ItemStar.GetLevelItemStar(temp.tierStar);
             temp.op.clear();
             temp.UpdateName();
-            for(int i = 0; i <ops.size(); i++)
-            {
-                Option o = ops.get(i);
-                int pr = (int)o.getParam(0);
-                int pr1 = (int)(pr + (int)(pr * (temp.color) * 0.109));
-                int pr2 = (int)(pr + (int)(pr * (temp.color + 1) * 0.109));
-                if((o.id >= 58 && o.id <=60)||(o.id >= 100 && o.id <=107))
+            for (Option o : ops) {
+                int pr = o.getParam(0);
+                if ((o.id >= 58 && o.id <= 60) || (o.id >= 100 && o.id <= 107)) {
                     temp.op.add(new Option(o.id, pr, temp.id));
-                else if(o.id == 37 || o.id == 38 && temp.tierStar <7)
-                {
-                    temp.op.add(new Option(o.id, 2 , temp.id));
-                }
-                else if(o.id == 37 || o.id == 38 && temp.tierStar >7)
-                {
-                    temp.op.add(new Option(o.id, 3 , temp.id));
-                }
-                else
+                } else if (o.id == 37 || o.id == 38) {
+                    temp.op.add(new Option(o.id, 2, temp.id));
+                } else if (o.id == -115 || o.id == -103 || o.id == -88 || o.id == -87) {
+                    temp.op.add(new Option(o.id, pr - 3000, temp.id));
+                } else if (o.id == -127 || o.id == -126) {
+                    temp.op.add(new Option(o.id, pr, temp.id));
+                } else if (o.id < -70) {
+                    int pr1 = (int) (pr + (int) temp.color * 40);
+                    int pr2 = (int) (pr + (int) temp.color * 40);
                     temp.op.add(new Option(o.id, Util.random(pr1, pr2), temp.id));
+                } else {
+                    int pr1 = (int) (pr * temp.color * 0.3);
+                    temp.op.add(new Option(o.id, pr1, temp.id));
+                }
+            }
+        } else {
+            if (index == 0) {
+                for (Option o : temp.op) {
+                    if (o.id == (byte) 129) {
+                        o.param -= 100;
+                    }
+                }
             }
         }
         // xóa nl
-        for(int i = conn.p.TypeItemStarCreate *5; i< conn.p.TypeItemStarCreate *5+5; i++)
-            conn.p.item.remove(7, conn.p.MaterialItemStar[i], 1);
-        if(index == 1)
+        for (int i = conn.p.TypeItemStarCreate * 5; i < conn.p.TypeItemStarCreate * 5 + 5; i++) {
+            conn.p.item.remove(7, conn.p.MaterialItemStar[i], material);
+        }
+        if (index == 1) {
             conn.p.item.remove(7, 471, 1);
-        if(suc && (temp.tierStar+1) % 3 == 0)
+        }
+        if (suc && (temp.tierStar + 1) % 3 == 0) {
             conn.p.ChangeMaterialItemStar(conn.p.TypeItemStarCreate);
+        }
         conn.p.item.char_inventory(4);
         conn.p.item.char_inventory(7);
         conn.p.item.char_inventory(3);
@@ -3042,7 +2894,7 @@ public class GameSrc {
         m.writer().writeByte(0);
         conn.addmsg(m);
         m.cleanup();
-        if(temp.tierStar <9){
+        if (temp.tierStar < 9) {
             m = new Message(-105);
             m.writer().writeByte(5);
             if (suc) {
@@ -3061,5 +2913,292 @@ public class GameSrc {
 //        }
     }
 
+    public static final int[] quantity_update_armor = new int[]{1000, 2000, 4000, 8000, 300, 600, 900, 1200, 1500, 2000};
+    public static final short[] material_update_armor = new short[]{481, 481, 481, 481, 485, 485, 485, 489, 489, 489};
+    public static final short[] gems_update_armor = new short[]{1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000};
+    public static short[] ratio_upgrade_armor = new short[]{11000, 10000, 9000, 8000, 5000, 4000, 3500, 3000, 2500, 2000};
+    public static byte[] option1 = new byte[]{(byte) 171, (byte) 173, (byte) 175, 99, 91, 92, 93, 94, 27, 28, 29, 30};
+    public static byte[] option2 = new byte[]{(byte) 185, (byte) 186, 89, 38, 37, 23, 24, 25, 26};
+
+    public static void ActionsItemArmor(Session conn, Message m) {
+        try {
+            if (conn.p.time_speed_rebuild > System.currentTimeMillis()) {
+                Service.send_notice_box(conn, "Thao tác quá nhanh.");
+                return;
+            }
+            conn.p.time_speed_rebuild = System.currentTimeMillis() + 2000;
+
+            byte type = m.reader().readByte();
+            short id = -1;
+            byte cat = -1;
+            if (type != 3) {
+                id = m.reader().readShort();
+                cat = m.reader().readByte();
+            } else {
+                if (conn.p.type_armor_create == -1 || conn.p.id_armor_create == -1) {
+                    return;
+                }
+            }
+            switch (type) {
+                case 0: {
+                    if (cat != 3) {
+                        Service.send_notice_box(conn, "Trang bị không phù hợp!");
+                        return;
+                    }
+                    if (id >= conn.p.item.bag3.length) {
+                        return;
+                    }
+                    Item3 item = conn.p.item.bag3[id];
+                    if (item != null) {
+                        if (item.type == 28) {
+                            if (item.tier < 10) {
+                                Message m_send = new Message(-105);
+                                m_send.writer().writeByte(4);
+                                m_send.writer().writeByte(1);
+                                short id_material = (short) (material_update_armor[item.tier] + item.id - 4784);
+                                m_send.writer().writeShort(id_material);
+                                if (conn.version >= 270) {
+                                    m_send.writer().writeShort(quantity_update_armor[item.tier]);
+                                } else {
+                                    m_send.writer().writeByte(quantity_update_armor[item.tier]);
+                                }
+                                conn.addmsg(m_send);
+                                m_send.cleanup();
+                            } else {
+                                Service.send_notice_box(conn, "Trang bị đã nâng tối đa");
+                            }
+                        } else {
+                            Service.send_notice_box(conn, "Vật phẩm không phù hợp");
+                        }
+                    } else {
+                        Service.send_notice_box(conn, "Vui lòng chọn giáp siêu nhân để nâng cấp");
+                    }
+                    break;
+                }
+                case 3: {
+                    int id_material = 481 + conn.p.id_armor_create;
+                    if (conn.p.item.total_item_by_id(7, id_material) < 500) {
+                        conn.p.type_armor_create = -1;
+                        conn.p.id_armor_create = -1;
+                        conn.p.isCreateArmor = false;
+                        Service.send_notice_box(conn, "Không đủ nguyên liệu");
+                        return;
+                    }
+                    if (conn.p.get_vang() < 2000000) {
+                        conn.p.type_armor_create = -1;
+                        conn.p.id_armor_create = -1;
+                        conn.p.isCreateArmor = false;
+                        Service.send_notice_box(conn, "Không đủ 2,000,000 vàng");
+                        return;
+                    }
+                    conn.p.update_vang(-2000000);
+                    conn.p.item.remove(7, id_material, 500);
+                    Item3 itbag = new Item3();
+                    short iditem = (short) (4784 + conn.p.id_armor_create);
+                    ItemTemplate3 temp = ItemTemplate3.item.get(iditem);
+                    itbag.id = iditem;
+                    itbag.name = temp.getName();
+                    itbag.clazz = temp.getClazz();
+                    itbag.type = temp.getType();
+                    itbag.level = temp.getLevel();
+                    itbag.icon = temp.getIcon();
+                    itbag.op = new ArrayList<>();
+                    itbag.op.add(new Option(15, 100, itbag.id));
+                    itbag.op.add(new Option(17 + conn.p.type_armor_create, 100, itbag.id));
+                    itbag.color = temp.getColor();
+                    itbag.part = temp.getPart();
+                    itbag.tier = 0;
+                    itbag.islock = false;
+                    itbag.time_use = 0;
+                    itbag.expiry_date = 0;
+                    conn.p.item.add_item_bag3(itbag);
+                    conn.p.item.char_inventory(7);
+                    conn.p.type_armor_create = -1;
+                    conn.p.id_armor_create = -1;
+                    conn.p.isCreateArmor = false;
+
+                    m.cleanup();
+                    m = new Message(-105);
+                    m.writer().writeByte(3);
+                    m.writer().writeByte(3);
+                    m.writer().writeUTF("Chúc mừng bạn đã nhận được " + temp.getName());
+                    m.writer().writeByte(3);
+                    m.writer().writeUTF(temp.getName());
+                    m.writer().writeByte(temp.getClazz());
+                    m.writer().writeShort(temp.getId());
+                    m.writer().writeByte(temp.getType());
+                    m.writer().writeShort(temp.getIcon());
+                    m.writer().writeByte(0); // tier
+                    m.writer().writeShort(1); // level required
+                    m.writer().writeByte(temp.getColor()); // color
+                    m.writer().writeByte(0); // can sell
+                    m.writer().writeByte(0); // can trade
+                    m.writer().writeByte(temp.getOp().size());
+                    for (int i = 0; i < temp.getOp().size(); i++) {
+                        m.writer().writeByte(temp.getOp().get(i).id);
+                        m.writer().writeInt(temp.getOp().get(i).getParam(0));
+                    }
+                    m.writer().writeInt(0); // time use
+                    m.writer().writeByte(0);
+                    m.writer().writeByte(0);
+                    m.writer().writeByte(0);
+                    conn.addmsg(m);
+                    m.cleanup();
+
+                    break;
+                }
+                case 4: {
+                    if (cat != 3) {
+                        return;
+                    }
+                    if (id >= conn.p.item.bag3.length) {
+                        return;
+                    }
+                    Item3 item = conn.p.item.bag3[id];
+                    if (item != null && item.type == 28 && item.tier < 10) {
+                        short id_material = (short) (material_update_armor[item.tier] + item.id - 4784);
+                        //System.out.println(id_material);
+                        int quantity = quantity_update_armor[item.tier];
+                        int gems = gems_update_armor[item.tier];
+                        if (conn.p.get_ngoc() < gems) {
+                            Service.send_notice_box(conn, "Không đủ " + gems + " ngọc");
+                            return;
+                        }
+                        if (conn.p.item.total_item_by_id(7, id_material) >= quantity) {
+                            boolean suc = ratio_upgrade_armor[item.tier] > Util.random(11000);
+                            conn.p.update_ngoc(-gems);
+                            if (suc) {
+                                item.tier++;
+                                for (int i = 0; i < item.op.size(); i++) {
+                                    Option op = item.op.get(i);
+                                    if (op.id < 0 || op.id == 99) {
+                                        op.param += Util.random(80, 100);
+                                    } else if (91 <= op.id && op.id <= 94 || op.id == 15 || (op.id >= 17 && op.id <= 20)) {
+                                        op.param += Util.random(80, 100);
+                                    } else if (27 <= op.id && op.id <= 30) {
+                                        op.param += Util.random(80, 100);
+                                    } else if (23 <= op.id && op.id <= 26) {
+                                        op.param += 1;
+                                    } else if (37 <= op.id && op.id <= 38) {
+                                        op.param += 1;
+                                    }
+                                }
+                                if (item.tier == 5) {
+                                    byte id_op = option1[Util.random(option1.length - 1)];
+                                    int param = 1;
+                                    if (id_op < 0 || id_op == 99) {
+                                        param = 100;
+                                    } else if (91 <= id_op && id_op <= 94) {
+                                        param = Util.random(3, 6) * 100;
+                                    } else {
+                                        param = 5 * 100;
+                                    }
+                                    item.op.add(new Option(id_op, param, item.id));
+                                } else if (item.tier == 9) {
+                                    byte id_op = option2[Util.random(option2.length - 1)];
+                                    int param = 1;
+                                    if (id_op < 0) {
+                                        param = 300;
+                                    } else if (id_op == 89) {
+                                        param = 100;
+                                    }
+                                    item.op.add(new Option(id_op, param, item.id));
+                                } else if (item.tier == 6 || item.tier == 7 || item.tier == 8 || item.tier == 10) {
+                                    if (Util.random(10) < 3) {
+                                        byte id_op = option1[Util.random(option1.length - 1)];
+                                        while (item.hasOption(id_op)) {
+                                            id_op = option1[Util.random(option1.length - 1)];
+                                        }
+                                        int param = 1;
+                                        if (id_op < 0 || id_op == 99) {
+                                            param = 100;
+                                        } else if (91 <= id_op && id_op <= 94) {
+                                            param = Util.random(3, 6) * 100;
+                                        } else {
+                                            param = 5 * 100;
+                                        }
+                                        item.op.add(new Option(id_op, param, item.id));
+                                    }
+                                }
+                                conn.p.item.remove(7, id_material, quantity);
+                                conn.p.item.bag3[id] = item;
+                            } else {
+                                if (item.tier < 4) {
+                                    conn.p.item.remove(7, id_material, quantity);
+                                } else if (item.tier < 8) {
+                                    conn.p.item.remove(7, id_material, (quantity / 2));
+                                } else if (item.tier < 10) {
+                                    conn.p.item.remove(7, id_material, (quantity / 3));
+                                }
+                            }
+
+                            m.cleanup();
+                            m = new Message(-105);
+                            m.writer().writeByte(3);
+                            if (suc) {
+                                m.writer().writeByte(3);
+                            } else {
+                                m.writer().writeByte(4);
+                            }
+                            ItemTemplate3 temp = ItemTemplate3.item.get(item.id);
+                            if (suc) {
+                                m.writer().writeUTF("Thành công!");
+                            } else {
+                                m.writer().writeUTF("Thất bại!");
+                            }
+                            m.writer().writeByte(3);
+                            m.writer().writeUTF(item.name);
+                            m.writer().writeByte(temp.getClazz());
+                            m.writer().writeShort(temp.getId());
+                            m.writer().writeByte(temp.getType());
+                            m.writer().writeShort(temp.getIcon());
+                            m.writer().writeByte(item.tier); // tier
+                            m.writer().writeShort(1); // level required
+                            m.writer().writeByte(item.color); // color
+                            m.writer().writeByte(0); // can sell
+                            m.writer().writeByte(0); // can trade
+                            m.writer().writeByte(item.op.size());
+                            for (int i = 0; i < item.op.size(); i++) {
+                                m.writer().writeByte(item.op.get(i).id);
+                                m.writer().writeInt(item.op.get(i).getParam(item.tier));
+                            }
+                            m.writer().writeInt(0); // time use
+                            m.writer().writeByte(0);
+                            m.writer().writeByte(0);
+                            m.writer().writeByte(0);
+                            conn.addmsg(m);
+                            m.cleanup();
+                            //
+                            conn.p.item.char_inventory(4);
+                            conn.p.item.char_inventory(7);
+                            conn.p.item.char_inventory(3);
+
+                            m = new Message(-105);
+                            m.writer().writeByte(5);
+                            if (suc) {
+                                m.writer().writeByte(3);
+                            } else {
+                                m.writer().writeByte(4);
+                            }
+                            if (suc) {
+                                m.writer().writeUTF("Thành công!");
+                            } else {
+                                m.writer().writeUTF("Thất bại!");
+                            }
+                            m.writer().writeShort(id);
+                            conn.addmsg(m);
+                            m.cleanup();
+
+                        } else {
+                            Service.send_notice_box(conn, "Không đủ nguyên liệu");
+                        }
+                    }
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

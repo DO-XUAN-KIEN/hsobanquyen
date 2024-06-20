@@ -1,7 +1,7 @@
 package map;
 
 public class Vgo {
-	public byte id_map_go;
+	public short id_map_go;
 	public String name_map_go;
 	public short x_old;
 	public short y_old;
@@ -10,7 +10,7 @@ public class Vgo {
         public Vgo(){}
         
         public Vgo(int idmap, String name, int x_o, int y_o, int x_n, int y_n){
-            id_map_go = (byte)idmap;
+            id_map_go = (short) idmap;
             name_map_go = name;
             x_old = (short) x_o;
             y_old = (short) y_o;
@@ -18,7 +18,7 @@ public class Vgo {
             y_new = (short) y_n;
         }
         public Vgo(int idmap, String name, int x_n, int y_n){
-            id_map_go = (byte)idmap;
+            id_map_go = (short) idmap;
             name_map_go = name;
             x_new = (short) x_n;
             y_new = (short) y_n;

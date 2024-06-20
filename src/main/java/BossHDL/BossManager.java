@@ -1,4 +1,3 @@
-
 package BossHDL;
 
 import client.Player;
@@ -11,14 +10,16 @@ import map.Mob_in_map;
 import template.Mob;
 import map.Map;
 
-
+/**
+ *
+ * @author chien
+ */
 public class BossManager {
     public static final CopyOnWriteArrayList<Mob_in_map> entrys = new CopyOnWriteArrayList<>();
     
     private static byte GetIdMap(int idboss){
         switch (idboss) {
             //case = mod - Return = map
-            
             case 103: return  7;
             case 104: return 15;
             case 101: return 25;
@@ -30,23 +31,21 @@ public class BossManager {
             case 149: return 76;
             case 155: return 79;
             case 174: return 26;
-            case 173: return 7;
-            case 190: return 124;
-            case 195: return 123;
-            case 196: return 126;
-            case 197: return 125;
-            case 186: return 120;
-            case 187: return 121;
-            case 188: return 122;
-            case 192: return 111;
+            case 173: return 113;
+            case 195: return 112;
+            case 196: return 115;
+            case 197: return 114;
+            case 186: return 109;
+            case 187: return 110;
+            case 188: return 111;
+            case 178: return 36;
             default:
                 throw new AssertionError();
         }
     }
     private static short[] GetSite(int idboss){
         switch (idboss) {
-            //mod + vị trí 
-            
+            //mod + vị trí
             case 103: return  new short[]{432,512};
             case 104: return new short[]{ 530,213};
             case 101: return new short[]{ 204,284};
@@ -58,28 +57,27 @@ public class BossManager {
             case 149: return new short[]{ 204,762};
             case 155: return new short[]{ 534,732};
             case 174: return new short[]{ 550,250};
-            case 173: return new short[]{ 432,512};
-            case 190: return new short[]{ 450,432};
+            case 173: return new short[]{ 450,432};
             case 195: return new short[]{ 450,432};
             case 196: return new short[]{ 450,432};
             case 197: return new short[]{ 450,432};
             case 186: return new short[]{ 450,432};
             case 187: return new short[]{ 450,432};
             case 188: return new short[]{ 450,432};
-            case 192: return new short[]{ 450,384};
+            case 178: return new short[]{ 450,384};
             default:
                 throw new AssertionError();
         }
     }
     public static void init(){
         int idx = 10_000;
-        int[] ids = new int[]{101 , 84 , 83 ,103 ,104 ,105 , 106, 149 , 155, 174, 173, 190, 195, 196, 197, 186, 187, 188,192};
+        int[] ids = new int[]{101 , 84 , 83 ,103 ,104 ,105 , 106, 149 , 155, 174, 173, 195, 196, 197, 186, 187, 188,178};
         for(int id : ids){
             for(int i=0; i<5;i++){
 //                if(id == 174){
 //                    if(i == 1 || i == 4 || Manager.gI().event != 2) continue;
 //                }
-                if(id == 192){
+                if(id == 178){
                     if(i == 1 || i == 4) continue;
                 }
                 Mob m = Mob.entrys.get(id);
@@ -87,13 +85,11 @@ public class BossManager {
                 temp.template = m;
                 temp.x = GetSite(id)[0];
                 temp.y = GetSite(id)[1];
-                temp.level = id == 192? 150: m.level;
+                temp.level = id == 178? 150: m.level;
                 temp.Set_isBoss(true);
-                temp.hp = temp.Set_hpMax(id == 192? (600_000_000 + (i*200_000_000)) : m.hpmax );
-                if(id == 192)
-                    temp.timeBossRecive = 1000 * 60 * 60 * 8;
-                else if(id == 173)
-                    temp.timeBossRecive = 1000 * 60 * 60 * 12;
+                temp.hp = temp.Set_hpMax(id == 178? (600_000_000 + (i*200_000_000)) : m.hpmax );
+                if(id == 178)
+                    temp.timeBossRecive = 1000 * 60 * 60 * 6;
                 else
                     temp.timeBossRecive = 1000 * 60 * 60 * 6;
                 temp.map_id = GetIdMap(id);
@@ -128,16 +124,16 @@ public class BossManager {
         try{
             long time = System.currentTimeMillis();
             for(Mob_in_map mob : entrys){
-                if((!mob.is_boss_active || mob.isdie ) && time > mob.time_back){
+                if((!mob.is_boss_active || mob.isDie) && time > mob.time_back){
                     Map[] map = Map.get_map_by_id(mob.map_id);
                     if(map == null || map.length <= mob.zone_id)continue;
-                    mob.isdie = false;
+                    mob.isDie = false;
                     mob.is_boss_active =true;
                     mob.hp = mob.get_HpMax();
                     if(map[mob.zone_id].Boss_entrys.contains(mob))
                         map[mob.zone_id].Boss_entrys.remove(mob);
                     map[mob.zone_id].Boss_entrys.add(mob);
-                 //   Manager.gI().chatKTGprocess(""+mob.template.name+" Đã Xuất Hiện Tại "+map[mob.zone_id].name);
+                    //Manager.gI().chatKTGprocess(""+mob.template.name+" đã xuất hiện tại "+map[mob.zone_id].name);
                     //System.out.println("Boss "+mob.template.name+" Acctive "+map[mob.zone_id].name+ " khu "+(mob.zone_id+1));
                 }
             }
@@ -166,7 +162,22 @@ public class BossManager {
             }
         }
     }
-    
+    public static void callBossToMap(int map_id, int boss_id, int x, int y, int hp, int level) {
+        Mob m = Mob.entrys.get(boss_id);
+        Mob_in_map temp = new Mob_in_map();
+        temp.template = m;
+        temp.x = (short) x;
+        temp.y = (short) y;
+        temp.level = (short) level;
+        temp.color_name = 5;
+
+        temp.Set_isBoss(true);
+        temp.hp = temp.Set_hpMax(hp);
+        temp.map_id = (short) map_id;
+        temp.zone_id = 0;
+        temp.index = 10_000 + entrys.size();
+        entrys.add(temp);
+    }
     
     
 }

@@ -1,7 +1,13 @@
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package template;
 
-
+/**
+ *
+ * @author chien
+ */
 public class Eff_in_body {
     // 0 -> 4 : special skill clazz, 4: vat ly
     // 52 : + 10 %vang

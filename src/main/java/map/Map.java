@@ -1,29 +1,35 @@
 package map;
 
 import History.His_DelItem;
+import ai.Bot;
 import ai.MobAi;
 import ai.NhanBan;
 import ai.Player_Nhan_Ban;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+
 import client.Party;
 import client.Pet;
-import client.Squire;
 import client.Player;
+import client.Squire;
 import core.Manager;
-import core.MenuController;
 import core.Service;
 import core.Util;
 import ev_he.MobCay;
 //import event_daily.LoiDai;
-import event_daily.LoiDai2;
+import event_daily.KingCup;
 import event_daily.UseItemArena;
 import event_daily.ChienTruong;
 import io.Message;
 import io.Session;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+
 import java.util.concurrent.CopyOnWriteArrayList;
-import template.EffTemplate;
+
 import template.Item3;
 import template.Item47;
 import template.ItemTemplate3;
@@ -31,6 +37,7 @@ import template.ItemTemplate4;
 import template.ItemTemplate7;
 import template.MainObject;
 import template.Mob_MoTaiNguyen;
+import template.NpcTemplate;
 import template.Option_pet;
 import template.StrucEff;
 
@@ -38,8 +45,8 @@ public class Map implements Runnable {
 
     public static final List<Map[]> entrys = new ArrayList<>();
     public final List<Player> players;
-    public long time_use_item_arena = System.currentTimeMillis();
-    public final byte map_id;
+    public long time_use_item_arena;
+    public final short map_id;
     public final byte zone_id;
     public final ItemMap[] item_map;
     private final Thread mapthread;
@@ -60,13 +67,11 @@ public class Map implements Runnable {
     public final boolean ismaplang;
     public final boolean showhs;
     public final short maxplayer;
-    public byte maxzone;
+    public final byte maxzone;
     private final byte[] map_data;
+    public int baseID = -1001;
     private boolean running;
-    public int num_mob_super;
     public Dungeon d;
-    //public LoiDai ld;
-    public LoiDai2 ld2;
     public short mapW;
     public short mapH;
     public long time_ct;
@@ -74,11 +79,14 @@ public class Map implements Runnable {
     public CopyOnWriteArrayList<MobCay> mobEvens = new CopyOnWriteArrayList<>();
     public final CopyOnWriteArrayList<Mob_in_map> Boss_entrys = new CopyOnWriteArrayList<>();
     public final CopyOnWriteArrayList<MobAi> Ai_entrys;
+    public List<Bot> bots;
+    public long time_add_bot;
     public UseItemArena Arena;
+    public KingCup kingCupMap;
 
     public Map(int id, int zone, String[] npc_name, String name, byte typemap, boolean ismaplang, boolean showhs,
             int maxplayer, int maxzone, List<Vgo> vgo) throws IOException {
-        this.map_id = (byte) id;
+        this.map_id = (short) id;
         this.zone_id = (byte) zone;
         this.npc_name_data = npc_name;
         this.name = name;
@@ -92,7 +100,6 @@ public class Map implements Runnable {
         this.players = new ArrayList<>();
         this.vgos = vgo;
         this.running = false;
-        this.num_mob_super = 0;
         this.map_data = Util.loadfile("data/mapnew/" + this.map_id);
 
         byte[] data = map_data; // Mảng byte chứa dữ liệu
@@ -105,8 +112,11 @@ public class Map implements Runnable {
         this.mapW = dis.readByte();
         this.mapH = dis.readByte();
         Ai_entrys = new CopyOnWriteArrayList<>();
-        if (map_id == 54 || map_id == 56 || map_id == 58 || map_id == 60) {
+        if (map_id == 54 || map_id == 56 || map_id == 58 || map_id == 60 || map_id == 61) {
             Arena = new UseItemArena();
+        }
+        if (this.zone_id == maxzone) {
+            bots = new ArrayList<>();
         }
     }
 
@@ -120,8 +130,18 @@ public class Map implements Runnable {
             try {
                 time1 = System.currentTimeMillis();
                 update();
-                update_AI();
-
+                if (this.zone_id == maxzone) {
+                    Iterator<Bot> iterator = bots.iterator();
+                    while (iterator.hasNext()) {
+                        Bot bot = iterator.next();
+                        if (bot != null) {
+                            bot.update();
+                            if (bot.isDie) {
+                                iterator.remove();
+                            }
+                        }
+                    }
+                }
                 if (this.time_chat < System.currentTimeMillis()) {
                     this.time_chat = System.currentTimeMillis() + 8000L;
                     auto_chat_npc();
@@ -142,6 +162,10 @@ public class Map implements Runnable {
                 if (this.map_id == 48 && d != null) {
                     d.update();
                 }
+                if (map_id == 102 && kingCupMap != null) {
+                    kingCupMap.update();
+                    kingCupMap.finish();
+                }
                 time2 = System.currentTimeMillis();
                 time3 = (1_000L - (time2 - time1));
                 if (time3 > 0) {
@@ -151,6 +175,7 @@ public class Map implements Runnable {
                     Thread.sleep(time3);
                 }
             } catch (InterruptedException e) {
+                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -161,7 +186,7 @@ public class Map implements Runnable {
         try {
             switch (this.map_id) {
                 case 4: {
-                  //  Npc.chat(this, Npc.CHAT_MR_BALLARD, -53);
+                    Npc.chat(this, Npc.CHAT_MR_BALLARD, -53);
                     break;
                 }
                 case 1: {
@@ -189,13 +214,20 @@ public class Map implements Runnable {
     public boolean isMapChiemThanh() {
         return map_id >= 83 && map_id <= 87;
     }
+    public boolean ismapkogioihan(){
+        return map_id == 55;
+    }
+    public boolean is_map_buon() {
+        return map_id == 8 || map_id == 7 || (map_id >= 15 && map_id <= 18) || (map_id >= 20 && map_id <= 25) || map_id == 33
+                || map_id == 34 || (map_id >= 37 && map_id <= 39) || (map_id >= 42 && map_id <= 45) || map_id == 52;
+    }
 
     public boolean isMapLoiDai() {
-        return map_id == 100 && map_id == 102;
+        return map_id == 100 || map_id == 102;
     }
 
     public void BossDie(Mob_in_map mob) {
-        mob.isdie = true;
+        mob.isDie = true;
         mob.time_back = System.currentTimeMillis() + mob.timeBossRecive;
         synchronized (Boss_entrys) {
             Boss_entrys.remove(mob);
@@ -226,6 +258,7 @@ public class Map implements Runnable {
                 return;
             }
         }
+        System.err.println("DIE BOSS" + idx);
         Message m2 = new Message(17);
         m2.writer().writeShort(-1);
         m2.writer().writeShort(idx);
@@ -273,18 +306,7 @@ public class Map implements Runnable {
                     mobtainguyen.hp = mobtainguyen.get_HpMax();
                     mobtainguyen.isbuff_hp = false;
                 }
-                Message m_hp = new Message(32);
-                m_hp.writer().writeByte(1);
-                m_hp.writer().writeShort(mobtainguyen.index);
-                m_hp.writer().writeShort(-1); // id potion in bag
-                m_hp.writer().writeByte(0);
-                m_hp.writer().writeInt(mobtainguyen.get_HpMax()); // max hp
-                m_hp.writer().writeInt(mobtainguyen.hp); // hp
-                m_hp.writer().writeInt(par); // param use
-                for (int i = 0; i < this.players.size(); i++) {
-                    this.players.get(i).conn.addmsg(m_hp);
-                }
-                m_hp.cleanup();
+                MainObject.upHP(mobtainguyen.map, mobtainguyen, par);
             }
         }
         //
@@ -355,7 +377,7 @@ public class Map implements Runnable {
                 if (temp.p_target.conn.connected && temp.p_target.map.map_id == temp.map_id
                         && temp.p_target.map.zone_id == 4
                         && (Math.abs(temp.x - temp.p_target.x) < 200 && Math.abs(temp.y - temp.p_target.y) < 200)
-                        && !temp.p_target.isdie) {
+                        && !temp.p_target.isDie) {
                     MainObject.MainAttack(this, temp, temp.p_target, Util.random(new int[]{0, 1, 2, 5, 6, 9, 10, 13, 14, 18}), null, 2);
 
                 } else {
@@ -383,6 +405,8 @@ public class Map implements Runnable {
             for (int i1 = players.size() - 1; i1 >= 0; i1--) {
                 try {
                     Player p = players.get(i1);
+                    Service.send_char_main_in4(p);
+                    MapService.update_in4_2_other_inside(p.map, p);
                     if (p == null || p.conn == null || p.conn.socket == null || p.conn.socket.isClosed() || !p.conn.connected) {
                         players.remove(p);
                         if (p != null && p.conn != null) {
@@ -405,7 +429,9 @@ public class Map implements Runnable {
                         MapService.send_msg_player_inside(p.map, p, m6, true);
                         m6.cleanup();
                     }
-
+                    if (p.isDie && kingCupMap != null && p.time_die + 3000L > System.currentTimeMillis()) {
+                        kingCupMap.refresh();
+                    }
                     if (this.map_id == 50) { // pet_manager
                         long now_time = System.currentTimeMillis();
                         for (Pet temp : p.mypet) {
@@ -493,7 +519,6 @@ public class Map implements Runnable {
                     if (p.squire != null && !p.isSquire) {
                         Squire.update(p);
                     }
-
                     p.update_wings_time();
                     for (Pet pet : p.mypet) {
                         if (pet.grown > 0 && pet.time_eat < System.currentTimeMillis()) {
@@ -505,13 +530,12 @@ public class Map implements Runnable {
                         }
                     }
                     p.updateEff();
-                    if (!p.isdie) {
+                    if (!p.isDie) {
                         // auto +hp,mp
                         p.update(this);
                         if (p.squire != null && p.isLiveSquire) {
                             p.squire.update(this);
                         }
-
                         // auto trừ hp, mp khi dính bỏng lửa, bỏng lạnh
                         // eff medal
                         Item3 it = p.item.wear[12];
@@ -574,9 +598,9 @@ public class Map implements Runnable {
                                 default: { // 4587
                                     byte eff_ = 3;
                                     if (it.tier == 15) {
-                                        eff_ = 30;
+                                        eff_ = 78;
                                     } else if (it.tier >= 12) {
-                                        eff_ = 29;
+                                        eff_ = 30;
                                     } else if (it.tier >= 9) {
                                         eff_ = 5;
                                     } else if (it.tier >= 6) {
@@ -595,111 +619,64 @@ public class Map implements Runnable {
                             MapService.send_msg_player_inside(this, p, m, true);
                             m.cleanup();
                         }
-                        // hieu ung danh hieu
-                        it = p.item.wear[19];
-                        if (it != null && p.time_eff_wear < System.currentTimeMillis()) {
-                            p.time_eff_wear = System.currentTimeMillis() + 5000L;
-                            Message m = new Message(-49);
-                            m.writer().writeByte(2);
-                            m.writer().writeShort(0);
-                            m.writer().writeByte(0);
-                            m.writer().writeByte(0);
-                            switch (it.id) {
-
-                                case 4812: {
-                                    byte eff_ = 76;
-                                    if (it.tier == 15) {
-                                        eff_ = 67;
-                                    }
-                                    m.writer().writeByte(eff_);
-                                    break;
-                                }
-                                case 4813: {
-                                    byte eff_ = 77;
-                                    if (it.tier == 15) {
-                                        eff_ = 67;
-                                    }
-                                    m.writer().writeByte(eff_);
-                                    break;
-                                }
-                                default: {
+//                        it = p.item.wear[20];
+//                        if (it != null && p.time_eff_wear < System.currentTimeMillis()) {
+//                            p.time_eff_wear = System.currentTimeMillis() + 5000L;
+//                            Message m = new Message(-49);
+//                            m.writer().writeByte(2);
+//                            m.writer().writeShort(0);
+//                            m.writer().writeByte(0);
+//                            m.writer().writeByte(0);
+//                            switch (it.id) {
+//
+//                                case 4784: {
+//                                    byte eff_ = 62;
+//                                    if (it.tier == 15) {
+//                                        eff_ = 62;
+//                                    }
+//                                    m.writer().writeByte(eff_);
+//                                    break;
+//                                }
+//                                case 4785: {
+//                                    byte eff_ = 66;
+//                                    if (it.tier == 15) {
+//                                        eff_ = 66;
+//                                    }
+//                                    m.writer().writeByte(eff_);
+//                                    break;
+//                                }
+//                                case 4786: {
+//                                    byte eff_ = 65;
+//                                    if (it.tier == 15) {
+//                                        eff_ = 65;
+//                                    }
+//                                    m.writer().writeByte(eff_);
+//                                    break;
+//                                }
+//                                case 4787: {
+//                                    byte eff_ = 50;
+//                                    if (it.tier == 15) {
+//                                        eff_ = 50;
+//                                    }
+//                                    m.writer().writeByte(eff_);
+//                                    break;
+//                                }
+//                                default: {
 //                                    byte eff_ = 51;
 //                                    if (it.tier == 15) {
 //                                        eff_ = 51;
 //                                    }
 //                                    m.writer().writeByte(eff_);
-                                    break;
-                                }
-                            }
-                            m.writer().writeShort(p.index);
-                            m.writer().writeByte(0);
-                            m.writer().writeByte(0);
-                            m.writer().writeInt(5000);
-                            MapService.send_msg_player_inside(this, p, m, true);
-                            m.cleanup();
-                        }
-                        // hieu ung giap sieu nhan
-                       it = p.item.wear[20];
-                        if (it != null && p.time_eff_wear < System.currentTimeMillis()) {
-                            p.time_eff_wear = System.currentTimeMillis() + 5000L;
-                            Message m = new Message(-49);
-                            m.writer().writeByte(2);
-                            m.writer().writeShort(0);
-                            m.writer().writeByte(0);
-                            m.writer().writeByte(0);
-                            switch (it.id) {
-
-                                case 4784: {
-                                    byte eff_ = 67;
-                                    if (it.tier == 15) {
-                                        eff_ = 67;
-                                    }
-                                    m.writer().writeByte(eff_);
-                                    break;
-                                }
-                                case 4785: {
-                                    byte eff_ = 67;
-                                    if (it.tier == 15) {
-                                        eff_ = 67;
-                                    }
-                                    m.writer().writeByte(eff_);
-                                    break;
-                                }
-                                case 4786: {
-                                    byte eff_ = 67;
-                                    if (it.tier == 15) {
-                                        eff_ = 67;
-                                    }
-                                    m.writer().writeByte(eff_);
-                                    break;
-                                }
-                                case 4787: {
-                                    byte eff_ = 67;
-                                    if (it.tier == 15) {
-                                        eff_ = 67;
-                                    }
-                                    m.writer().writeByte(eff_);
-                                    break;
-                                }
-                                default: {
-                                    byte eff_ = 51;
-                                    if (it.tier == 15) {
-                                        eff_ = 51;
-                                    }
-                                    m.writer().writeByte(eff_);
-                                    break;
-                                }
-                            }
-                            m.writer().writeShort(p.index);
-                            m.writer().writeByte(0);
-                            m.writer().writeByte(0);
-                            m.writer().writeInt(5000);
-                            MapService.send_msg_player_inside(this, p, m, true);
-                            m.cleanup();
-                        
-                     
-
-                        }
+//                                    break;
+//                                }
+//                            }
+//                            m.writer().writeShort(p.index);
+//                            m.writer().writeByte(0);
+//                            m.writer().writeByte(0);
+//                            m.writer().writeInt(5000);
+//                            MapService.send_msg_player_inside(this, p, m, true);
+//                            m.cleanup();
+//                        }
                     }
                 } catch (Exception eee) {
                 }
@@ -774,6 +751,7 @@ public class Map implements Runnable {
             p.change_map(p, vgo);
             return;
         }
+        p.npcs.clear();
         Message m = new Message(12);
         m.writer().writeShort(this.map_id);
         m.writer().writeShort((short) (p.x / 24));
@@ -781,7 +759,9 @@ public class Map implements Runnable {
         m.writer().write(this.map_data);
         m.writer().writeByte(this.zone_id); // zone
         m.writer().writeByte(this.typemap);
-        m.writer().writeBoolean(this.ismaplang);
+        if (p.conn.ac_admin < 66) {
+            m.writer().writeBoolean(this.ismaplang);
+        }
         m.writer().writeBoolean(this.showhs);
         p.conn.addmsg(m);
         m.cleanup();
@@ -790,12 +770,48 @@ public class Map implements Runnable {
         if (Manager.gI().event == 1 && this.map_id == 1) {
             path = "data/npc/event" + Manager.gI().event + "/";
             Service.send_msg_data(p.conn, -49, "event1_1");
+        } else if (Manager.gI().event == 3 && this.map_id == 1) {
+            path = "data/npc/event4/";
+            Service.eff_map(this, p, -65, 60, 648, 360, 4, 2, 95);
+            Service.eff_map(this, p, -64, 59, 408, 360, 4, 2, 95);
+            Service.eff_map(this, p, -62, 61, 528, 360, 3, 2, 75);
+            Service.eff_map(this, p, -66, 64, 576, 216, 2, 2, 115);
+            Service.eff_map(this, p, -89, 110, 288, 600, 4, 2, 115);
         }
-        for (int i = 0; i < this.npc_name_data.length; i++) {
+        if (isMapLangPhuSuong() || map_id == 135) {
+            path = "data/npc/langphusuong/";
+        }
+        for (String npc_name_data1 : this.npc_name_data) {
+            byte[] data = Util.loadfile(path + npc_name_data1);
             m = new Message(-50);
-            m.writer().write(Util.loadfile(path + this.npc_name_data[i]));
+            m.writer().write(data);
             p.conn.addmsg(m);
             m.cleanup();
+
+            ByteArrayInputStream bais = new ByteArrayInputStream(data);
+            DataInputStream dis = new DataInputStream(bais);
+            try {
+                byte size = dis.readByte();
+                for (int i = 0; i < size; i++) {
+                    NpcTemplate npc = new NpcTemplate();
+                    npc.name = dis.readUTF();
+                    dis.readUTF();
+                    npc.id = dis.readByte();
+                    dis.readByte();
+                    npc.x = dis.readShort();
+                    npc.y = dis.readShort();
+                    dis.readByte();
+                    dis.readByte();
+                    dis.readByte();
+                    dis.readByte();
+                    dis.readUTF();
+                    dis.readByte();
+                    dis.readByte();
+                    p.npcs.add(npc);
+                }
+            } catch (IOException e) {
+                System.err.println("ERROR " + this.map_id);
+            }
         }
         // mob mo tai nguyen
         if (Map.is_map_chiem_mo(p.map, true)) {
@@ -837,8 +853,70 @@ public class Map implements Runnable {
             m.writer().writeByte(0);
             p.conn.addmsg(m);
             m.cleanup();
+            NpcTemplate npc = new NpcTemplate();
+            npc.name = "Mr Dylan";
+            npc.id = -57;
+            npc.x = 384;
+            npc.y = 432;
+            p.npcs.add(npc);
         }
-
+        if (this.map_id == 1 && p.conn.ac_admin > 120) {
+            m = new Message(-50);
+            m.writer().writeByte(1);
+            m.writer().writeUTF("Ms AD");
+            m.writer().writeUTF("Giao Tiếp");
+            m.writer().writeByte(-1);// id npc
+            m.writer().writeByte(22);   // icon
+            m.writer().writeShort(358); // x
+            m.writer().writeShort(302); // y
+            m.writer().writeByte(1);
+            m.writer().writeByte(1);
+            m.writer().writeByte(2);
+            m.writer().writeByte(22); // icon 2
+            m.writer().writeUTF("thích gì có đó");
+            m.writer().writeByte(1);
+            m.writer().writeByte(0);
+            p.conn.addmsg(m);
+            m.cleanup();
+        }
+        if (this.map_id == 1) {
+            m = new Message(-50);
+            m.writer().writeByte(1);
+            m.writer().writeUTF("Ms mango");
+            m.writer().writeUTF("Giao Tiếp");
+            m.writer().writeByte(-99);// id npc
+            m.writer().writeByte(56);   // icon
+            m.writer().writeShort(423); // x
+            m.writer().writeShort(234); // y
+            m.writer().writeByte(1);
+            m.writer().writeByte(1);
+            m.writer().writeByte(2);
+            m.writer().writeByte(48); // icon 2
+            m.writer().writeUTF("Có money có tất cả");
+            m.writer().writeByte(1);
+            m.writer().writeByte(0);
+            p.conn.addmsg(m);
+            m.cleanup();
+        }
+        if (this.map_id == 1) {
+            m = new Message(-50);
+            m.writer().writeByte(1);
+            m.writer().writeUTF("Mr Ngọc Hoàng");
+            m.writer().writeUTF("Giao Tiếp");
+            m.writer().writeByte(-97);// id npc
+            m.writer().writeByte(56);   // icon
+            m.writer().writeShort(612); // x
+            m.writer().writeShort(237); // y
+            m.writer().writeByte(1);
+            m.writer().writeByte(1);
+            m.writer().writeByte(2);
+            m.writer().writeByte(48); // icon 2
+            m.writer().writeUTF("Muốn thành tiên thì gặp ta");
+            m.writer().writeByte(1);
+            m.writer().writeByte(0);
+            p.conn.addmsg(m);
+            m.cleanup();
+        }
         // monument
         if (this.map_id == 1) {
             m = new Message(-96);
@@ -851,7 +929,7 @@ public class Map implements Runnable {
             m.writer().writeByte(-1);
             m.writer().writeByte(-25);
             m.writer().writeByte(1);
-            m.writer().writeUTF("Top Level");
+            m.writer().writeUTF("Đài vinh danh");
             m.writer().writeUTF(Map.name_mo);
             m.writer().writeByte(-49);
             m.writer().writeByte(15);
@@ -966,8 +1044,15 @@ public class Map implements Runnable {
         }
     }
 
-
     public static Map get_map_dungeon(int id) {
+        for (Map[] temp : entrys) {
+            if (temp[0].map_id == id) {
+                return temp[0];
+            }
+        }
+        return null;
+    }
+    public static Map get_leothap(int id) {
         for (Map[] temp : entrys) {
             if (temp[0].map_id == id) {
                 return temp[0];
@@ -977,8 +1062,8 @@ public class Map implements Runnable {
     }
 
     public synchronized void drop_item(Player p, byte type, short id) throws IOException {
-        His_DelItem hist = new His_DelItem(p.name);
-        hist.Logger = "Vứt";
+//        His_DelItem hist = new His_DelItem(p.name);
+//        hist.Logger = "Vứt";
         switch (type) {
             case 3: {
                 Item3 temp = p.item.bag3[id];
@@ -987,26 +1072,23 @@ public class Map implements Runnable {
                         Service.send_notice_box(p.conn, "Vật phẩm đã khóa");
                         return;
                     }
-                    hist.tem3 = temp;
+//                    hist.tem3 = temp;
 //                    hist.Flus();
-                    p.item.bag3[id] = null;
+                    p.item.remove(3, id, 1);
                 }
                 break;
             }
             case 4:
             case 7: {
-                hist.tem47 = new Item47();
-                hist.tem47.id = id;
-                hist.tem47.category = type;
-                hist.tem47.quantity = (short) p.item.total_item_by_id(type, id);
+//                hist.tem47 = new Item47();
+//                hist.tem47.id = id;
+//                hist.tem47.category = type;
+//                hist.tem47.quantity = (short) p.item.total_item_by_id(type, id);
 //                hist.Flus();
                 p.item.remove(type, id, p.item.total_item_by_id(type, id));
                 break;
             }
         }
-        p.item.char_inventory(4);
-        p.item.char_inventory(7);
-        p.item.char_inventory(3);
     }
 
     public void send_mount(Player p) throws IOException {
@@ -1035,7 +1117,7 @@ public class Map implements Runnable {
         }
         if (type == 3 && item_map[id] != null
                 && (item_map[id].id_item == 3590 || item_map[id].id_item == 3591 || item_map[id].id_item == 3592)) {
-            if (item_map[id].idmaster != -1 && item_map[id].idmaster != conn.p.index ) {
+            if (item_map[id].idmaster != -1 && conn.p.index != item_map[id].idmaster) {
                 Service.send_notice_nobox_white(conn, "Vật phẩm của người khác");
                 return;
             }
@@ -1061,7 +1143,7 @@ public class Map implements Runnable {
 //            System.out.println("map.Map.pick_item()"+id+"   "+type);
 //            return;
 //        }
-        if (conn.p.isdie) {
+        if (conn.p.isDie) {
             return;
         }
         if (item_map[id].idmaster != -1 && conn.p.index != item_map[id].idmaster) {
@@ -1304,9 +1386,15 @@ public class Map implements Runnable {
         return null;
     }
 
-    public static boolean is_map_cant_save_site(byte id) {
+    public static boolean is_map_cant_save_site(short id) {
         return id == 48 || id == 88 || id == 89 || id == 90 || id == 91 || id == 82 || id == 102 || id == 100 || (id >= 83 && id <= 87) || (id >= 53 && id <= 61)
-                || Map.is_map_chien_truong(id);
+                || Map.is_map_chien_truong(id) || id == 125 || id == 127 || id == 129 || id == 132 || id == 135;
+    }
+    public static boolean is_map_not_zone2(short id) {
+        return id == 48 || id == 88 || id == 89 || id == 90 || id == 91 || id == 82 || id == 102 || id == 100
+                || (id >= 83 && id <= 87) || (id >= 53 && id <= 61) || Map.is_map_chien_truong(id) || id == 1 || id == 10
+                || id == 14 || id == 18 || id == 28 || id == 32 || id == 33 || id == 34 || id == 35 || id == 36 || id == 67
+                || id == 68 || id == 69 || id == 70 || id == 93;
     }
 
     public synchronized void add_item_map_leave(Map map, Player p_master, ItemMap temp, int mob_index)
@@ -1357,16 +1445,20 @@ public class Map implements Runnable {
         }
         return (is_zone) ? (map.zone_id == 4 && is_map) : is_map;
     }
-
-    public static boolean is_map__load_board_player(byte id) {
+    public static boolean is_map__load_board_player(short id) {
         return id == 102;
     }
 
-    public static boolean is_map_chien_truong(byte id) {
+    public static boolean is_map_chien_truong(short id) {
         return id >= 53 && id <= 61;
     }
 
     public boolean isMapChienTruong() {
         return map_id >= 53 && map_id <= 61;
     }
+
+    public boolean isMapLangPhuSuong() {
+        return map_id == 125 || map_id == 127 || map_id == 129 || map_id == 132;
+    }
+
 }

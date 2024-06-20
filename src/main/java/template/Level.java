@@ -7,7 +7,6 @@ public class Level {
 	public static final List<Level> entrys = new ArrayList<>();
 	public short level;
 	public long exp;
-	public long point_arena;
 	public short tiemnang;
 	public short kynang;
 

@@ -15,12 +15,12 @@ import template.Option_pet;
 public class Pet {
 
     public static String[] name_template = new String[]{"Cú", "Dơi", "Sói", "Đại Bàng", "Khỉ", "Rồng lửa", "Thỏ",
-        "Phượng hoàng băng", "Zabivaka", "Bóng ma", "Dê con", "Yêu tinh", "Thiên thần", "Sao la", "Mèo","Quái vật"};
-    static short[] id_template = new short[]{2944,2943,2939,3269,3616,4614,4622,4626,4631,4699,4708,4761,4762,4768,4788,4812};
-//    public static byte[] type_template = new byte[]{41,8, 13, 14, 10, 11, 11, 11, 12, 12, 12, 9, 7, 7, 7, 6, 5, 5, 5, 4, 4, 4,
-//        3, 3, 3, 2, 2, 2, 1, 1, 1, 0, 0, 0};
-//    public static byte[] icon_template = new byte[]{26, 41, 32, 33, 34, 35, 36, 37, 38, 29, 21, 22, 23, 20, 15, 16, 17,
-//        18, 18, 18, 45, 45, 45, 12, 13, 14, 9, 10, 11, 6, 7, 8, 0, 1, 2, 3, 4, 5};
+        "Phượng hoàng băng", "Zabivaka", "Bóng ma", "Dê con", "Yêu tinh", "Thiên thần", "Sao la", "Mèo"};
+    static short[] id_template = new short[]{2944,2943,2939,3269,3616,4614,4622,4626,4631,4699,4708,4761,4762,4768,4788};
+    public static byte[] type_template = new byte[]{41,8, 13, 10, 11, 11, 11, 12, 12, 12, 9, 7, 7, 7, 6, 5, 5, 5, 4, 4, 4,
+        3, 3, 3, 2, 2, 2, 1, 1, 1, 0, 0, 0};
+    public static byte[] icon_template = new byte[]{26, 41, 32, 33, 34, 35, 36, 37, 38, 29, 21, 22, 23, 20, 15, 16, 17,
+        12, 13, 14, 9, 10, 11, 6, 7, 8, 0, 1, 2, 3, 4, 5};
     public List<Option_pet> op;
     public String name;
     public short level;
@@ -130,6 +130,14 @@ public class Pet {
                 maxdam_ = new int[]{0, 0, 0, 0, 2000, 4500, 2000};
                 break;
             }
+            case 4622: { //tho
+                temp.icon = 18;
+                temp.type = 6;
+                id_ = new short[]{23, 24, 25, 26, 48, 80, 85, 86, 114, 1}; // chir so
+                param_ = new int[]{1, 1, 1, 1, 1500, 100, 100, 1000, 2, 1000};
+                maxdam_ = new int[]{0, 0, 0, 0, 4500, 200, 150, 1500, 3, 2000};
+                break;
+            }
             case 3616: {//khỉ
                 temp.icon = 12;
                 temp.type = 4;
@@ -144,14 +152,6 @@ public class Pet {
                 id_ = new short[]{23, 24, 25, 26, 48, 97, 98, 2};
                 param_ = new int[]{1, 1, 1, 1, 1500, 1300, 2000, 1000};
                 maxdam_ = new int[]{0, 0, 0, 0, 4500, 2300, 4500, 2000};
-                break;
-            }
-            case 4622: { //tho
-                temp.icon = 18;
-                temp.type = 6;
-                id_ = new short[]{23, 24, 25, 26, 48, 80, 85, 86, 114, 1}; // chir so
-                param_ = new int[]{1, 1, 1, 1, 1500, 100, 100, 1000, 2, 1000};
-                maxdam_ = new int[]{0, 0, 0, 0, 4500, 200, 150, 1500, 3, 2000};
                 break;
             }
             case 4626: {//phb
@@ -212,7 +212,7 @@ public class Pet {
                 break;
             }
              case 4788: {//mèo
-                temp.icon = 42;
+                temp.icon = 40;
                 temp.type = 14;
                 id_ = new short[]{23, 24, 25, 26, 48, 80, 85, 86, 114, 1}; // chir so
                 param_ = new int[]{1, 1, 1, 1, 1500, 100, 100, 1000, 2, 1000};
@@ -232,7 +232,7 @@ public class Pet {
     }
 
     public short get_id() {
-        if(type < id_template.length)
+        if(type<id_template.length)
             return id_template[type];
         else
             return 2943;
@@ -338,7 +338,7 @@ public class Pet {
         }
     }
     public void PetAttack(Player p, MainObject focus)throws IOException{
-        if (!focus.isdie && this.grown > 0) {
+        if (!focus.isDie && this.grown > 0) {
             int a1 = 0;
             int a2 = 1;
             for (Option_pet temp : this.op) {
@@ -355,7 +355,7 @@ public class Pet {
             if (((focus.hp - dame_pet) > 0) && (p.pet_atk_speed < System.currentTimeMillis()) && (a2 > 1)) {
                 if(this.get_id() == 3269 || this.name.equals("Đại Bàng"))
                 {
-                    int vangjoin = Util.random(5000,10000 );
+                    int vangjoin = Util.random(1666, 2292);
                     p.update_vang(vangjoin);
                     Service.send_notice_nobox_white(p.conn, "+ "+vangjoin+" vàng");
                 }

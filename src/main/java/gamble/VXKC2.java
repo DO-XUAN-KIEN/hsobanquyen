@@ -1,4 +1,7 @@
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package gamble;
 
 import History.His_VXMM;
@@ -14,7 +17,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ *
+ * @author chien
+ */
 public class VXKC2 implements Runnable {
 
     public static long LastGameMoney = 0;
@@ -183,7 +189,7 @@ public class VXKC2 implements Runnable {
 
                     last_winner = p0.name;
                     vang_join = player.getValue();
-                    vang_win = (get_total_vang() * 7L) / 10L;
+                    vang_win = (get_total_vang() * 8L) / 10L;
                     Manager.gI().chatKTGprocess(last_winner + " đã thắng " + Util.number_format(vang_win)
                             + " ngọc khi tham gia vòng xoay may mắn");
                     p0.update_ngoc(vang_win);

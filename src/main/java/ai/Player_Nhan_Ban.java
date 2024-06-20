@@ -87,7 +87,7 @@ public class Player_Nhan_Ban {
                 //
                 Player p0 = Map.get_player_by_id(temp.target);
                 if (p0 != null) { // atk
-                    if (!p0.isdie && p0.map.equals(temp.map)) {
+                    if (!p0.isDie && p0.map.equals(temp.map)) {
                         if (Math.abs(p0.x - temp.x) < 150 && Math.abs(p0.y - temp.y) < 150) {
                             temp.x = (short) (p0.x + Util.random(-30, 30));
                             temp.y = (short) (p0.y + Util.random(-30, 30));
@@ -121,7 +121,7 @@ public class Player_Nhan_Ban {
     }
 
     private static void atk(Map map, Player_Nhan_Ban temp, Player p0) throws IOException {
-        int dame = (temp.dame * Util.random(90, 100)) / 100;
+        int dame = (temp.dame * 1000) / 10;
         Message m = new Message(6);
         m.writer().writeShort(temp.id);
         m.writer().writeByte(0); // indexskill
@@ -137,7 +137,7 @@ public class Player_Nhan_Ban {
         if (crit) {
             dame *= 2;
         }
-        int miss = p0.body.get_Miss();
+        int miss = p0.body.get_Miss(false);
         ef = p0.get_eff(34);
         if (ef != null) {
             miss += ef.param;
@@ -150,10 +150,10 @@ public class Player_Nhan_Ban {
         p0.hp -= dame;
         if (p0.hp <= 0) {
             p0.hp = 0;
-            if (!p0.isdie) {
+            if (!p0.isDie) {
                 p0.dame_affect_special_sk = 0;
                 p0.hp = 0;
-                p0.isdie = true;
+                p0.isDie = true;
                 Message m2 = new Message(41);
                 m2.writer().writeShort(p0.index);
                 m2.writer().writeShort(temp.id);

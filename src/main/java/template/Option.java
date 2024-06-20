@@ -1,5 +1,7 @@
 package template;
 
+import core.Util;
+
 public class Option {
 
     private static final int[] parafterupdate
@@ -19,12 +21,35 @@ public class Option {
 //	}
 
     public Option(int id, int param) {
-		this.id = (byte) id;
-		this.param = param;
-	}
+        this.id = (byte) id;
+        this.param = param;
+    }
+
+    public static Option createOpItemStar(int idOption, short idItem) {
+        Option newOP;
+        switch (idOption) {
+            case -115, -103, -88, -87 ->
+                newOP = new Option(idOption, 180000, idItem);
+            case 129 ->
+                newOP = new Option(idOption, 10000, idItem);
+            case 130 -> {
+                short temp = (short) Util.nextInt(100, 400);
+                if (Util.nextInt(20) == 1) {
+                    temp = (short) Util.nextInt(100, 900);
+                }
+                newOP = new Option(idOption, temp, idItem);
+            }
+            default ->
+                newOP = new Option(idOption, Util.random(100, 200), idItem);
+        }
+        return newOP;
+    }
 
     public int getParam(int tier) {
-        if ((id >= 100 && id <= 107)||(id >= 58 && id<=60)) {
+        if ((id >= 100 && id <= 107) || (id >= 58 && id <= 60)) {
+            return param;
+        }
+        if (Helps.CheckItem.isArmor(idItem)) {
             return param;
         }
         if (Helps.CheckItem.isMeDay(idItem)) {
@@ -41,6 +66,7 @@ public class Option {
             parbuffer += 20 * tier;
             return parbuffer;
         }
+
         if (this.id >= 23 && this.id <= 26) {
             return (parbuffer + tier);
         }
@@ -82,23 +108,24 @@ public class Option {
         {
             return (int) (parbuffer * tier * 0.3);
         }
-        if (this.id == 85 || this.id == 87 || this.id == 80 || this.id == 82 ) // dòng vip
+        if (this.id == 85 || this.id == 87 || this.id == 80 || this.id == 82) // dòng vip
         {
-            return (int) (parbuffer * tier * 0.05);
+            return (int) (parbuffer * tier * 0.031);
         }
         if (this.id == 78 || this.id == 76) // dòng vip
         {
-            return (int) (parbuffer * tier * 0.05);
+            return (int) (parbuffer * tier * 0.1);
         }
 
         if ((this.id >= 76 && this.id <= 89) || this.id == 97 || this.id == 98 || this.id == 95) // dòng vip
         {
-            return (int) (parbuffer * tier * 0.05);
+            return (int) (parbuffer * tier * 0.07);
         }
         if (this.id >= 29 && this.id <= 36 || this.id >= 16 && this.id <= 22 || this.id == 41) {
             parbuffer += 50 * tier;
             return parbuffer;
         }
+
         if (this.id >= 23 && this.id <= 26) {
             return (parbuffer + tier);
         }

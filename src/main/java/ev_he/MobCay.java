@@ -1,4 +1,7 @@
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package ev_he;
 
 import client.Player;
@@ -10,7 +13,10 @@ import io.Session;
 import java.io.IOException;
 import map.Map;
 
-
+/**
+ *
+ * @author chien
+ */
 public class MobCay {
     public long timeUpdate;
     public short index;

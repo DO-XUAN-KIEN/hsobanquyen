@@ -1,4 +1,7 @@
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package core;
 
 import io.Session;
@@ -8,7 +11,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-
+/**
+ *
+ * @author chien
+ */
 public class SessionManager {
     public static final ConcurrentHashMap<String, Integer> BandWidthSizes = new ConcurrentHashMap<>();
     public static synchronized void AddBandWidth(String ipAddress, int size) {

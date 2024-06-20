@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Squire extends Player {
+
     private long delay_move;
     private long delay_chat;
 
@@ -51,10 +52,11 @@ public class Squire extends Player {
             this.vang = owner.vang;
             this.isOwner = false;
             this.isSquire = false;
-            this.isdie = false;
+            this.isDie = false;
             this.x = owner.x;
             this.y = owner.y;
             this.map = owner.map;
+            this.npcs = new ArrayList<>();
             conn.p = this;
             this.owner = owner;
             this.squire = this;
@@ -103,7 +105,6 @@ public class Squire extends Player {
         list_thao_kham_ngoc = new ArrayList<>();
         myclan = null;
     }
-
     public void removeClan() {
         try {
             Message msg = new Message(69);
@@ -117,7 +118,6 @@ public class Squire extends Player {
             e.printStackTrace();
         }
     }
-
     public Squire load() {
         long _time = System.currentTimeMillis();
         String query = "SELECT * FROM `squire` WHERE `id` = '" + this.index + "' LIMIT 1;";
@@ -166,7 +166,7 @@ public class Squire extends Player {
                     exp = Level.entrys.get(level - 1).exp - 1;
                 }
             }
-            isdie = false;
+            isDie = false;
             tiemnang = rs.getShort("tiemnang");
             kynang = rs.getShort("kynang");
             point1 = rs.getShort("point1");
@@ -359,7 +359,7 @@ public class Squire extends Player {
                 jsar.clear();
                 for (int i = 0; i < MainEff.size(); i++) {
                     EffTemplate temp = MainEff.get(i);
-                    if (temp.id != -126 && temp.id != -125) {
+                    if (temp.id != -126 && temp.id != -125 && temp.id != -127 && temp.id != -128) {
                         continue;
                     }
                     JSONArray jsar21 = new JSONArray();
@@ -654,7 +654,7 @@ public class Squire extends Player {
                     if (mob_target == null) {
                         mob_target = map.GetBoss(ObjAtk);
                     }
-                    if (map.zone_id == 5 && !map.isMapChiemThanh() && !map.isMapLoiDai()) {
+                    if (map.zone_id == map.maxzone && !map.isMapChiemThanh() && !map.isMapLoiDai()) {
                         Pet_di_buon pet_di_buon = Pet_di_buon_manager.check(ObjAtk);
                         if (pet_di_buon != null) {
                             if (!pet_di_buon.equals(conn.p.pet_di_buon)) {
@@ -734,7 +734,7 @@ public class Squire extends Player {
         // pvp, pve, mob chiến trường, mob chiếm thành, nhân bản boss, (không đánh mob đi buôn)
 
         //<editor-fold defaultstate="collapsed" desc="... không thể tấn công    ...">
-        if (ObjAtk == null || focus == null || ObjAtk.equals(focus) || ObjAtk.isdie || ObjAtk.isStunes(true)) {
+        if (ObjAtk == null || focus == null || ObjAtk.equals(focus) || ObjAtk.isDie || ObjAtk.isStunes(true)) {
             return;
         }
         if (ObjAtk.isPlayer() && focus.isPlayer() && !map.isMapChiemThanh() && (map.ismaplang || ObjAtk.level < 10 || focus.level < 11
@@ -756,7 +756,7 @@ public class Squire extends Player {
         if (ObjAtk.isPlayer() && ObjAtk.get_EffMe_Kham(StrucEff.LuLan) != null) {
             return;
         }
-        if (focus.isdie || focus.hp <= 0 && ObjAtk.isPlayer()) {
+        if (focus.isDie || focus.hp <= 0 && ObjAtk.isPlayer()) {
             if (focus.isPlayer()) {
                 MapService.Player_Die(map, (Player) focus, ObjAtk, false);
             } else {
@@ -770,9 +770,9 @@ public class Squire extends Player {
                 return;
             }
         }
-        if (focus.get_Miss() > Util.random(10_000)) {
+        if (focus.get_Miss(false) > Util.random(10_000)) {
             if (ObjAtk.isPlayer()) {
-                MapService.Fire_Player(map, ((Player) ObjAtk).conn, idxSkill, focus.index, 0, focus.hp, new ArrayList<>());
+                MapService.Fire_Player(map, ((Player) ObjAtk).conn, idxSkill, focus.index, 0, focus.hp, new ArrayList<>(), (byte) 11, 0);
             }
             return;
         }
@@ -857,7 +857,6 @@ public class Squire extends Player {
         }
 
         //</editor-fold>
-
         List<Float> giamdame = new ArrayList<>();
         ef = ObjAtk.get_EffDefault(3);
         if (ef != null) {
@@ -1002,7 +1001,7 @@ public class Squire extends Player {
             Mob_MoTaiNguyen mo = (Mob_MoTaiNguyen) focus;
             if (!mo.is_atk) {
                 dame = 0;
-            } else if (mo.nhanban != null && !mo.nhanban.isdie) {
+            } else if (mo.nhanban != null && !mo.nhanban.isDie) {
                 mo.nhanban.p_target = (Player) ObjAtk;
                 mo.nhanban.is_move = false;
             }
@@ -1188,10 +1187,10 @@ public class Squire extends Player {
 
     public static void create(Player p) throws IOException {
         try (Connection connnect = SQL.gI().getConnection(); PreparedStatement ps = connnect.prepareStatement(
-                "INSERT INTO `squire` (`name`, `body`, `clazz`, `site`, `tiemnang`, `kynang`, " +
-                        "`point1`, `point2`, `point3`, `point4`, `itemwear`, `rms_save`, `date`, " +
-                        "`skill`, `typeexp`, `medal_create_material`,`count_dungeon`, `id`, `friend`, `eff`, `enemies`, `pet`) " +
-                        "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")) {
+                "INSERT INTO `squire` (`name`, `body`, `clazz`, `site`, `tiemnang`, `kynang`, "
+                + "`point1`, `point2`, `point3`, `point4`, `itemwear`, `rms_save`, `date`, "
+                + "`skill`, `typeexp`, `medal_create_material`,`count_dungeon`, `id`, `friend`, `eff`, `enemies`, `pet`) "
+                + "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);")) {
             ps.setNString(1, p.name);
             byte clazz = (byte) Util.random(4);
             byte[] body = randomBody(clazz);

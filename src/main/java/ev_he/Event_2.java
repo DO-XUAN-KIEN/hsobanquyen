@@ -1,4 +1,7 @@
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package ev_he;
 
 import client.Player;
@@ -23,7 +26,10 @@ import template.Item3;
 import template.ItemTemplate3;
 import template.Option;
 
-
+/**
+ *
+ * @author chien
+ */
 public class Event_2 {
     private static String name_event = "sự kiện hè";
     public static final CopyOnWriteArrayList<MobCay> entrys = new CopyOnWriteArrayList<>();

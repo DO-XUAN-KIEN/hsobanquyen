@@ -10,20 +10,16 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import event_daily.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import client.Clan;
-import client.Player;
 import ev_he.Event_2;
 import ev_he.Event_3;
-import event_daily.ChiemMo;
-import event_daily.ChiemThanhManager;
-import event_daily.Group_ld;
-import event_daily.LoiDai2;
-import event_daily.LoiDaiManager;
-import event_daily.ChienTruong;
-import event_daily.Wedding;
-
+import ev_he.Event_4;
+import ev_he.Event_5;
+import ev_he.Event_6;
 import gamble.VXKC2;
 import gamble.VXMM2;
 import io.Message;
@@ -83,11 +79,17 @@ public class Manager {
     public int indexCharPar;
     public int exp;
     public int lvmax;
+    public int giakmngoc;
+    public int giakmgold;
+    public int vang;
+    public int ngoc;
+    public String thongbao;
     public int allow_ip_client;
     public int time_login;
     public List<ItemSell3[]> itemsellTB;
     public short[] itempoitionsell;
     public short[] item7sell;
+    public short[] item7sell1;
     public VXMM2 vxmm;
     public VXKC2 vxkc;
     public int size_mob_now = -20;
@@ -97,19 +99,20 @@ public class Manager {
     public static boolean isLockVX = false;
     public static boolean isGiaoDich = false;
     public static boolean isKmb = true;
-    public static boolean doicoin = false;
+    public static boolean isKTG = true;
     public static boolean isServerTest;
     public static boolean BuffAdmin = true;
     public static boolean BuffAdminMaterial = true;
     public static int timeRemoveClient = 1000 * 60;
     public static boolean logErrorLogin = false;
      public static String BXH_level = "";
+   
 
-
-    public static byte thue = 5;
+    public static byte thue = 10;
     public static String nameClanThue;
     public static Clan ClanThue;
     public static final List<String> PlayersWinCThanh = new ArrayList<>();
+    public static HashMap<Byte, List<Short>> item_sell;
 
     public static void setClanThue() {
         if (nameClanThue == null || nameClanThue.isEmpty()) {
@@ -130,7 +133,7 @@ public class Manager {
     public static void ResetCThanh() {
         PlayersWinCThanh.clear();
         nameClanThue = null;
-        thue = 5;
+        thue = 10;
         ClanThue = null;
     }
 
@@ -179,7 +182,7 @@ public class Manager {
         this.msg_26 = load_msg26();
         this.msg_eff_70 = Util.loadfile("data/msg_eff/70");
         this.msg_eff_71 = Util.loadfile("data/msg_eff/71");
-        this.msg_eff_109 = Util.loadfile("data/msg_eff/109");
+        this.msg_eff_109 = Util.loadfile("data/msg_eff/109");//109
         this.msg_eff_105 = Util.loadfile("data/msg_eff/105");
         //
         data_part_char_x1 = new byte[966][];
@@ -215,7 +218,6 @@ public class Manager {
                 System.exit(0);
                 return;
             }
-            LoiDaiManager.gI();
             list_nhanban = new ArrayList<>();
             chiem_mo = new ChiemMo();
             chiem_mo.init();
@@ -359,7 +361,7 @@ public class Manager {
             temp.setId(rs.getShort("id"));
             temp.setIcon(rs.getShort("icon"));
             if (temp.getId() >= 113 && temp.getId() <= 116) {
-                temp.setPrice(500);
+                temp.setPrice(50);
             } else {
                 temp.setPrice(rs.getLong("price"));
             }
@@ -402,6 +404,7 @@ public class Manager {
             temp.setValue(rs.getShort("value"));
             temp.setTrade(rs.getByte("trade"));
             temp.setColor(rs.getByte("setcolorname"));
+            //temp.setLamcoin(rs.getByte("lamcoin"));
             ItemTemplate7.item.add(temp);
         }
         // load item medal
@@ -435,6 +438,11 @@ public class Manager {
         query = "SELECT * FROM `itemsell`;";
         rs = ps.executeQuery(query);
         itemsellTB = new ArrayList<>();
+
+        item_sell = new HashMap<>();
+        item_sell.put(Service.SHOP_POTION, new ArrayList<>());
+        item_sell.put(Service.SHOP_ITEM, new ArrayList<>());
+        item_sell.put(Service.SHOP_MATERIRAL, new ArrayList<>());
         while (rs.next()) {
             byte type = rs.getByte("id");
             JSONArray jsar = (JSONArray) JSONValue.parse(rs.getString("data"));
@@ -448,35 +456,57 @@ public class Manager {
                             itempoitionsell = new short[jsar.size() + 4];
                             for (int i = 0; i < jsar.size(); i++) {
                                 itempoitionsell[i] = Short.parseShort(jsar.get(i).toString());
+                                item_sell.get(Service.SHOP_POTION).add(itempoitionsell[i]);
                             }
                             itempoitionsell[itempoitionsell.length - 4] = 113;
                             itempoitionsell[itempoitionsell.length - 3] = 114;
                             itempoitionsell[itempoitionsell.length - 2] = 115;
                             itempoitionsell[itempoitionsell.length - 1] = 116;
+                            item_sell.get(Service.SHOP_POTION).add((short) 113);
+                            item_sell.get(Service.SHOP_POTION).add((short) 114);
+                            item_sell.get(Service.SHOP_POTION).add((short) 115);
+                            item_sell.get(Service.SHOP_POTION).add((short) 116);
                             break;
                         }
                         case 2: {
                             itempoitionsell = new short[jsar.size() + 3];
                             for (int i = 0; i < jsar.size(); i++) {
                                 itempoitionsell[i] = Short.parseShort(jsar.get(i).toString());
+                                item_sell.get(Service.SHOP_POTION).add(itempoitionsell[i]);
                             }
                             itempoitionsell[itempoitionsell.length - 3] = 253;
                             itempoitionsell[itempoitionsell.length - 2] = 252;
                             itempoitionsell[itempoitionsell.length - 1] = 141;
+                            item_sell.get(Service.SHOP_POTION).add((short) 253);
+                            item_sell.get(Service.SHOP_POTION).add((short) 252);
+                            item_sell.get(Service.SHOP_POTION).add((short) 141);
                             break;
                         }
                         case 3: {
                             itempoitionsell = new short[jsar.size() + 1];
                             for (int i = 0; i < jsar.size(); i++) {
                                 itempoitionsell[i] = Short.parseShort(jsar.get(i).toString());
+                                item_sell.get(Service.SHOP_POTION).add(itempoitionsell[i]);
                             }
                             itempoitionsell[itempoitionsell.length - 1] = 303;
+                            item_sell.get(Service.SHOP_POTION).add((short) 303);
+                            break;
+                        }
+                        case 4: {
+                            itempoitionsell = new short[jsar.size() + 1];
+                            for (int i = 0; i < jsar.size(); i++) {
+                                itempoitionsell[i] = Short.parseShort(jsar.get(i).toString());
+                                item_sell.get(Service.SHOP_POTION).add(itempoitionsell[i]);
+                            }
+                            itempoitionsell[itempoitionsell.length - 1] = 30;
+                            item_sell.get(Service.SHOP_POTION).add((short) 30);
                             break;
                         }
                         default: {
                             itempoitionsell = new short[jsar.size()];
                             for (int i = 0; i < itempoitionsell.length; i++) {
                                 itempoitionsell[i] = Short.parseShort(jsar.get(i).toString());
+                                item_sell.get(Service.SHOP_POTION).add(itempoitionsell[i]);
                             }
                             break;
                         }
@@ -511,6 +541,7 @@ public class Manager {
                         itemsell3[i] = new ItemSell3();
                         JSONArray jsar2 = (JSONArray) JSONValue.parse(jsar.get(i).toString());
                         itemsell3[i].id = Short.parseShort(jsar2.get(0).toString());
+                        item_sell.get(Service.SHOP_ITEM).add(itemsell3[i].id);
                         itemsell3[i].clazz = Byte.parseByte(jsar2.get(1).toString());
                         itemsell3[i].type = Byte.parseByte(jsar2.get(2).toString());
                         itemsell3[i].price = Long.parseLong(jsar2.get(3).toString());
@@ -531,6 +562,7 @@ public class Manager {
                             ItemTemplate3 temp = ItemTemplate3.item.get(id_[i]);
                             itemsell3[i + jsar.size()] = new ItemSell3();
                             itemsell3[i + jsar.size()].id = id_[i];
+                            item_sell.get(Service.SHOP_ITEM).add(itemsell3[i + jsar.size()].id);
                             itemsell3[i + jsar.size()].clazz = temp.getClazz();
                             itemsell3[i + jsar.size()].type = temp.getType();
                             itemsell3[i + jsar.size()].price = 50;
@@ -546,6 +578,7 @@ public class Manager {
                             ItemTemplate3 temp = ItemTemplate3.item.get(id_[i]);
                             itemsell3[i + jsar.size()] = new ItemSell3();
                             itemsell3[i + jsar.size()].id = id_[i];
+                            item_sell.get(Service.SHOP_ITEM).add(itemsell3[i + jsar.size()].id);
                             itemsell3[i + jsar.size()].clazz = temp.getClazz();
                             itemsell3[i + jsar.size()].type = temp.getType();
                             itemsell3[i + jsar.size()].price = 50;
@@ -564,6 +597,15 @@ public class Manager {
                     item7sell = new short[jsar.size()];
                     for (int i = 0; i < item7sell.length; i++) {
                         item7sell[i] = Short.parseShort(jsar.get(i).toString());
+                        item_sell.get(Service.SHOP_MATERIRAL).add(item7sell[i]);
+                    }
+                    break;
+                }
+                case 99: {
+                    item7sell1 = new short[jsar.size()];
+                    for (int i = 0; i < item7sell1.length; i++) {
+                        item7sell1[i] = Short.parseShort(jsar.get(i).toString());
+                        item_sell.get(Service.SHOP_MATERIRAL).add(item7sell1[i]);
                     }
                     break;
                 }
@@ -592,7 +634,7 @@ public class Manager {
         while (rs.next()) {
             byte maxzone = rs.getByte("maxzone");
             Map[] temp_all_zone = new Map[maxzone + 1];
-            byte map_id = rs.getByte("id");
+            short map_id = rs.getShort("id");
             String name = rs.getString("name");
             //
             List<Vgo> vgo_temp = new ArrayList<>();
@@ -603,7 +645,7 @@ public class Manager {
             for (int i = 0; i < jsar.size(); i++) {
                 JSONArray jsar2 = (JSONArray) JSONValue.parse(jsar.get(i).toString());
                 Vgo vgo = new Vgo();
-                vgo.id_map_go = Byte.parseByte(jsar2.get(0).toString());
+                vgo.id_map_go = Short.parseShort(jsar2.get(0).toString());
                 vgo.x_old = Short.parseShort(jsar2.get(1).toString());
                 vgo.y_old = Short.parseShort(jsar2.get(2).toString());
                 vgo.name_map_go = jsar2.get(3).toString();
@@ -632,8 +674,8 @@ public class Manager {
                 JSONArray jsar2 = (JSONArray) JSONValue.parse(jsar.get(i).toString());
                 Mob_in_map mob = new Mob_in_map();
                 short id = Short.parseShort(jsar2.get(0).toString());
-                if (id == 101 || id == 84 || id == 83 || id == 103 || id == 104 || id == 105 || id == 106 || id == 149 || id == 155 || id == 173 || id == 174 || id == 190 || id == 195 || id == 196 || id == 197
-                        || id == 186 || id == 187 || id == 188 || id == 192 || id == 173){
+                if (id == 101 || id == 84 || id == 83 || id == 103 || id == 104 || id == 105 || id == 106 || id == 149 || id == 155 || id == 173 || id == 195 || id == 194 || id == 196 || id == 197
+                        || id == 186 || id == 187 || id == 188 || id == 189 || id == 190 || id == 191 || id == 192 || id == 193 || id == 178) {
                     continue;
                 }
                 mob.template = Mob.entrys.get(id);
@@ -641,11 +683,13 @@ public class Manager {
                 mob.y = Short.parseShort(jsar2.get(2).toString());
                 mob.level = mob.template.level;
                 mob.map_id = map_id;
-                mob.isdie = false;
-                mob.time_back = System.currentTimeMillis() + 4_000L;
+                mob.isDie = false;
+                mob.ishs = true;
+                mob.time_back = System.currentTimeMillis() + 3_000L;
                 mob.color_name = 0;
+                mob.MainEff = new ArrayList<>();
                 mob.Set_isBoss(false);
-                mob.Set_hpMax(Mob.entrys.get(id).hpmax);
+                mob.Set_hpMax(mob.template.hpmax);
                 mob.hp = mob.get_HpMax();
 //                mob.dame = mob.level * 75;
                 mob_in_map.add(mob);
@@ -680,11 +724,12 @@ public class Manager {
                         mob.level = mob_in_map.get(i1).level;
                         mob.map_id = map_id;
                         mob.zone_id = (byte) i;
-                        mob.isdie = mob_in_map.get(i1).isdie;
+                        mob.isDie = mob_in_map.get(i1).isDie;
                         mob.color_name = mob_in_map.get(i1).color_name;
                         mob.Set_isBoss(mob_in_map.get(i1).isBoss());
                         mob.time_back = mob_in_map.get(i1).time_back;
                         mob.is_boss_active = false;
+                        mob.map = m;
                         m.mobs[i1] = mob;
                         if (mob.isBoss()) {
                             if (Map.is_map_chien_truong(m.map_id)) {
@@ -737,7 +782,7 @@ public class Manager {
             if (jsar == null) {
                 return false;
             }
-            temp.part = new byte[jsar.size()];
+            temp.part = new short[jsar.size()];
             for (int i = 0; i < temp.part.length; i++) {
                 temp.part[i] = Byte.parseByte(jsar.get(i).toString());
             }
@@ -837,6 +882,31 @@ public class Manager {
                 JSONObject jsob = (JSONObject) JSONValue.parse(rs.getString("data"));
                 Event_3.LoadDB(jsob);
             }
+        }else if (this.event == 4) {
+            query = "SELECT * FROM `event` WHERE `id` = 3;";
+            rs = ps.executeQuery(query);
+            long t_ = System.currentTimeMillis();
+            while (rs.next()) {
+                JSONObject jsob = (JSONObject) JSONValue.parse(rs.getString("data"));
+                Event_4.LoadDB(jsob);
+            }
+        }else if (this.event == 5) {
+            query = "SELECT * FROM `event` WHERE `id` = 4;";
+            rs = ps.executeQuery(query);
+            long t_ = System.currentTimeMillis();
+            while (rs.next()) {
+                JSONObject jsob = (JSONObject) JSONValue.parse(rs.getString("data"));
+                Event_5.LoadDB(jsob);
+            }
+        }
+        else if (this.event == 6) {
+            query = "SELECT * FROM `event` WHERE `id` = 5;";
+            rs = ps.executeQuery(query);
+            long t_ = System.currentTimeMillis();
+            while (rs.next()) {
+                JSONObject jsob = (JSONObject) JSONValue.parse(rs.getString("data"));
+                Event_6.LoadDB(jsob);
+            }
         }
         query = "SELECT * FROM `config_server`;";
         rs = ps.executeQuery(query);
@@ -874,10 +944,60 @@ public class Manager {
             temp_wed.it.time_use = 0;
             Wedding.list.add(temp_wed);
         }
+        rs.close();
+        // load loi dai data
+        query = "SELECT * FROM `king_cup`;";
+        rs = ps.executeQuery(query);
+        while (rs.next()) {
+            KingCupManager.TURN_KING_CUP = rs.getInt("turn_king_cup");
+            JSONArray jsar = (JSONArray) JSONValue.parse(rs.getString("group_65_74"));
+            for (int i = 0; i < jsar.size(); i++) {
+                KingCupManager.group_65_74.add(jsar.get(i).toString());
+            }
+            jsar.clear();
+            jsar = (JSONArray) JSONValue.parse(rs.getString("group_75_84"));
+            for (int i = 0; i < jsar.size(); i++) {
+                KingCupManager.group_75_84.add(jsar.get(i).toString());
+            }
+            jsar.clear();
+            jsar = (JSONArray) JSONValue.parse(rs.getString("group_85_94"));
+            for (int i = 0; i < jsar.size(); i++) {
+                KingCupManager.group_85_94.add(jsar.get(i).toString());
+            }
+            jsar.clear();
+            jsar = (JSONArray) JSONValue.parse(rs.getString("group_95_104"));
+            for (int i = 0; i < jsar.size(); i++) {
+                KingCupManager.group_95_104.add(jsar.get(i).toString());
+            }
+            jsar.clear();
+            jsar = (JSONArray) JSONValue.parse(rs.getString("group_105_114"));
+            for (int i = 0; i < jsar.size(); i++) {
+                KingCupManager.group_105_114.add(jsar.get(i).toString());
+            }
+            jsar.clear();
+            jsar = (JSONArray) JSONValue.parse(rs.getString("group_115_124"));
+            for (int i = 0; i < jsar.size(); i++) {
+                KingCupManager.group_115_124.add(jsar.get(i).toString());
+            }
+            jsar.clear();
+            jsar = (JSONArray) JSONValue.parse(rs.getString("group_125_139"));
+            for (int i = 0; i < jsar.size(); i++) {
+                KingCupManager.group_125_139.add(jsar.get(i).toString());
+            }
+            jsar.clear();
+            KingCupManager.list_name.addAll(KingCupManager.group_65_74);
+            KingCupManager.list_name.addAll(KingCupManager.group_75_84);
+            KingCupManager.list_name.addAll(KingCupManager.group_85_94);
+            KingCupManager.list_name.addAll(KingCupManager.group_95_104);
+            KingCupManager.list_name.addAll(KingCupManager.group_105_114);
+            KingCupManager.list_name.addAll(KingCupManager.group_115_124);
+            KingCupManager.list_name.addAll(KingCupManager.group_125_139);
+        }
         // close all
         rs.close();
         ps.close();
         conn.close();
+        add_item_sell_other();
         return true;
     }
 
@@ -973,6 +1093,31 @@ public class Manager {
         } else {
             this.lvmax = 150;
         }
+        if (configMap.containsKey("giakmngoc")) {
+            this.giakmngoc = Integer.parseInt(configMap.get("giakmngoc"));
+        } else {
+            this.giakmngoc = 1;
+        }
+        if (configMap.containsKey("giakmgold")) {
+            this.giakmgold = Integer.parseInt(configMap.get("giakmgold"));
+        } else {
+            this.giakmgold = 1;
+        }
+        if (configMap.containsKey("vang")) {
+            this.vang = Integer.parseInt(configMap.get("vang"));
+        } else {
+            this.vang = 0;
+        }
+        if (configMap.containsKey("kimcuong")) {
+            this.ngoc = Integer.parseInt(configMap.get("kimcuong"));
+        } else {
+            this.ngoc = 0;
+        }
+        if (configMap.containsKey("thongbao")) {
+            this.thongbao = configMap.get("thongbao");
+        } else {
+            this.thongbao = "";
+        }
         if (configMap.containsKey("allow_ip_client")) {
             this.allow_ip_client = Integer.parseInt(configMap.get("allow_ip_client"));
         } else {
@@ -1007,18 +1152,6 @@ public class Manager {
                 }
             }
         }
-        try {
-            for (Group_ld g : LoiDaiManager.gI().Group_entrys) {
-                for (LoiDai2 l : g.ld_entrys) {
-                    for (Player p0 : l.map.players) {
-                        if (p0 != null && p0.conn != null && p0.conn.connected) {
-                            p0.conn.addmsg(m);
-                        }
-                    }
-                }
-            }
-        } catch (Exception ee) {
-        }
         m.cleanup();
     }
 
@@ -1047,5 +1180,25 @@ public class Manager {
 
     public synchronized void remove_list_nhanbban(NhanBan nhanban) {
         this.list_nhanban.remove(nhanban);
+    }
+
+    public static void add_item_sell_other() {
+        item_sell.get(Service.SHOP_POTION).add((short) 48);
+        item_sell.get(Service.SHOP_POTION).add((short) 49);
+        item_sell.get(Service.SHOP_POTION).add((short) 50);
+        item_sell.get(Service.SHOP_POTION).add((short) 51);
+        item_sell.get(Service.SHOP_POTION).add((short) 84);
+        item_sell.get(Service.SHOP_POTION).add((short) 86);
+        item_sell.get(Service.SHOP_POTION).add((short) 205);
+        item_sell.get(Service.SHOP_POTION).add((short) 206);
+        item_sell.get(Service.SHOP_POTION).add((short) 207);
+        item_sell.get(Service.SHOP_POTION).add((short) 244);
+        item_sell.get(Service.SHOP_POTION).add((short) 245);
+
+        item_sell.get(Service.SHOP_ITEM).add((short) 2943);
+        item_sell.get(Service.SHOP_ITEM).add((short) 2944);
+        item_sell.get(Service.SHOP_ITEM).add((short) 3590);
+        item_sell.get(Service.SHOP_ITEM).add((short) 3591);
+        item_sell.get(Service.SHOP_ITEM).add((short) 3592);
     }
 }

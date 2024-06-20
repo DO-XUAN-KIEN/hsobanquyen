@@ -1,12 +1,10 @@
 package template;
 
 import client.Player;
-import core.Manager;
 import core.Util;
-import io.Message;
+
 import java.io.IOException;
 import map.Dungeon;
-import map.LeaveItemMap;
 import map.Map;
 
 public class Mob_Dungeon extends MainObject {
@@ -21,7 +19,7 @@ public class Mob_Dungeon extends MainObject {
         this.index = (short) index;
         this.template = mob;
         is_atk = false;
-        isdie = false;
+        isDie = false;
         color_name = 0;
     }
     @Override
@@ -33,29 +31,13 @@ public class Mob_Dungeon extends MainObject {
         if (this.hp <= 0) {
             this.hp = 0;
             // mob die
-            if (!this.isdie) {
-                this.isdie = true;
+            if (!this.isDie) {
+                this.isDie = true;
                 // send p outside
                 if(30>Util.random(0,100))
                     Dungeon.leave_item_by_type7(map, (short)Util.random(417,464), (Player)mainAtk, this.index);
                 if(5>Util.random(0,100))
                     Dungeon.leave_item_by_type7(map, Medal_Material.m_blue[Util.random(Medal_Material.m_blue.length)], (Player)mainAtk, this.index);
-                if(Manager.gI().event == 5 && 0.1>Util.random(0,100)){
-                    Dungeon.leave_item_by_type4(map, (short) 193,(Player) mainAtk, this.index);
-                }
-                if(Manager.gI().event == 5 && 10>Util.random(0,100)){
-                    Dungeon.leave_item_by_type4(map, (short) 186,(Player) mainAtk, this.index);
-                }
-//                Message m2 = new Message(17);
-//                m2.writer().writeShort(mainAtk.index);
-//                m2.writer().writeShort(this.index);
-//                for (int i = 0; i < map.players.size(); i++) {
-//                    Player p2 = map.players.get(i);
-//                    if (!((Math.abs(p2.x - this.x) < 200) && (Math.abs(p2.y - this.y) < 200))) {
-//                        p2.conn.addmsg(m2);
-//                    }
-//                }
-//                m2.cleanup();
             }
             ((Player)mainAtk).point_active[1] += (dungeon.wave / 5);
             dungeon.num_mob--;

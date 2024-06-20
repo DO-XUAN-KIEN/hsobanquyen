@@ -8,7 +8,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.PreparedStatement;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,17 +15,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import ai.NhanBan;
 import core.*;
-import map.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
-import event_daily.ArenaTemplate;
-import event_daily.ChienTruong;
-import event_daily.Wedding;
+import event_daily.*;
 
 import io.Message;
 import io.Session;
+import map.Map;
+import map.MapService;
+import map.Vgo;
 import template.*;
 
 public class Player extends Body2 {
@@ -41,28 +39,20 @@ public class Player extends Body2 {
     public Map map;
     public boolean is_changemap;
     public long timeCantChangeMap;
-
-    //    public short x;
-//    public short y;
-//    public short x_old;
-//    public short y_old;
     public byte head;
     public byte eye;
     public byte hair;
-    //    public List<EffTemplate> list_eff;
     public Date date;
     public byte diemdanh;
-    public byte banclone;
     public byte chucphuc;
-    public int doiqua;
-    public int phoban;
+    public byte type_use_mount;
+    // public int hieuchien;
+    public int dibuon;
+    public int dicuop;
     public int boss;
-    public int diemsukien;
-    public int diemchiemthanh;
-    public int diemdibuon;
-    public int diemdicuop;
-    public int chuyensinh;
-    //    public int hieuchien;
+    public int phoban;
+    public long danhvong;
+    public int doiqua;
     public byte type_exp;
     //    public byte clazz;
 //    public short level;
@@ -94,14 +84,14 @@ public class Player extends Body2 {
     public List<String> list_enemies;
     //    public int hp;
 //    public int mp;
-    public byte[] fashion;
+    public short[] fashion;
     public Skill[] skills;
     public byte item_color_can_pick;
     public byte hp_mp_can_pick;
     public HashMap<Integer, Boolean> other_player_inside;
+    public HashMap<Integer, Boolean> bot_inside;
     public HashMap<Integer, Boolean> other_mob_inside;
     public HashMap<Integer, Boolean> other_mob_inside_update;
-    public byte type_use_mount;
     public short id_item_rebuild;
     public boolean is_use_mayman;
     public short id_use_mayman;
@@ -155,13 +145,40 @@ public class Player extends Body2 {
     public Wedding it_wedding;
     public String[] in4_wedding;
     public int[] quest_daily;
+    public int[] st_ran;
+    public int[] sc_ran;
     public int chuyencan;
-    public int id_index_temp;
-    public int[] skill_110;
+    public int diemsukien;
+    public byte khu2;
     public int jointx;
     public boolean tai;
     public boolean xiu;
+    public Squire squire;
+    public Player owner;
+    public boolean isOwner = true;
+    public boolean ngu = false;
+    public boolean isSquire;
+    public boolean isLiveSquire;
     public String taixiu = "Bạn chưa đặt cược.";
+    public int id_index_temp = -1;
+    public int[] skill_110;
+    public long cooldown_bat_tu;
+    public long cooldown_thieu_chay;
+    public int group_king_cup;
+    public byte type_reward_king_cup;
+    public int point_king_cup;
+    public int countWin;
+    public long time_die;
+    public byte type_armor_create = -1;
+    public byte id_armor_create = -1;
+    public byte id_than;
+    public int exp_tutien;
+    public int chuyensinh;
+    public int mm_cs;
+    public int luyenthe;
+    public int kinhmach;
+    public int tutien;
+    public List<NpcTemplate> npcs;
 
     public void datatx() {
         if (this.tai == true) {
@@ -187,28 +204,26 @@ public class Player extends Body2 {
 //    public Kham_template kham;
     //create item star
     public boolean isCreateItemStar = false;
+    public boolean isCreateArmor = false;
+    public boolean isdothan = false;
+    public boolean ismdthan = false;
     public byte ClazzItemStar = -1;
     public byte TypeItemStarCreate = -1;
     public short[] MaterialItemStar;
+    public short[] NLdothan;
     public int id_Upgrade_Medal_Star = -1;
 
     //biến heo chiến trường
     public long timeBienHeo;
     public long time_use_item_arena;
-    public long time_henshin;
     public int id_henshin;
-    public List<Part_player> part_p;
-
-    public Squire squire;
-    public Player owner;
-
-    public boolean isOwner = true;
-    public boolean isSquire;
-    public boolean isLiveSquire;
-
+    public int count_special;
 
     public void ResetCreateItemStar() {
         isCreateItemStar = false;
+        isdothan = false;
+        ismdthan = false;
+        isCreateArmor = false;
         ClazzItemStar = -1;
         TypeItemStarCreate = -1;
     }
@@ -222,6 +237,7 @@ public class Player extends Body2 {
         }
         return null;
     }
+
     public void update_point_arena(int i) throws IOException {
         Member_ChienTruong temp = ChienTruong.gI().get_infor_register(this.name);
         if (temp != null) {
@@ -248,6 +264,18 @@ public class Player extends Body2 {
                 (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),
                 (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),};
     }
+    public void setnldothan() {
+        NLdothan = new short[]{
+                (short) Util.random(246, 316), (short) Util.random(246, 316), (short) Util.random(316, 326), (short) Util.random(326, 336), (short) Util.random(336, 346),
+                (short) Util.random(246, 316), (short) Util.random(246, 316), (short) Util.random(316, 326), (short) Util.random(326, 336), (short) Util.random(336, 346),
+                (short) Util.random(246, 316), (short) Util.random(246, 316), (short) Util.random(316, 326), (short) Util.random(326, 336), (short) Util.random(336, 346),
+                (short) Util.random(246, 316), (short) Util.random(246, 316), (short) Util.random(316, 326), (short) Util.random(326, 336), (short) Util.random(336, 346),
+                (short) Util.random(246, 316), (short) Util.random(246, 316), (short) Util.random(316, 326), (short) Util.random(326, 336), (short) Util.random(336, 346),
+                (short) Util.random(246, 316), (short) Util.random(246, 316), (short) Util.random(316, 326), (short) Util.random(326, 336), (short) Util.random(336, 346),
+                (short) Util.random(246, 316), (short) Util.random(246, 316), (short) Util.random(316, 326), (short) Util.random(326, 336), (short) Util.random(336, 346),
+                (short) Util.random(246, 316), (short) Util.random(246, 316), (short) Util.random(316, 326), (short) Util.random(326, 336), (short) Util.random(336, 346),};
+    }
+
 
     public void ChangeMaterialItemStar(byte type) {
         if (type >= 8) {
@@ -261,8 +289,16 @@ public class Player extends Body2 {
 
         MaterialItemStar[type * 5 + 4] = (short) Util.random(457, 464);
     }
-    public Player(Session conn){
-        this.conn = conn;
+
+    public void ChangeNL_dothan(byte type) {
+        if (type >= 8) {
+            return;
+        }
+        NLdothan[type * 5] = (short) Util.random(246, 316);
+        NLdothan[type * 5 + 1] = (short) Util.random(246, 316);
+        NLdothan[type * 5 + 2] = (short) Util.random(316, 326);
+        NLdothan[type * 5 + 3] = (short) Util.random(326, 336);
+        NLdothan[type * 5 + 4] = (short) Util.random(336, 346);
     }
 
     public Player(Session conn, int id) {
@@ -276,6 +312,11 @@ public class Player extends Body2 {
         for (int i = 0; i < skill_point.length; i++) {
             if (skill_point[i] <= 0) {
                 continue;
+            }
+            if(chuyensinh > 0){
+                kynang = 0;
+                skill_point = new byte[]{1, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
+                return;
             }
             LvSkill temp = skills[i].mLvSkill[skill_point[i] - 1];
             while (skill_point[i] > 0 && temp.LvRe > level) {
@@ -309,7 +350,7 @@ public class Player extends Body2 {
                 if (jsar == null) {
                     return false;
                 }
-                Map[] map_enter = Map.get_map_by_id(Byte.parseByte(jsar.get(0).toString()));
+                Map[] map_enter = Map.get_map_by_id(Short.parseShort(jsar.get(0).toString()));
                 if (map_enter != null) {
                     x = Short.parseShort(jsar.get(1).toString());
                     y = Short.parseShort(jsar.get(2).toString());
@@ -322,6 +363,7 @@ public class Player extends Body2 {
                 other_player_inside = new HashMap<>();
                 other_mob_inside = new HashMap<>();
                 other_mob_inside_update = new HashMap<>();
+                bot_inside = new HashMap<>();
                 jsar.clear();
                 jsar = (JSONArray) JSONValue.parse(rs.getString("eff"));
                 if (jsar == null) {
@@ -342,22 +384,27 @@ public class Player extends Body2 {
                 jsar.clear();
                 date = Util.getDate(rs.getString("date"));
                 diemdanh = rs.getByte("diemdanh");
-                banclone = rs.getByte("banclone");
-                diemsukien = rs.getInt("diemsukien");
-                doiqua = rs.getInt("doiqua");
-                phoban = rs.getInt("phoban");
-                boss = rs.getInt("boss");
-                diemchiemthanh = rs.getInt("diemchiemthanh");
-                diemdibuon = rs.getInt("diemdibuon");
-                diemdicuop = rs.getInt("diemdicuop");
                 chucphuc = rs.getByte("chucphuc");
+                khu2 = rs.getByte("khu2");
                 hieuchien = rs.getInt("hieuchien");
+                dibuon = rs.getInt("dibuon");
+                dicuop = rs.getInt("dicuop");
+                boss = rs.getInt("boss");
+                phoban = rs.getInt("phoban");
+                danhvong = rs.getLong("danhvong");
+                doiqua = rs.getInt("doiqua");
                 chuyencan = rs.getInt("chuyencan");
-                chuyensinh = rs.getInt("chuyensinh");
+                diemsukien = rs.getInt("diemsukien");
                 type_exp = rs.getByte("typeexp");
                 clazz = rs.getByte("clazz");
                 level = rs.getShort("level");
                 exp = rs.getLong("exp");
+                chuyensinh = rs.getInt("chuyensinh");
+                mm_cs = rs.getInt("mm_cs");
+                luyenthe = rs.getInt("luyenthe");
+                kinhmach = rs.getInt("kinhmach");
+                tutien = rs.getInt("tutien");
+                type_use_mount = rs.getByte("type_use_mount");
                 //
                 if (level > Manager.gI().lvmax) {
                     level = (short) Manager.gI().lvmax;
@@ -368,7 +415,8 @@ public class Player extends Body2 {
                 //
                 vang = rs.getLong("vang");
                 kimcuong = rs.getInt("kimcuong");
-                isdie = false;
+                exp_tutien = rs.getInt("exptt");
+                isDie = false;
                 tiemnang = rs.getShort("tiemnang");
                 kynang = rs.getShort("kynang");
                 point1 = rs.getShort("point1");
@@ -376,6 +424,9 @@ public class Player extends Body2 {
                 point3 = rs.getShort("point3");
                 point4 = rs.getShort("point4");
                 pointarena = rs.getInt("point_arena");
+                group_king_cup = rs.getByte("group_king_cup");
+                point_king_cup = rs.getShort("point_king_cup");
+                type_reward_king_cup = rs.getByte("type_reward_king_cup");
                 short it_name_ = rs.getShort("id_name");
                 if (it_name_ != -1) {
                     id_name = (short) (ItemTemplate3.item.get(it_name_).getPart() + 41);
@@ -748,6 +799,48 @@ public class Player extends Body2 {
                 }
                 jsar.clear();
 
+                jsar = (JSONArray) JSONValue.parse(rs.getString("NL_do_than"));
+                if (jsar == null) {
+                    return false;
+                }
+                NLdothan = new short[jsar.size()];
+                for (int i = 0; i < jsar.size(); i++) {
+                    NLdothan[i] = Short.parseShort(jsar.get(i).toString());
+                }
+                if (NLdothan == null || NLdothan.length < 40) {
+                    setnldothan();
+                }
+                jsar.clear();
+
+                jsar = (JSONArray) JSONValue.parse(rs.getString("quest_daily"));
+                if (jsar == null) {
+                    return false;
+                }
+                quest_daily = new int[]{-1, -1, 0, 0, 20};
+                for (int i = 0; i < 5; i++) {
+                    if (jsar.size() < 5) continue;
+                    quest_daily[i] = Integer.parseInt(jsar.get(i).toString());
+                }
+                jsar.clear();
+                // đồ thần random
+                jsar = (JSONArray) JSONValue.parse(rs.getString("st_ran"));
+                if (jsar == null) {
+                    return false;
+                }
+                st_ran = new  int[jsar.size()];
+                for (int i = 0; i < jsar.size(); i++) {
+                    st_ran[i] = Integer.parseInt(jsar.get(i).toString());
+                }
+                //
+                jsar = (JSONArray) JSONValue.parse(rs.getString("sc_ran"));
+                if (jsar == null) {
+                    return false;
+                }
+                sc_ran = new  int[jsar.size()];
+                for (int i = 0; i < jsar.size(); i++) {
+                    sc_ran[i] = Integer.parseInt(jsar.get(i).toString());
+                }
+                jsar.clear();
                 jsar = (JSONArray) JSONValue.parse(rs.getString("point_active"));
                 if (jsar == null) {
                     return false;
@@ -756,7 +849,6 @@ public class Player extends Body2 {
                 for (int i = 0; i < jsar.size(); i++) {
                     point_active[i] = Integer.parseInt(jsar.get(i).toString());
                 }
-
                 jsar.clear();
                 myclan = Clan.get_clan_of_player(this.name);
                 //
@@ -767,8 +859,8 @@ public class Player extends Body2 {
             //
             already_setup = true;
             return true;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception eee) {
+            eee.printStackTrace();
         }
         return false;
     }
@@ -872,8 +964,8 @@ public class Player extends Body2 {
     }
 
     public synchronized void update_vang(long i) {
-        if ((i + vang) > 2_000_000_000_000L) {
-            vang = 2_000_000_000_000L;
+        if ((i + vang) > 2__000_000_000_000_000L) {
+            vang = 2__000_000_000_000_000L;
         } else {
             vang += i;
         }
@@ -911,6 +1003,37 @@ public class Player extends Body2 {
         }
 
     }
+    public synchronized void update_chuyensinh(long i) {
+        chuyensinh += i;
+        try {
+            Message m = new Message(16);
+            m.writer().writeByte(0);
+            m.writer().writeByte(5);
+            m.writer().writeLong(this.get_vang());
+            m.writer().writeInt(this.get_ngoc());
+            m.writer().writeByte(5);
+            m.writer().writeByte(0); // size item quest
+            conn.addmsg(m);
+            m.cleanup();
+        } catch (Exception e) {
+        }
+    }
+    public synchronized void update_exptt(long i) {
+        exp_tutien += i;
+        try {
+            Message m = new Message(16);
+            m.writer().writeByte(0);
+            m.writer().writeByte(5);
+            m.writer().writeLong(this.get_vang());
+            m.writer().writeInt(this.get_ngoc());
+            m.writer().writeByte(5);
+            m.writer().writeByte(0); // size item quest
+            conn.addmsg(m);
+            m.cleanup();
+        } catch (Exception e) {
+        }
+
+    }
 
     @SuppressWarnings("unchecked")
     public void flush() {
@@ -926,7 +1049,7 @@ public class Player extends Body2 {
                 String a = "`level` = " + level;
                 a += ",`exp` = " + exp;
                 JSONArray jsar = new JSONArray();
-                if (isdie || Map.is_map_cant_save_site(map.map_id)) {
+                if (isDie || Map.is_map_cant_save_site(map.map_id)) {
                     jsar.add(1);
                     jsar.add(432);
                     jsar.add(354);
@@ -944,7 +1067,7 @@ public class Player extends Body2 {
                 jsar.clear();
                 for (int i = 0; i < MainEff.size(); i++) {
                     EffTemplate temp = MainEff.get(i);
-                    if (temp.id != -126 && temp.id != -125) {
+                    if (temp.id != -126 && temp.id != -125 && temp.id != -127 && temp.id != -128) {
                         continue;
                     }
                     JSONArray jsar21 = new JSONArray();
@@ -976,6 +1099,24 @@ public class Player extends Body2 {
                 }
                 a += ",`friend` = '" + jsar.toJSONString() + "'";
                 jsar.clear();
+                for (int j : quest_daily) {
+                    jsar.add(j);
+                }
+                a += ",`quest_daily` = '" + jsar.toJSONString() + "'";
+                jsar.clear();
+                // random đồ thần
+                for (int i = 0; i < st_ran.length; i++) {
+                    jsar.add(st_ran[i]);
+                }
+                a += ",`st_ran` = '" + jsar.toJSONString() + "'";
+                jsar.clear();
+                // random đồ thần
+                for (int i = 0; i < sc_ran.length; i++) {
+                    jsar.add(sc_ran[i]);
+                }
+                a += ",`sc_ran` = '" + jsar.toJSONString() + "'";
+                jsar.clear();
+
                 for (int i = 0; i < 21; i++) {
                     jsar.add(skill_point[i]);
                 }
@@ -1168,7 +1309,6 @@ public class Player extends Body2 {
                 }
                 a += ",`itembox3` = '" + jsar.toJSONString() + "'";
                 jsar.clear();
-
                 //
                 for (int i = 0; i < mypet.size(); i++) {
                     JSONArray js1 = new JSONArray();
@@ -1216,6 +1356,13 @@ public class Player extends Body2 {
                 a += ",`item_star_material` = '" + jsar.toJSONString() + "'";
                 jsar.clear();
 
+                //nldothan
+                for (int i = 0; i < NLdothan.length; i++) {
+                    jsar.add(NLdothan[i]);
+                }
+                a += ",`NL_do_than` = '" + jsar.toJSONString() + "'";
+                jsar.clear();
+
                 for (int i = 0; i < point_active.length; i++) {
                     jsar.add(point_active[i]);
                 }
@@ -1224,20 +1371,26 @@ public class Player extends Body2 {
                 //
                 a += ",`vang` = " + vang;
                 a += ",`kimcuong` = " + kimcuong;
+                a += ",`exptt` = " + exp_tutien;
                 a += ",`tiemnang` = " + tiemnang;
                 a += ",`kynang` = " + kynang;
                 a += ",`diemdanh` = " + diemdanh;
                 a += ",`chucphuc` = " + chucphuc;
-                a += ",`doiqua` = " + doiqua;
-                a += ",`phoban` = " + phoban;
-                a += ",`boss` = " + boss;
+                a += ",`khu2` = " + khu2;
                 a += ",`hieuchien` = " + hieuchien;
+                a += ",`chuyensinh` = " + chuyensinh;
+                a += ",`mm_cs` = " + mm_cs;
+                a += ",`luyenthe` = " + luyenthe;
+                a += ",`kinhmach` = " + kinhmach;
+                a += ",`tutien` = " + tutien;
+                a += ",`dibuon` = " + dibuon;
+                a += ",`dicuop` = " + dicuop;
+                a += ",`boss` = " + boss;
+                a += ",`phoban` = " + phoban;
+                a += ",`danhvong` = " + danhvong;
+                a += ",`doiqua` = " + doiqua;
                 a += ",`chuyencan` = " + chuyencan;
                 a += ",`diemsukien` = " + diemsukien;
-                a += ",`banclone` = " + banclone;
-                a += ",`diemdibuon` = " + diemdibuon;
-                a += ",`diemdicuop` = " + diemdicuop;
-                a += ",`diemchiemthanh` = " + diemchiemthanh;
                 a += ",`typeexp` = " + type_exp;
                 a += ",`date` = '" + date.toString() + "'";
                 a += ",`point1` = " + point1;
@@ -1245,6 +1398,15 @@ public class Player extends Body2 {
                 a += ",`point3` = " + point3;
                 a += ",`point4` = " + point4;
                 a += ",`point_arena` = " + pointarena;
+                a += ",`type_reward_king_cup` = " + type_reward_king_cup;
+                a += ",`point_king_cup` = " + point_king_cup;
+                a += ",`group_king_cup` = " + group_king_cup;
+                int id_hore = type_use_mount;
+                if (!Horse.isHorseClan(id_hore)) {
+                    id_hore = -1;
+                }
+                a += ",`type_use_mount` = " + id_hore;
+
                 if (ps.executeUpdate("UPDATE `player` SET " + a + " WHERE `id` = " + this.index + ";") > 0) {
                     connection.commit();
                 }
@@ -1375,6 +1537,8 @@ public class Player extends Body2 {
                 }
                 a += ",`itembox3` = '" + jsar.toJSONString() + "'";
                 jsar.clear();
+                a += ",`vang` = " + vang;
+                a += ",`kimcuong` = " + kimcuong;
 
                 if (ps.executeUpdate("UPDATE `player` SET " + a + " WHERE `id` = " + this.owner.index + ";") > 0) {
                     connection.commit();
@@ -1392,20 +1556,18 @@ public class Player extends Body2 {
     }
 
 
-
     public void change_new_date() {
         if (!Util.is_same_day(Date.from(Instant.now()), date) && isOwner) {
             // diem danh
             diemdanh = 1;
             chucphuc = 1;
-            diemsukien = 0;
+            khu2 = 2;
             point_active[0] = 10;
             point_active[1] = 0;
-            //
+            quest_daily = new int[]{-1, -1, 0, 0, 10};
             date = Date.from(Instant.now());
         }
     }
-
     public void set_x2_xp(int type) throws IOException {
         switch (type) {
             case 0: {
@@ -1434,18 +1596,7 @@ public class Player extends Body2 {
 
     public void add_EffDefault(int id, int param, int time) {
         this.body.add_EffDefault(id, param, System.currentTimeMillis() + time);
-//        synchronized (list_eff) {
-//            if (param == 0) {
-//                return;
-//            }
-//            EffTemplate temp_test = get_EffDefault(id);
-//            while (temp_test != null) {
-//                list_eff.remove(temp_test);
-//                temp_test = get_EffDefault(id);
-//            }
-//            EffTemplate temp = new EffTemplate(id, param, (System.currentTimeMillis() + time));
-//            list_eff.add(temp);
-//        }
+
     }
 
     public int getlevelpercent() {
@@ -1465,6 +1616,10 @@ public class Player extends Body2 {
     }
 
     public void change_map(Player p, Vgo vgo) throws IOException {
+//        if ((vgo.id_map_go == 36 || vgo.id_map_go == 50) && this.level < 40) {
+//            Service.send_notice_nobox_white(conn, "Yêu cầu trình độ cấp 40");
+//            return;
+//        }
         if (map.map_id == 0) {
             Message m = new Message(55);
             m.writer().writeByte(1);
@@ -1502,7 +1657,7 @@ public class Player extends Body2 {
                 }
             }
             if (mbuffer2 == null) {
-                Service.send_notice_box(p.conn, "Có lỗi xảy ra khi chuyển map hoặc đã đầy, hãy thử lại sau");
+                Service.send_notice_box(p.conn, "có lỗi xảy ra khi chuyển map");
                 return;
             }
             // di buon
@@ -1549,13 +1704,25 @@ public class Player extends Body2 {
             Service.send_notice_box(p.conn, "Có lỗi xảy ra khi chuyển map");
         }
     }
-
+    public void down_horse_clan() throws IOException {
+        if (Horse.isHorseClan(type_use_mount)) {
+            type_use_mount = -1;
+            id_horse = -1;
+            MapService.update_in4_2_other_inside(this.map, this);
+            MapService.send_in4_other_char(this.map, this, this);
+            Service.send_char_main_in4(this);
+            Service.send_notice_nobox_white(conn, "Tháo thú cưỡi thành công");
+        }
+    }
     public void update_Exp(long expup, boolean expmulti) throws IOException {
         long dame_exp = expup;
         if (expmulti && this.getlevelpercent() >= 0) {
             dame_exp *= Manager.gI().exp;
         }
-        if (type_use_mount == 4) {
+        if (conn.p.isTrader() == true || conn.p.isRobber() == true || conn.p.isKnight() == true){
+            dame_exp = 0;
+        }
+        if (type_use_mount == Horse.NGUA_DEN) {
             dame_exp += ((dame_exp * 5) / 100);
         }
         if ((type_exp == 0 && this.typepk != 0) || this.getlevelpercent() < (-500)) {
@@ -1564,6 +1731,9 @@ public class Player extends Body2 {
         if (!isOwner && owner.level <= level) {
             level = owner.level;
             return;
+        }
+        if (this.map.zone_id == 1 && !Map.is_map_not_zone2(this.map.map_id)) { // Khu 2
+            dame_exp += ((dame_exp * 5) / 100);
         }
         if (level >= Manager.gI().lvmax || type_exp == 0) {
             return;
@@ -1626,6 +1796,7 @@ public class Player extends Body2 {
     }
 
     public void change_zone(Session conn2, Message m2) throws IOException {
+
         if (this.map.map_id == 0) {
             Message m = new Message(55);
             m.writer().writeByte(1);
@@ -1636,6 +1807,10 @@ public class Player extends Body2 {
             m.cleanup();
         }
         byte zone = m2.reader().readByte();
+        Map map_change = Map.get_map_by_id(this.map.map_id)[zone];
+        if (zone == map.maxzone && !conn.p.isKnight() && !conn.p.isRobber() && !conn.p.isTrader() && map_change.is_map_buon()) {
+            return;
+        }
         if (zone < this.map.maxzone || (conn.p.item.wear[11] != null && (conn.p.item.wear[11].id == 3599
                 || conn.p.item.wear[11].id == 3593 || conn.p.item.wear[11].id == 3596))) {
             if (zone != this.map.zone_id) {
@@ -1644,8 +1819,25 @@ public class Player extends Body2 {
                     Service.send_notice_box(conn, "Có lỗi xảy ra khi chuyển map hoặc đã đầy, hãy thử lại sau");
                     return;
                 }
+                if (zone == 1 && !Map.is_map_not_zone2(map_change.map_id)) {
+                    EffTemplate ff = conn.p.get_EffDefault(-127);
+                    if (ff == null) {
+                        if (conn.p.khu2 > 0) {
+                            conn.p.add_EffDefault(-127, 1, 2 * 60 * 60 * 1000);
+                            MapService.leave(conn.p.map, conn.p);
+                            conn.p.map = map_change;
+                            MapService.enter(conn.p.map, conn.p);
+                            khu2--;
+//                        } else if (conn.p.item.total_item_by_id(4, (short) 54) >= 1) {
+//                            MenuController.send_menu_select(conn, -43, new String[]{"Đồng bạc Tyche", "Dùng ngọc"}, (byte) 1);
+                        } else {
+                            Service.send_box_input_yesno(conn, -112, "Bạn có muốn vào khu 2 với 5k coin cho 2 giờ?");
+                        }
+                        return;
+                    }
+                }
                 MapService.leave(this.map, this);
-                this.map = map;
+                this.map = map_change;
                 MapService.enter(this.map, this);
             } else {
                 Service.send_notice_box(conn, "Bạn đang ở khu vực này!");
@@ -1656,7 +1848,7 @@ public class Player extends Body2 {
     public synchronized boolean update_coin(int coin_exchange) throws IOException {
         String query = "SELECT `coin` FROM `account` WHERE `user` = '" + conn.user + "' LIMIT 1;";
         int coin_old = 0;
-        try ( Connection connection = SQL.gI().getConnection();  Statement ps = connection.createStatement();  ResultSet rs = ps.executeQuery(query)) {
+        try (Connection connection = SQL.gI().getConnection(); Statement ps = connection.createStatement(); ResultSet rs = ps.executeQuery(query)) {
             rs.next();
             coin_old = rs.getInt("coin");
             if (coin_old + coin_exchange < 0) {
@@ -1673,8 +1865,23 @@ public class Player extends Body2 {
         }
         return true;
     }
-
-    public synchronized int checkcoin() throws IOException {
+    public synchronized boolean update_nap(int nap_exchange) throws IOException {
+        String query = "SELECT `tichdiem` FROM `account` WHERE `user` = '" + conn.user + "' LIMIT 1;";
+        int nap_old = 0;
+        try (Connection connection = SQL.gI().getConnection(); Statement ps = connection.createStatement(); ResultSet rs = ps.executeQuery(query)) {
+            rs.next();
+            nap_old = rs.getInt("tichdiem");
+            nap_old += nap_exchange;
+            if (ps.executeUpdate(
+                    "UPDATE `account` SET `tichdiem` = " + nap_old + " WHERE `user` = '" + conn.user + "'") == 1) {
+                connection.commit();
+            }
+        } catch (SQLException e) {
+            Service.send_notice_box(conn, "Đã xảy ra lỗi");
+        }
+        return true;
+    }
+    public synchronized int checkcoin() {
         int result = 0;
         String query = "SELECT `coin` FROM `account` WHERE `user` = '" + conn.user + "' LIMIT 1;";
         try ( Connection connection = SQL.gI().getConnection();  Statement ps = connection.createStatement();  ResultSet rs = ps.executeQuery(query)) {
@@ -1685,12 +1892,22 @@ public class Player extends Body2 {
         }
         return result;
     }
-
+    public synchronized int check_nap() {
+        int result = 0;
+        String query = "SELECT `tichdiem` FROM `account` WHERE `user` = '" + conn.user + "' LIMIT 1;";
+        try ( Connection connection = SQL.gI().getConnection();  Statement ps = connection.createStatement();  ResultSet rs = ps.executeQuery(query)) {
+            rs.next();
+            result = rs.getInt("tichdiem");
+        } catch (SQLException e) {
+            result = 0;
+        }
+        return result;
+    }
     public synchronized boolean history_coin(int coin_exchange, String log) throws IOException {
         String query
                 = "INSERT INTO `history_coin` (`user_id`, `user_name`, `name_player` , `coin_change`, `logger`) VALUES ('"
                 + this.conn.id + "', '" + this.conn.user + "', '" + this.name + "', '" + coin_exchange + "', '" + log + "')";
-        try ( Connection connection = SQL.gI().getConnection();  Statement statement = connection.createStatement();) {
+        try (Connection connection = SQL.gI().getConnection(); Statement statement = connection.createStatement();) {
             if (statement.executeUpdate(query) > 0) {
                 connection.commit();
             }
@@ -1812,6 +2029,18 @@ public class Player extends Body2 {
             }
         }
     }
+
+    public int countTT() {
+        int count = 0;
+        for (int i = 0; i < 10; i++) {
+            if (i == 5) continue;
+            if (item.wear[i] != null && item.wear[i].isTT() && item.wear[i].color == 5) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     public void player_wear(Session conn2, Item3 temp3, int index_bag, byte index_wear) throws IOException {
         byte b = -1;
         switch (temp3.type) {
@@ -1898,11 +2127,11 @@ public class Player extends Body2 {
                 b = 20;
                 break;
             }
-            case 102: {
+            case 55: {
                 b = 21;
                 break;
             }
-            case 55: {
+            case 102: {
                 b = 22;
                 break;
             }
@@ -1948,7 +2177,7 @@ public class Player extends Body2 {
             value = m.reader().readShort();
         } catch (IOException e) {
         }
-        if (isdie || value <= 0) {
+        if (isDie || value <= 0) {
             return;
         }
         if (type == 1) {
@@ -1969,14 +2198,14 @@ public class Player extends Body2 {
                     boolean dont_have_book_skill_110 = true;
                     switch (clazz) {
                         case 0: {
-                            if (item.total_item_by_id(3, 4577) > 0 && index == 19) {
+                            if (item.total_item_book_skill(4577) > 0 && index == 19) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4577) {
                                         item.bag3[i] = null;
                                     }
                                 }
-                            } else if (item.total_item_by_id(3, 4578) > 0 && index == 20) {
+                            } else if (item.total_item_book_skill(4578) > 0 && index == 20) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4578) {
@@ -1987,14 +2216,14 @@ public class Player extends Body2 {
                             break;
                         }
                         case 1: {
-                            if (item.total_item_by_id(3, 4579) > 0 && index == 19) {
+                            if (item.total_item_book_skill(4579) > 0 && index == 19) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4579) {
                                         item.bag3[i] = null;
                                     }
                                 }
-                            } else if (item.total_item_by_id(3, 4580) > 0 && index == 20) {
+                            } else if (item.total_item_book_skill(4580) > 0 && index == 20) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4580) {
@@ -2005,14 +2234,14 @@ public class Player extends Body2 {
                             break;
                         }
                         case 2: {
-                            if (item.total_item_by_id(3, 4581) > 0 && index == 19) {
+                            if (item.total_item_book_skill(4581) > 0 && index == 19) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4581) {
                                         item.bag3[i] = null;
                                     }
                                 }
-                            } else if (item.total_item_by_id(3, 4582) > 0 && index == 20) {
+                            } else if (item.total_item_book_skill(4582) > 0 && index == 20) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4582) {
@@ -2023,14 +2252,14 @@ public class Player extends Body2 {
                             break;
                         }
                         case 3: {
-                            if (item.total_item_by_id(3, 4583) > 0 && index == 19) {
+                            if (item.total_item_book_skill(4583) > 0 && index == 19) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4583) {
                                         item.bag3[i] = null;
                                     }
                                 }
-                            } else if (item.total_item_by_id(3, 4584) > 0 && index == 20) {
+                            } else if (item.total_item_book_skill(4584) > 0 && index == 20) {
                                 dont_have_book_skill_110 = false;
                                 for (int i = 0; i < item.bag3.length; i++) {
                                     if (item.bag3[i] != null && item.bag3[i].id == 4584) {
@@ -2098,7 +2327,7 @@ public class Player extends Body2 {
                 MapService.update_in4_2_other_inside(this.map, this);
                 Service.send_char_main_in4(this);
             }
-        }else if (type == 2) {
+        } else if (type == 2) {
             if (index == 19 || index == 20) {
                 if (conn.p.skill_point[index] != 10) {
                     conn.p.id_index_temp = -1;
@@ -2111,7 +2340,7 @@ public class Player extends Body2 {
                     return;
                 }
                 this.id_index_temp = (byte) (index - 19);
-                MenuController.send_menu_select(conn, -128, new String[]{"Nâng cấp bằng sách", "Nâng cấp bằng sách ghép"});
+                MenuController.send_menu_select(conn, 999, new String[]{"Nâng cấp bằng sách", "Nâng cấp bằng sách ghép"});
             }
         }
     }
@@ -2282,7 +2511,7 @@ public class Player extends Body2 {
     public void set_in4() throws IOException {
         id_henshin = -1;
         this.already_setup = true;
-        //   time_use_item_arena = System.currentTimeMillis() + 250_000L;
+        time_use_item_arena = System.currentTimeMillis() + 250_000L;
         load_skill();
 //        try{
 //            CheckSkillPoint();
@@ -2291,12 +2520,17 @@ public class Player extends Body2 {
 //        }
         CheckSkillPoint();
         suckhoe = 30000;
-        typepk = -1;
+        if (this.isTrader()) {
+            typepk = 13;
+        } else if (isRobber()) {
+            typepk = 12;
+        } else {
+            typepk = -1;
+        }
         pointpk = 0;
         hp = body.get_HpMax();
         mp = body.get_MpMax();
         fashion = Part_fashion.get_part(this);
-        type_use_mount = -1;
         id_item_rebuild = -1;
         is_use_mayman = false;
         id_use_mayman = -1;
@@ -2380,11 +2614,11 @@ public class Player extends Body2 {
         item.char_inventory(3);
         item.char_chest(3);
 
+        npcs = new ArrayList<>();
         isOwner = true;
         owner = this;
         squire = new Squire(this.conn, this.index);
         squire = squire.load();
-
         Log.gI().add_log(this.name,
                 "Login : [Vàng] : " + Util.number_format(this.vang) + " : [Ngọc] : " + Util.number_format(this.kimcuong));
     }
@@ -2447,6 +2681,7 @@ public class Player extends Body2 {
         MapService.send_msg_player_inside(this.map, this, m, true);
         m.cleanup();
     }
+
     public int get_id_eff_skill(int type) {
         int id = 0;
         switch (this.clazz) {
@@ -2473,13 +2708,65 @@ public class Player extends Body2 {
                 break;
             case 3:
                 if (type == 19) {
-                    id = 77;
+                    id = 49;
                 } else if (type == 20) {
-                    id = 52;
+                    id = 77;
                 }
                 break;
         }
         return id;
     }
-}
 
+    public void veLang() throws IOException {
+        Vgo vgo = new Vgo();
+        vgo.id_map_go = 1;
+        vgo.x_new = 432;
+        vgo.y_new = 354;
+        change_map(conn.p, vgo);
+    }
+
+    public void goMapTapKet() throws IOException {
+        Vgo vgo = new Vgo();
+        vgo.id_map_go = 100;
+        vgo.x_new = 312;
+        vgo.y_new = 216;
+        change_map(conn.p, vgo);
+    }
+
+    public boolean isKnight() {
+        return item.wear[11] != null && item.wear[11].id >= 3596 && item.wear[11].id <= 3598;
+    }
+
+    public boolean isRobber() {
+        return item.wear[11] != null && item.wear[11].id >= 3593 && item.wear[11].id <= 3595;
+    }
+
+    public boolean isTrader() {
+        return item.wear[11] != null && item.wear[11].id >= 3599 && item.wear[11].id <= 3601;
+    }
+
+    public boolean isSonTinh() {
+        return item.wear[11] != null && item.wear[11].id == 4585;
+    }
+
+    public boolean isThuyTinh() {
+        return item.wear[11] != null && item.wear[11].id == 4586;
+    }
+
+    public void langPhuSuong() throws IOException {
+        Vgo vgo = new Vgo();
+        vgo.id_map_go = 135;
+        vgo.x_new = 642;
+        vgo.y_new = 318;
+        conn.p.change_map(conn.p, vgo);
+    }
+    
+//    public NpcTemplate findNPC(byte id) {
+//        for (NpcTemplate npc : npcs) {
+//            if (npc.id == id && Math.abs(npc.x - this.x) < 150 && Math.abs(npc.y - this.y) < 150) {
+//                return npc;
+//            }
+//        }
+//        return null;
+//    }
+}

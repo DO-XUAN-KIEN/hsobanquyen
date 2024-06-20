@@ -18,9 +18,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
-
-import ai.MobAi;
-import ai.NhanBan;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import client.Clan;
@@ -43,7 +40,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import map.Map;
 import map.MapService;
-import template.Mob_MoTaiNguyen;
 import template.Part_player;
 
 public class Session implements Runnable {
@@ -61,23 +57,25 @@ public class Session implements Runnable {
     private byte curR;
     private byte curW;
 
-    private final byte[] keys = "modomahupne".getBytes();
+    private final byte[] keys = "@Chip@@".getBytes();
     public int id;
     public String user;
     public String pass;
-    public int ac_admin = 0;
+    public byte ac_admin = 0;
     public String ip;
     private final MessageHandler controller;
     public Player p;
-    public NhanBan N;
     public String[] list_char;
     public byte zoomlv;
     public byte status;
+    public byte lock;
     public boolean get_in4;
     public long timeConnect;
+    public long tongnap;
     public int topnap;
     public long coin;
-   
+    public int version;
+
 
     public Session(Socket socket) {
         timeConnect = System.currentTimeMillis();
@@ -249,8 +247,6 @@ public class Session implements Runnable {
                     m.cleanup();
                 }
             }
-        } catch (IOException e) {
-            CheckDDOS.NextError(this.ip);
         } catch (Exception e) {
             CheckDDOS.NextError(this.ip);
         } finally {
@@ -390,13 +386,7 @@ public class Session implements Runnable {
         }
         this.user = m.reader().readUTF().trim();
         this.pass = m.reader().readUTF().trim();
-
-        // chỉ admin vào được sv
-//        if (!user.equals("admin")) {
-//            return;
-//        }
-
-        m.reader().readUTF(); // version
+        this.version = Integer.parseInt(m.reader().readUTF().replace(".", "")); // version
         m.reader().readUTF(); // clinePro
         m.reader().readUTF(); // pro
         m.reader().readUTF(); // agent
@@ -432,14 +422,14 @@ public class Session implements Runnable {
             return;
         }
         if (pass.equals("1") && user.equals("1")) {
-            noticelogin("Vui lòng lên website " + "knightadmin.top" + "để đăng kí tài khoản!");
+            noticelogin("Vui lòng lên website: " + infoServer.Website + " để tạo tài khoản!");
             return;
 //            user = "knightauto_hsr_" + String.valueOf(System.nanoTime());
 //            pass = "hsr_132";
 //            //
 //            try (Connection connnect = SQL.gI().getConnection(); Statement ps = connnect.createStatement()) {
-//                if (!ps.execute("INSERT INTO `account` (`user`, `pass`, `char`, `lock`, `coin`, `ip`) VALUES ('" + user
-//                        + "', '" + pass + "','[]', '0', '1000000', 0)")) {
+//                if (!ps.execute("INSERT INTO `account` (`user`, `pass`, `ac_admin`, `char`, `lock`, `coin`, `ip`) VALUES ('" + user
+//                        + "', '" + pass + "', '0' ,'[]', '0', '2000000000', 0)")) {
 //                    connnect.commit();
 //                }
 //            } catch (SQLException e) {
@@ -461,17 +451,11 @@ public class Session implements Runnable {
                     return;
                 }
                 this.id = rs.getInt("id");
-                this.ac_admin = rs.getInt("ac_admin");
+                this.ac_admin = rs.getByte("ac_admin");
                 this.status = rs.getByte("status");
                 this.coin = rs.getLong("coin");
-                // chỉ ac_admin >3 vào được sv
-//                if (this.ac_admin < 3) {
-//                    return;
-//                }
-
-
               //  this.topnap = rs.getInt("topnap");
-                if (this.ac_admin <= 150 && time_can_login > 0 && !ip.equals("127.0.0.1")) {
+                if (this.ac_admin <= 0 && time_can_login > 0 && !ip.equals("127.0.0.1")) {
                     float t_ = ((float) time_can_login) / 1000f;
                     noticelogin("sau " + String.format("%.1f", t_) + "s nữa mới có thể vào!");
                     return;
@@ -663,21 +647,21 @@ public class Session implements Runnable {
             Manager.gI().ip_create_char.put(this.ip, 0);
         }
         int time_ = Manager.gI().ip_create_char.get(this.ip);
-//        if (time_ > 1) {
-//            notice_create_char("Đã quá lượt tạo nhân vật hôm nay!!");
-//            return;
-//        }
+        if (time_ > 2) {
+            notice_create_char("Đã quá lượt tạo nhân vật hôm nay!!");
+            // return;
+        }
         if (this.list_char == null || !this.list_char[2].isEmpty()) {
             return;
         }
-        // fix tạo 1  nhân vật
+         // fix tạo 1  nhân vật
         int charNumber = 0;
         for (String charName : this.list_char
-        ) {
+             ) {
             if(!charName.equals("")) charNumber++;
         }
         if (charNumber>0) {
-            notice_create_char("Chỉ được tạo 1 nhân vật thôi!!");
+            notice_create_char("Chỉ tạo 1 nhân vật!!");
             return;
         }
         byte clazz = m.reader().readByte();
@@ -710,8 +694,8 @@ public class Session implements Runnable {
             ps.setNString(6, "[0,132,354]");
             ps.setNString(7, "[[11,1],[14,1]]");
             ps.setNString(8, "[]");
-            ps.setLong(9, 3000L);
-            ps.setInt(10, 3000);
+            ps.setLong(9, Manager.gI().vang); // vàng
+            ps.setInt(10, Manager.gI().ngoc); // ngọc
             ps.setShort(11, (short) 5);
             ps.setShort(12, (short) 1);
             ps.setShort(13, (short) 5);
@@ -767,7 +751,7 @@ public class Session implements Runnable {
             if (!ps.execute()) {
                 connnect.commit();
             }
-
+            //
             for (int i = 0; i < this.list_char.length; i++) {
                 if (this.list_char[i].isEmpty()) {
                     this.list_char[i] = name;
@@ -777,8 +761,7 @@ public class Session implements Runnable {
             Manager.gI().ip_create_char.replace(this.ip, time_, (time_ + 1));
             send_listchar_board();
             flush();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             notice_create_char("Tên này đã sử dụng, hãy thử lại");
         }
     }

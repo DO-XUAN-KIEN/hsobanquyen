@@ -22,6 +22,7 @@ import map.Vgo;
 import template.ItemTemplate3;
 import template.MainObject;
 import template.Member_ChienTruong;
+import BossHDL.*;
 
 public class ChienTruong {
 	private static ChienTruong instance;
@@ -34,7 +35,7 @@ public class ChienTruong {
 	public List<Mob_in_map> boss;
 	public long vang;
 	public long ngoc;
-         
+
 
 	public int getStatus() {
 		return status;
@@ -77,6 +78,13 @@ public class ChienTruong {
 				}
 			} else if (this.status == 2) {
 				this.time--;
+				if(this.time == 60* 55){
+					BossManager.callBossToMap(61, 101, 487,510 , 250_000_000, 55);
+					Manager.gI().chatKTGprocess("Xà nữ đã xuất hiện tại chiến trường");
+				}else if(this.time == 60 * 50){
+					BossManager.callBossToMap(61, 101, 487,510, 250_000_000, 55);
+					Manager.gI().chatKTGprocess("Xà nữ đã xuất hiện tại chiến trường");
+				}
 				//
 				if (this.time <= 0) {
 					this.finish();
@@ -85,7 +93,6 @@ public class ChienTruong {
 		} catch (IOException e) {
 		}
 	}
-
 	private void create_boss(int i) {
 //		if (i == 20) {
 //			Mob_in_map m = null;
@@ -141,7 +148,7 @@ public class ChienTruong {
 			this.status = 2;
 			this.time = 60 * 60;
 			int init_house = this.list.size() / 40;
-			init_house = init_house > 0 ? init_house : 1;
+			init_house = init_house > 0 ? init_house : 10;
 			this.info_house = new int[] {init_house, init_house, init_house, init_house
 					// Map.get_map_by_id(56)[0].maxzone, Map.get_map_by_id(60)[0].maxzone,
 					// Map.get_map_by_id(58)[0].maxzone, Map.get_map_by_id(54)[0].maxzone
@@ -177,7 +184,7 @@ public class ChienTruong {
 				Map[] mapp = Map.get_map_by_id(id_map[i]);
 				for (Map map : mapp) {
 					for (Mob_in_map mobb : map.mobs) {
-						mobb.isdie = false;
+						mobb.isDie = false;
 					}
 				}
 			}
@@ -344,7 +351,7 @@ public class ChienTruong {
 //			this.ngoc = 0;
 //			list_receiv.clear();
 			for (Entry<String, Member_ChienTruong> en : this.list.entrySet()) {
-				 System.out.println(en.getKey() + " " + en.getValue().village);
+				System.out.println(en.getKey() + " " + en.getValue().village);
 				Player p0 = Map.get_player_by_name(en.getKey());
 				if (p0 != null) {
 					Vgo vgo = new Vgo();
@@ -378,7 +385,7 @@ public class ChienTruong {
 		}
 	}
 
-	public synchronized void register(Player p, int type) throws IOException {
+	public synchronized void register(Player p) throws IOException {
 
 		if (this.list.containsKey(p.name)) {
 			Service.send_notice_box(p.conn, "Đã đăng ký rồi");
@@ -397,7 +404,7 @@ public class ChienTruong {
 		if (this.status == 0) {
 			Manager.gI().chatKTGprocess("Chiến trường mở đăng ký, mau mau đến ");
 			this.status = 1;
-			this.time = 60*30;
+			this.time = 60*44;
 		}
 	}
 
@@ -413,7 +420,6 @@ public class ChienTruong {
 			m.cleanup();
 		}
 	}
-
 	private int total_p_of_house(int i) {
 		int result = 0;
 		for (Entry<String, Member_ChienTruong> en : this.list.entrySet()) {
@@ -498,52 +504,62 @@ public class ChienTruong {
 			}
 		}
 	}
-  public static void Obj_Die(Map map, MainObject mainAtk, MainObject focus)throws IOException{
-        if(!mainAtk.isPlayer() || !focus.isMob())return;
-        Player p = (Player)mainAtk;
-        Mob_in_map mob = (Mob_in_map)focus;
-        if (mob != null) {
-            // roi do boss co dinh
-            short[] id_item_leave3 = new short[]{};
-            short[] id_item_leave4 = new short[]{};
-            short[] id_item_leave7 = new short[]{};
-            //short id_medal_material = -1;
-            short sizeRandomMedal = 0;
-            switch (mob.template.mob_id) {
-                case 93, 94, 95, 96, 97, 98, 99, 100: {
-					id_item_leave7 = new short[]{(short) Util.random(126, 136)};
+	public static void Obj_Die(Map map, MainObject mainAtk, MainObject focus)throws IOException{
+		if(!mainAtk.isPlayer() || !focus.isMob())return;
+		Player p = (Player)mainAtk;
+		Mob_in_map mob = (Mob_in_map)focus;
+		if (mob != null) {
+			// roi do boss co dinh
+			short[] id_item_leave3 = new short[]{};
+			short[] id_item_leave4 = new short[]{};
+			short[] id_item_leave7 = new short[]{};
+			//short id_medal_material = -1;
+			short sizeRandomMedal = 0;
+			switch (mob.template.mob_id) {
+				case 93, 94, 95, 96, 97, 98, 99, 100: {
+					if(Util.random(100)>90){
+						id_item_leave7 =new short[]{(short) Util.random(126, 136)};
+					}
 					if(Util.random(10000) < 1 ){
 						id_item_leave3 = new short[]{(short) Util.random(4577, 4585)};
 					}
-					id_item_leave4 = new short[]{(short) Util.random(187,189)};
 					p.update_point_arena(1);
 					p.item.char_inventory(5);
 					break;
-                }
-            }
-            for (short id : id_item_leave3) {
-                ItemTemplate3 temp = ItemTemplate3.item.get(id);
-                LeaveItemMap.leave_item_by_type3(map, id, temp.getColor(), p, temp.getName(), mob.index);
-            }
-            for (int i = 0; i < 1; i++) {
-                for (short id : id_item_leave4) {
-                    if (id == -1) {
-                        leave_vang(map, mob, p);
-                    } else {
-                        LeaveItemMap.leave_item_by_type4(map, id, p, mob.index,p.index);
-                    }
-                }
-            }
-            for (int i = 0; i < 1; i++) {
-                for (short id : id_item_leave7) {
-                    LeaveItemMap.leave_item_by_type7(map, id, p, mob.index,p.index);
-                }
-            }
-            for (int l = 0; l < sizeRandomMedal; l++) {
-                LeaveItemMap.leave_item_by_type7(map, (short) Util.random(136, 146), p, mob.index,p.index);
-            }
-        }
-    }
+				}
+				case 89,90,91,92: {
+					id_item_leave7 = new short[]{(short) Util.random(126, 146)};
+					if(Util.random(5000) < 1){
+						id_item_leave3 = new short[]{(short) Util.random(4577, 4585)};
+					}
+					p.update_point_arena(5);
+					p.item.char_inventory(5);
+					break;
+				}
+			}
+			for (short id : id_item_leave3) {
+				ItemTemplate3 temp = ItemTemplate3.item.get(id);
+				LeaveItemMap.leave_item_by_type3(map, id, temp.getColor(), p, temp.getName(), mob.index);
+			}
+			for (int i = 0; i < 3; i++) {
+				for (short id : id_item_leave4) {
+					if (id == -1) {
+						leave_vang(map, mob, p);
+					} else {
+						LeaveItemMap.leave_item_by_type4(map, id, p, mob.index,p.index);
+					}
+				}
+			}
+			for (int i = 0; i < 3; i++) {
+				for (short id : id_item_leave7) {
+					LeaveItemMap.leave_item_by_type7(map, id, p, mob.index, p.index);
+				}
+			}
+			for (int l = 0; l < sizeRandomMedal; l++) {
+				LeaveItemMap.leave_item_by_type7(map, (short) Util.random(136, 146), p, mob.index,p.index);
+			}
+		}
+	}
 	public Member_ChienTruong get_infor_register(String name) {
 		return this.list.get(name);
 	}

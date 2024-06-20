@@ -1,4 +1,7 @@
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package Helps;
 
 import java.util.ArrayList;
@@ -6,10 +9,17 @@ import java.util.List;
 import template.Item3;
 import template.Option;
 
+/**
+ *
+ * @author chien
+ */
 public class Kham_Item {
 
     public static boolean CheckNgocTinhLuyen(short id) {
-        if ((id >= 382 && id <= 386) || (id >= 387 && id <= 391) ||(id >= 392 && id <= 396) || (id >= 397 && id <= 401) || (id >= 402 && id <= 406) ||(id >= 407 && id <= 411))// hỗn nguyên tinh luyện
+        if ((id >= 382 && id <= 386) || (id >= 387 && id <= 391) ||(id >= 392 && id <= 396) 
+                || (id >= 397 && id <= 401) || (id >= 402 && id <= 406) 
+                ||(id >= 407 && id <= 411) || (id >= 412 && id <= 416)
+                || (id >= 23 && id <= 32))
             return true;
         return false;
     }
@@ -43,7 +53,7 @@ public class Kham_Item {
             int pr = (357 - id) * 5;
             re = new Option(100, pr, idItem);
             //re.add(new Option(100, pr, idItem));
-        }
+        } 
         else if (id >= 382 && id <= 386)// hỗn nguyên tinh luyện
         {
             int pr = (387 - id) * 5;
@@ -131,6 +141,24 @@ public class Kham_Item {
             int pr = idx == 1 ? 1400 : (idx == 2 ? 900 : (idx == 3 ? 700 : (idx == 4 ? 500 : 300)));
             re = new Option(107, pr, idItem);
 //            re.add(new Option(107, pr, idItem));
+        }
+        else if(id >= 412 && id <= 416) // Nguyên thuỷ
+        {
+            int idx = (417 - id);
+            int pr = idx == 1 ? 900 : (idx == 2 ? 700 : (idx == 3 ? 500 : (idx == 4 ? 300 : 100)));
+            re = new Option(116, pr, idItem);
+        }
+        else if(id >= 23 && id <= 27) // Ánh sáng
+        {
+            int idx = (28 - id);
+            int pr = idx == 1 ? 1600 : (idx == 2 ? 800 : (idx == 3 ? 400 : (idx == 4 ? 200 : 100)));
+            re = new Option(6, pr, idItem);
+        }
+        else if(id >= 28 && id <= 32) // Bóng tối
+        {
+            int idx = (33 - id);
+            int pr = idx == 1 ? 1600 : (idx == 2 ? 800 : (idx == 3 ? 400 : (idx == 4 ? 200 : 100)));
+            re = new Option(5, pr, idItem);
         }
         return re;
     }

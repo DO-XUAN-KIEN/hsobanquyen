@@ -1,4 +1,7 @@
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package gamble;
 import java.io.IOException;
 import java.util.HashMap;
@@ -9,7 +12,10 @@ import core.Manager;
 import core.Service;
 import core.Util;
 import io.Message;
-
+/**
+ *
+ * @author chien
+ */
 public class VXKC implements Runnable{
     public Thread mainloopThread;
     private boolean running;
@@ -163,7 +169,7 @@ public class VXKC implements Runnable{
                                     player.getKey().item.char_inventory(5);
                             }
                     } else {
-                            Manager.gI().chatKTGprocess("Người thắng cuộc đã offline nên kết quả bị hủy  :v");
+                            Manager.gI().chatKTGprocess("Người thắng cuộc đã offline nên kết quả bị hủy kakaka :v");
                     }
                     break;
                 }
@@ -201,16 +207,16 @@ public class VXKC implements Runnable{
                     Service.send_notice_box(p.conn, "Bạn chỉ có thể tham gia 1 lần");
                     return;
                 }
-                if (list_playerHashMap.containsKey(p) && (list_playerHashMap.get(p) + vang_join_vxmm) > 10_000) {
-                        Service.send_notice_box(p.conn, "Chỉ có thể tham gia tối đa 10k ngọc");
+                if (list_playerHashMap.containsKey(p) && (list_playerHashMap.get(p) + vang_join_vxmm) > 50_000) {
+                        Service.send_notice_box(p.conn, "Chỉ có thể tham gia tối đa 50k ngọc");
                         return;
                 }
-                if ((get_total_vang() + vang_join_vxmm) > 100_000) {
+                if ((get_total_vang() + vang_join_vxmm) > 50_000_000) {
                         Service.send_notice_box(p.conn, "Tổng số ngọc trong vòng xoay tối đa chỉ 50tr");
                         return;
                 }
                 p.update_ngoc(-vang_join_vxmm);
-                Log.gI().add_log(p.name, "Vòng xoay kim cương chơi " + Util.number_format(vang_join_vxmm) + " ngọc");
+                Log.gI().add_log(p.name, "VXKC chơi " + Util.number_format(vang_join_vxmm) + " ngọc");
                 p.item.char_inventory(5);
                 Service.send_notice_box(p.conn, "tham gia " + Util.number_format(vang_join_vxmm) + " ngọc thành công");
                 if (!list_playerHashMap.containsKey(p)) {

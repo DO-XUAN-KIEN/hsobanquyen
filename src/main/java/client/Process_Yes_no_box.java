@@ -6,14 +6,18 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 import event_daily.ChiemThanhManager;
 import event_daily.Wedding;
+import event_daily.*;
+import event_daily.st.*;
 
 import io.Message;
 import io.Session;
-import map.*;
+import map.Dungeon;
+import map.DungeonManager;
+import map.Map;
+import map.MapService;
 import template.*;
 
 public class Process_Yes_no_box {
@@ -59,102 +63,43 @@ public class Process_Yes_no_box {
             }
         } else {
             switch (type) {
+                case -1: {
+                    Dungeon d = DungeonManager.get_list(conn.p.name);
+                    if(d == null){
+                        Service.send_notice_box(conn, "Phải vào phó bản trước rồi mới dùng được chức năng này");
+                        return;
+                    }
+                    if(conn.p.point_active[0] <1){
+                        Service.send_notice_box(conn,"Bạn không còn lượt nào để trừ");
+                        return;
+                    }
+                    conn.p.point_active[0] -= 1;
+                    d.finish_dungeon();
+                    conn.p.item.char_inventory(3);
+                    conn.p.item.char_inventory(5);
+                    Service.send_notice_box(conn,"Bạn đã sử dụng quyền trợ giúp hoàn thành phó bản");
+                    break;
+                }
                 case -127: {
                     if (!conn.p.isOwner) {
                         return;
                     }
-                    if (conn.p.checkcoin() < 1_500_000) {
-                        Service.send_notice_box(conn, "Không đủ coin, Hãy kiếm thêm đi");
+                    if (conn.p.checkcoin() < 100000) {
+                        Service.send_notice_box(conn, "Không đủ coin");
                         return;
                     }
                     if (conn.p.level < 10) {
-                        Service.send_notice_box(conn, "Yêu cầu level trên 10");
+                        Service.send_notice_box(conn, "Yêu cầu level 10");
                         return;
                     }
                     if (conn.p.squire == null) {
                         Squire.create(conn.p);
                         conn.p.squire = new Squire(conn, conn.p.index);
                         conn.p.squire.load();
-                        conn.p.update_coin(-1_500_000);
+                        conn.p.update_coin(-100_000);
                         Service.send_notice_box(conn, "Nhận thành công đệ tử");
                         Squire.callSquire(conn);
                     }
-                    break;
-                }
-                case -128: {
-                    MapService.Fire_Mob_DiBuon(conn.p.map, conn,conn.p.pet_di_buon,-1,conn.p.pet_di_buon.get_HpMax());
-//                    conn.p.pet_di_buon.(conn.p,0);
-                    UseItem.concac(conn);
-                    conn.p.item.remove(4,84,1);
-                    //
-                    break;
-                }
-                case -19: {
-                    conn.p.diemdicuop = 0;
-                    conn.p.item.char_inventory(5);
-                    Item3 itbag = new Item3();
-                    itbag.id = 3599;
-                    itbag.clazz = ItemTemplate3.item.get(3599).getClazz();
-                    itbag.type = ItemTemplate3.item.get(3599).getType();
-                    itbag.level = ItemTemplate3.item.get(3599).getLevel();
-                    itbag.icon = ItemTemplate3.item.get(3599).getIcon();
-                    itbag.op = new ArrayList<>();
-                    itbag.op.addAll(ItemTemplate3.item.get(3599).getOp());
-                    itbag.color = 5;
-                    itbag.part = ItemTemplate3.item.get(3599).getPart();
-                    itbag.tier = 0;
-                    itbag.islock = true;
-                    itbag.time_use = 0;
-                    // thao do
-                    if (conn.p.item.wear[11] != null && conn.p.item.wear[11].id != 3593 && conn.p.item.wear[11].id != 3599
-                            && conn.p.item.wear[11].id != 3596) {
-                        Item3 buffer = conn.p.item.wear[11];
-                        conn.p.item.wear[11] = null;
-                        conn.p.item.add_item_bag3(buffer);
-                    }
-                    itbag.name = ItemTemplate3.item.get(3599).getName() + " [Khóa]";
-                    itbag.UpdateName();
-                    conn.p.item.wear[11] = itbag;
-                    conn.p.item.char_inventory(4);
-                    conn.p.item.char_inventory(7);
-                    conn.p.item.char_inventory(3);
-                    conn.p.fashion = Part_fashion.get_part(conn.p);
-                    conn.p.change_map_di_buon(conn.p);
-                    Service.send_notice_box(conn, "Nhận thành công");
-                    break;
-                }
-                case -20:{
-                    conn.p.diemdibuon = 0;
-                    conn.p.item.char_inventory(5);
-                    Item3 itbag = new Item3();
-                    itbag.id = 3593;
-                    itbag.clazz = ItemTemplate3.item.get(3593).getClazz();
-                    itbag.type = ItemTemplate3.item.get(3593).getType();
-                    itbag.level = ItemTemplate3.item.get(3593).getLevel();
-                    itbag.icon = ItemTemplate3.item.get(3593).getIcon();
-                    itbag.op = new ArrayList<>();
-                    itbag.op.addAll(ItemTemplate3.item.get(3593).getOp());
-                    itbag.color = 5;
-                    itbag.part = ItemTemplate3.item.get(3593).getPart();
-                    itbag.tier = 0;
-                    itbag.islock = true;
-                    itbag.time_use = 0;
-                    // thao do
-                    if (conn.p.item.wear[11] != null && conn.p.item.wear[11].id != 3593 && conn.p.item.wear[11].id != 3599
-                            && conn.p.item.wear[11].id != 3596) {
-                        Item3 buffer = conn.p.item.wear[11];
-                        conn.p.item.wear[11] = null;
-                        conn.p.item.add_item_bag3(buffer);
-                    }
-                    itbag.name = ItemTemplate3.item.get(3593).getName() + " [Khóa]";
-                    itbag.UpdateName();
-                    conn.p.item.wear[11] = itbag;
-                    conn.p.item.char_inventory(4);
-                    conn.p.item.char_inventory(7);
-                    conn.p.item.char_inventory(3);
-                    conn.p.fashion = Part_fashion.get_part(conn.p);
-                    conn.p.change_map_di_buon(conn.p);
-                    Service.send_notice_box(conn, "Nhận thành công");
                     break;
                 }
                 case -124: {
@@ -175,6 +120,22 @@ public class Process_Yes_no_box {
                     } else {
                         Service.send_notice_box(conn, "Chưa có đệ tử");
                     }
+                }
+                case -112: {
+                    if (conn.p.checkcoin() < 5_000) {
+                        Service.send_notice_box(conn, "Không đủ coin");
+                        return;
+                    }
+                    Map map = Map.get_map_by_id(conn.p.map.map_id)[1];
+                    if (map != null && map.players.size() >= map.maxplayer) {
+                        Service.send_notice_box(conn, "Khu vực đầy!!!");
+                        return;
+                    }
+                    conn.p.update_coin(-5_000);
+                    conn.p.add_EffDefault(-127, 1, 2 * 60 * 60 * 1000);
+                    MapService.leave(conn.p.map, conn.p);
+                    conn.p.map = map;
+                    MapService.enter(conn.p.map, conn.p);
                     break;
                 }
                 case -122: {
@@ -239,15 +200,15 @@ public class Process_Yes_no_box {
                             it.icon = temp3.getIcon();
                             it.op = temp3.getOp();
                             it.op.add(new Option((byte) 61, 0));
-                            it.color = temp3.getColor();
+                            it.color = 0;
                             it.islock = true;
                             it.part = temp3.getPart();
                             conn.p.item.add_item_bag3(it);
                             it.op.clear();
-                            conn.p.item.remove(7, 476, 50);
                             conn.p.item.remove(7, 477, 50);
                             conn.p.item.remove(7, 478, 50);
                             conn.p.item.remove(7, 479, 50);
+                            conn.p.item.remove(7, 480, 50);
                             conn.p.item.char_inventory(3);
                             conn.p.item.char_inventory(4);
                             conn.p.item.char_inventory(7);
@@ -280,7 +241,7 @@ public class Process_Yes_no_box {
                             case 0 -> 4577;
                             case 1 -> 4580;
                             case 2 -> 4582;
-                            case 3 -> 4584;
+                            case 3 -> 4583;
                             default -> id_book;
                         };
                     } else if (conn.p.id_index_temp == 0) {
@@ -288,7 +249,7 @@ public class Process_Yes_no_box {
                             case 0 -> 4578;
                             case 1 -> 4579;
                             case 2 -> 4581;
-                            case 3 -> 4583;
+                            case 3 -> 4584;
                             default -> id_book;
                         };
                     }
@@ -298,7 +259,7 @@ public class Process_Yes_no_box {
                         return;
                     }
                     if (conn.p.item.total_item_book_skill(id_book) >= (level + 1)) {
-                        if (Util.nextInt(100) < 20 - level || level == 0) {
+                        if (Util.nextInt(100) < 22 - level || level == 0) {
                             conn.p.skill_110[conn.p.id_index_temp] += 1;
                             Service.send_notice_box(conn, "Nâng cấp thành công");
                             conn.p.load_skill();
@@ -306,12 +267,159 @@ public class Process_Yes_no_box {
                         } else {
                             Service.send_notice_box(conn, "Thất bại rồi");
                         }
-                        conn.p.item.remove_item_book_skill(id_book, (level + 1));
+                        conn.p.item.remove_item_book(id_book, (level + 1));
                         conn.p.item.char_inventory(3);
                         conn.p.id_index_temp = -1;
                         conn.p.update_ngoc(-(level * 5 + 10));
                     } else {
                         Service.send_notice_box(conn, "Không đủ sách");
+                    }
+                    break;
+                }
+                case -12: {
+                    if (conn.p.id_than != -1) {
+                        Player p = conn.p;
+                        Item3 it_pr = conn.p.item.bag3[conn.p.id_than];
+                        if (it_pr != null) {
+                            int[] ids = {st.id[p.st_ran[0]], st1.id[p.st_ran[1]], st2.id[p.st_ran[2]], st3.id[p.st_ran[3]], st4.id[p.st_ran[4]]};
+                            int[] values = {10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40};
+                            int tierStar = it_pr.tierStar >= 0 && it_pr.tierStar < values.length ? values[it_pr.tierStar] : it_pr.tierStar;
+                            for (int i = 0; i < ids.length; i++) {
+                                if (conn.p.item.total_item_by_id(7, ids[i]) < tierStar) {
+                                    Service.send_notice_box(conn, "Không đủ " + tierStar + " " + ItemTemplate7.item.get(ids[i]).getName());
+                                    return;
+                                }
+                                conn.p.item.remove(7, ids[i], tierStar);
+                            }
+                            for (int i = 0; i < it_pr.op.size(); i++) {
+                                Option op = it_pr.op.get(i);
+                                if (op.id >= 0 && op.id <= 99) {
+                                    op.setParam(op.getParam(4));
+                                }
+                                if (op != null && op.id >= -128 && op.id <= -80 || (op.id == 99)) {
+                                    op.setParam(op.getParam(0) + 100);
+                                }
+                            }
+                            boolean suc = 15 > Util.random(100) || conn.ac_admin > 10;
+                            if (suc) {
+                                it_pr.tierStar++;
+                                it_pr.name = ItemTemplate3.item.get(it_pr.id).getName() + "";
+                                it_pr.UpdateName();
+                                conn.p.item.char_inventory(4);
+                                conn.p.item.char_inventory(7);
+                                conn.p.item.char_inventory(3);
+                                Service.send_notice_box(conn, "Nhận Được " + it_pr.name + "");
+                                st.ran_st(conn.p);
+                            } else {
+                                Service.send_notice_box(conn, "Nâng cấp thất bại!");
+                            }
+                        }
+                    }
+                    break;
+//                    if (conn.p.id_than != -1) {
+//                        Player p = conn.p;
+//                        Item3 it_pr = conn.p.item.bag3[conn.p.id_than];
+//                        if (it_pr == null) {
+//                            Service.send_notice_box(conn, "Không tìm thấy vật phẩm phù hợp");
+//                            return;
+//                        }
+//                        if (conn.p.get_ngoc() < 10_000) {
+//                            Service.send_notice_box(conn, "Không đủ 10k ngọc");
+//                            return;
+//                        }
+//                        if (it_pr != null && it_pr.id >= 4831 && it_pr.id <= 4873 && it_pr.color == 5 && it_pr.tierStar <= 17) {
+//                            int[] ids = {st.id[p.st_ran[0]], st1.id[p.st_ran[1]], st2.id[p.st_ran[2]], st3.id[p.st_ran[3]], st4.id[p.st_ran[4]]};
+//                            int[] sls = {st.sl[p.st_ran[0]], st1.sl[p.st_ran[1]], st2.sl[p.st_ran[2]], st3.sl[p.st_ran[3]], st4.sl[p.st_ran[4]]};
+//                            for (int i = 0; i < ids.length; i++) {
+//                                if (conn.p.item.total_item_by_id(7, ids[i]) < sls[i] * it_pr.tierStar) {
+//                                    Service.send_notice_box(conn, "Không đủ " + sls[i] * it_pr.tierStar + " " + ItemTemplate7.item.get(ids[i]).getName());
+//                                    return;
+//                                }
+//                                conn.p.item.remove(7, ids[i], sls[i] * it_pr.tierStar / 9);
+//                            }
+//                            for (int i = 0; i < it_pr.op.size(); i++) {
+//                                Option op = it_pr.op.get(i);
+//                                if (op.id >= 0 && op.id <= 99) {
+//                                    op.setParam(op.getParam(4));
+//                                }
+//                                if (op != null && op.id >= -128 && op.id <= -80 || (op.id == 99)) {
+//                                    op.setParam(op.getParam(0) + 100);
+//                                }
+//                            }
+//                            boolean suc = 15 > Util.random(100) || conn.ac_admin > 10;
+//                            if (suc) {
+//                                it_pr.tierStar++;
+//                                it_pr.name = ItemTemplate3.item.get(it_pr.id).getName() + "";
+//                                it_pr.UpdateName();
+//                                conn.p.item.char_inventory(4);
+//                                conn.p.item.char_inventory(7);
+//                                conn.p.item.char_inventory(3);
+//                                Service.send_notice_box(conn, "Nhận Được " + it_pr.name + "");
+//                                conn.p.item.char_inventory(3);
+//                                st.ran_st(conn.p);
+//                            } else {
+//                                Service.send_notice_box(conn, "Nâng cấp thất bại!");
+//                            }
+//                        }
+//                    }
+//                    break;
+                }
+                case -13: {
+                    Item3 it_pr = null;
+                    Player p = conn.p;
+                    for (int i = 0; i < conn.p.item.bag3.length; i++) {
+                        Item3 it = conn.p.item.bag3[i];
+
+                        if (it != null && it.id >= 4656 && it.id <= 4675 && it.color == 5 && it.tierStar >= 9 && it.tierStar <= 17) {
+                            it_pr = it;
+                            break;
+                        }
+                    }
+
+                    if (it_pr == null) {
+                        Service.send_notice_box(conn, "Không tìm thấy vật phẩm phù hợp");
+                        return;
+                    }
+
+                    if (conn.p.get_ngoc() < 10_000) {
+                        Service.send_notice_box(conn, "Không đủ 10k ngọc");
+                        return;
+                    }
+
+                    int[] ids = {st.id[p.st_ran[0]], st1.id[p.st_ran[1]], st2.id[p.st_ran[2]], st3.id[p.st_ran[3]], st4.id[p.st_ran[4]]};
+                    int[] sls = {st.sl[p.st_ran[0]], st1.sl[p.st_ran[1]], st2.sl[p.st_ran[2]], st3.sl[p.st_ran[3]], st4.sl[p.st_ran[4]]};
+
+                    for (int i = 0; i < ids.length; i++) {
+                        if (conn.p.item.total_item_by_id(7, ids[i]) < sls[i] * it_pr.tierStar / 9) {
+                            Service.send_notice_box(conn, "Không đủ " + sls[i] * it_pr.tierStar / 9 + " " + ItemTemplate7.item.get(ids[i]).getName());
+                            return;
+                        }
+                        conn.p.item.remove(7, ids[i], sls[i] * it_pr.tierStar / 9);
+                    }
+
+//                    for (int i = 0; i < it_pr.op.size(); i++) {
+//                        Option op = it_pr.op.get(i);
+//                        if (op.id >= 0 && op.id <= 99) {
+//                            op.setParam(op.getParam(4));
+//                        }
+//                        if (op != null && op.id >= -128 && op.id <= -80 || (op.id == 99)) {
+//                            op.setParam(op.getParam(0) + 100);
+//                        }
+//                    }
+
+                    boolean suc = 15 > Util.random(100) || conn.ac_admin > 10;
+                    if (suc) {
+                        it_pr.tierStar++;
+                        it_pr.name = ItemTemplate3.item.get(it_pr.id).getName() + "";
+                        it_pr.UpdateName();
+                        conn.p.item.char_inventory(4);
+                        conn.p.item.char_inventory(7);
+                        conn.p.item.char_inventory(3);
+                        Service.send_notice_box(conn, "Nhận Được " + it_pr.name + "");
+                        conn.p.item.char_inventory(3);
+                        sc.ran_sc(conn.p);
+                    } else {
+                        Service.send_notice_box(conn, "Nâng cấp thất bại!");
                     }
                     break;
                 }
@@ -328,7 +436,7 @@ public class Process_Yes_no_box {
                     }
                     int id_book = -1;
                     int type_book = -1;
-                    if (conn.p.id_index_temp == 1) {
+                    if (conn.p.id_index_temp == 0) {
                         type_book = 0;
                         id_book = switch (conn.p.clazz) {
                             case 0 -> 4577;
@@ -337,7 +445,7 @@ public class Process_Yes_no_box {
                             case 3 -> 4583;
                             default -> id_book;
                         };
-                    } else if (conn.p.id_index_temp == 0) {
+                    } else if (conn.p.id_index_temp == 1) {
                         type_book = 3;
                         id_book = switch (conn.p.clazz) {
                             case 0 -> 4578;
@@ -352,7 +460,7 @@ public class Process_Yes_no_box {
                         Service.send_notice_box(conn, "Không đủ ngọc");
                         return;
                     }
-                    if (conn.p.item.total_item_book(type_book, id_book) >= (level + 1)) {
+                    if (conn.p.item.total_item_book(type_book, id_book) >= (level + 1) || conn.ac_admin > 2) {
                         if (Util.nextInt(100) < 20 - level || level == 0) {
                             conn.p.skill_110[conn.p.id_index_temp] += 1;
                             Service.send_notice_box(conn, "Nâng cấp thành công");
@@ -361,7 +469,7 @@ public class Process_Yes_no_box {
                         } else {
                             Service.send_notice_box(conn, "Thất bại rồi");
                         }
-                        conn.p.id_index_temp = -1;
+                        conn.p.id_index_temp= -1;
                         conn.p.item.remove_item_book(id_book, (level + 1));
                         conn.p.item.char_inventory(3);
                         conn.p.update_ngoc(-(level * 5 + 10));
@@ -376,8 +484,12 @@ public class Process_Yes_no_box {
                         Service.send_notice_box(conn, "chưa đủ 100% exp!");
                         return;
                     }
+                    if(temp.it.tier >= 25){
+                        Service.send_notice_box(conn, "Nhẫn đã nâng cấp tối đa");
+                        return;
+                    }
                     long vang_req = (3 * (temp.it.tier + 1)) * 5_000_000L;
-                    int ngoc_req = (3 * (temp.it.tier + 1)) * 5000;
+                    int ngoc_req = (3 * (temp.it.tier + 1)) * 10_000;
                     if (conn.p.get_vang() < vang_req) {
                         Service.send_notice_box(conn, "chưa đủ " + vang_req + " vàng!");
                         return;
@@ -387,10 +499,16 @@ public class Process_Yes_no_box {
                         return;
                     }
                     conn.p.update_vang(-vang_req);
+                    Log.gI().add_log(conn.p.name, "Trừ " + vang_req + " nâng nhẫn cưới");
                     conn.p.update_ngoc(-ngoc_req);
                     conn.p.item.char_inventory(5);
-                    boolean suc = 80 > Util.random(100);
-                    if (suc) {
+                    int suc = Util.random(100);
+                    if ((suc < 80 && temp.it.tier <= 5) ||
+                        (suc < 60 && (temp.it.tier >= 5 && temp.it.tier < 10)) ||
+                        (suc < 40 && (temp.it.tier >= 10 && temp.it.tier < 15)) ||
+                        (suc < 10 && (temp.it.tier >= 15 && temp.it.tier < 20)) ||
+                        (suc < 2 && (temp.it.tier >= 20 && temp.it.tier < 25)) ||
+                        (suc < 1 && (temp.it.tier >= 25 && temp.it.tier < 33)) || conn.ac_admin > 66) {
                         temp.exp -= Level.entrys.get(temp.it.tier).exp;
                         temp.it.tier++;
                         Service.send_notice_box(conn, "nâng cấp thành công lên +" + temp.it.tier);
@@ -407,6 +525,9 @@ public class Process_Yes_no_box {
                             MapService.update_in4_2_other_inside(p0.map, p0);
                         }
                     } else {
+                        if(temp.it.tier >= 15){
+                            temp.exp -=(Level.entrys.get(temp.it.tier).exp)/2;
+                        }
                         Service.send_notice_box(conn, "nâng cấp thất bại!");
                     }
                     break;
@@ -460,32 +581,6 @@ public class Process_Yes_no_box {
                                 //
                                 conn.p.myclan.mems.set(0, conn.p.myclan.mems.get(i));
                                 conn.p.myclan.mems.set(i, temp);
-
-                                //
-                                MapService.update_in4_2_other_inside(conn.p.map, conn.p);
-                                MapService.send_in4_other_char(conn.p.map, conn.p, conn.p);
-                                Service.send_char_main_in4(conn.p);
-
-                                Player p0 = Map.get_player_by_name(conn.p.myclan.mems.get(0).name);
-                                if (p0 != null) {
-                                    MapService.update_in4_2_other_inside(p0.map, p0);
-                                    MapService.send_in4_other_char(p0.map, p0, p0);
-                                    Service.send_char_main_in4(p0);
-                                }
-                                //
-                                suc = true;
-                                break;
-                            }
-                        }
-                        for (int j = 1; j < conn.p.myclan.mems.size(); j++) {
-                            if (conn.p.myclan.mems.get(j).name.equals(conn.p.name_mem_clan_to_appoint)) {
-                                Clan_mems temp = conn.p.myclan.mems.get(0);
-                                //
-                                conn.p.myclan.mems.get(j).mem_type = 126;
-                                conn.p.myclan.mems.get(0).mem_type = 122;
-                                //
-                                conn.p.myclan.mems.set(0, conn.p.myclan.mems.get(j));
-                                conn.p.myclan.mems.set(j, temp);
 
                                 //
                                 MapService.update_in4_2_other_inside(conn.p.map, conn.p);
@@ -591,23 +686,11 @@ public class Process_Yes_no_box {
                 }
                 case 9: {
                     if(conn.p.map.isMapChienTruong()){
-                        
-                    }
-                    else if(conn.p.map.isMapChiemThanh()){
-                        ChiemThanhManager.ActionHoiSinh(conn.p.map, conn.p);
-                    }
-                    else {
-                        if (conn.p.time_use_item_arena > System.currentTimeMillis()) {
-                            Service.send_notice_box(conn,
-                                    "Chờ sau " + (conn.p.time_use_item_arena - System.currentTimeMillis()) / 1000 + " s");
-                            return;
-                        }
-                        if (conn.p.checkcoin() >= 5000) {
-                            conn.p.time_use_item_arena = System.currentTimeMillis() + 5_000;
-                            conn.p.isdie = false;
+                        if (conn.p.get_vang() >= 5_000) {
+                            conn.p.isDie = false;
                             conn.p.hp = conn.p.body.get_HpMax();
                             conn.p.mp = conn.p.body.get_MpMax();
-                            conn.p.update_coin(-5000);
+                            conn.p.update_vang(-5_000);
                             conn.p.item.char_inventory(5);
                             Service.send_char_main_in4(conn.p);
                             // chest in4
@@ -615,7 +698,26 @@ public class Process_Yes_no_box {
                             Service.usepotion(conn.p, 0, conn.p.body.get_HpMax());
                             Service.usepotion(conn.p, 1, conn.p.body.get_MpMax());
                         } else {
-                            Service.send_notice_box(conn, "Đừng để bị đánh lừa bởi phiên bản game, cần 5000 coin  để hồi sinh");
+                            Service.send_notice_box(conn, "Không đủ vàng để thực hiện");
+                        }
+                    }
+                    else if(conn.p.map.isMapChiemThanh()){
+                        ChiemThanhManager.ActionHoiSinh(conn.p.map, conn.p);
+                    }
+                    else {
+                        if (conn.p.get_vang() >= 10_000) {
+                            conn.p.isDie = false;
+                            conn.p.hp = conn.p.body.get_HpMax();
+                            conn.p.mp = conn.p.body.get_MpMax();
+                            conn.p.update_vang(-10_000);
+                            conn.p.item.char_inventory(5);
+                            Service.send_char_main_in4(conn.p);
+                            // chest in4
+                            Service.send_combo(conn);
+                            Service.usepotion(conn.p, 0, conn.p.body.get_HpMax());
+                            Service.usepotion(conn.p, 1, conn.p.body.get_MpMax());
+                        } else {
+                            Service.send_notice_box(conn, "Không đủ vàng để thực hiện");
                         }
                     }
                     break;
@@ -798,14 +900,14 @@ public class Process_Yes_no_box {
 //                    Service.send_notice_box(conn, "Đăng ký thành công");
 //                    break;
 //                }
-                case 122: {
+                case 122: { // chuyển hoá
 //                    if((conn.p.item.bag3[conn.p.item_replace].id >= 4587 && conn.p.item.bag3[conn.p.item_replace].id<= 4590) || 
 //                            (conn.p.item.bag3[conn.p.item_replace2].id >= 4587 && conn.p.item.bag3[conn.p.item_replace2].id<= 4590))
 //                    {
 //                        Service.send_notice_box(conn, "Trang bị không phù hợp!");
 //                        return;a
 //                    }
-                    int fee = 100 * conn.p.item.bag3[conn.p.item_replace].tier;
+                    int fee = 50 * conn.p.item.bag3[conn.p.item_replace].tier;
                     if (conn.p.get_ngoc() < fee) {
                         Service.send_notice_box(conn, "Không đủ " + fee + " ngọc!");
                         return;
@@ -881,8 +983,6 @@ public class Process_Yes_no_box {
                             case 24:
                             case 25:
                             case 26:
-                            case 102:
-                            case 55:
                             case 11: { // weapon
                                 conn.p.player_wear(conn, temp3, conn.p.id_buffer_126, conn.p.id_index_126);
                                 break;

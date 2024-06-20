@@ -1,4 +1,3 @@
-
 package Helps;
 
 import java.time.Instant;
@@ -8,7 +7,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
-
+/**
+ *
+ * @author chien
+ */
 public class _Time {
 
     public static long timeDay = GetTime();

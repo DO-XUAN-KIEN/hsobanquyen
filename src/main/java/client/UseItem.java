@@ -1,18 +1,34 @@
 package client;
 
-import core.GameSrc;
-import core.Manager;
+import core.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import core.Service;
-import core.Util;
+
+import ev_he.Event_Ruong;
+import event.Event_1;
 import io.Message;
 import io.Session;
-import map.*;
-import template.*;
+import map.LeaveItemMap;
+import map.MapService;
+import map.Vgo;
+import map.Map;
+import template.EffTemplate;
+import template.Item3;
+import template.Item47;
+import template.ItemTemplate3;
+import template.ItemTemplate4;
+import template.ItemTemplate7;
+import template.Level;
+import template.Option;
+import template.Pet_di_buon;
+import template.Pet_di_buon_manager;
+import template.StrucEff;
+import template.Horse;
+import template.box_item_template;
+
 public class UseItem {
-    int diemtest = 50;
 
     public static void ProcessItem4(Session conn, Message m2) throws IOException {
         short id = m2.reader().readShort();
@@ -52,212 +68,8 @@ public class UseItem {
         }
 
     }
-
-    public static void concac(Session conn){
-        try{
-            conn.p.time_use_item_arena = System.currentTimeMillis() + 10_000;
-            conn.p.pet_di_buon = new Pet_di_buon(84, Manager.gI().get_index_mob_new(), conn.p.x, conn.p.y,
-                    conn.p.map.map_id, conn.p.name, conn.p);
-            Pet_di_buon_manager.add(conn.p.name, conn.p.pet_di_buon);
-            //
-            Message m22 = new Message(4);
-            m22.writer().writeByte(1);
-            m22.writer().writeShort(131);
-            m22.writer().writeShort(conn.p.pet_di_buon.index);
-            m22.writer().writeShort(conn.p.pet_di_buon.x);
-            m22.writer().writeShort(conn.p.pet_di_buon.y);
-            m22.writer().writeByte(-1);
-            conn.addmsg(m22);
-            m22.cleanup();
-
-        }catch (Exception e){
-
-        }
-    }
     private static void use_item4_default(Session conn, short id_potion) throws IOException {
         switch (id_potion) {
-            case 193: {// rương coin
-                if(conn.p.item.get_bag_able() <= 1){
-                    Service.send_notice_box(conn, "Hành trang đầy");
-                    return;
-                }
-                conn.p.item.remove(4, 193, 1);
-                int vang_ = Util.random(100_000, 5_000_000);
-                int ngoc_ = Util.random(1_000, 5_000);
-                int coin_ = Util.random(1_000, 10_000);
-                List<box_item_template> ids = new ArrayList<>();
-                List<Integer> ngockham = new ArrayList<>(java.util.Arrays.asList(356, 361, 366, 371, 376, 381));
-                List<Integer> ruong = new ArrayList<>(java.util.Arrays.asList(326, 427, 328));
-                List<Integer> sachnang = new ArrayList<>(java.util.Arrays.asList(262, 244));
-                List<Integer> tbsieucap = new ArrayList<>(java.util.Arrays.asList(4850, 4851, 4852, 4853, 4854, 4855));
-                for (int i = 0; i < 3; i++) {
-                    int ran = Util.random(101);
-                    if (ran > 100) {
-                        short iditem = Util.random(tbsieucap, new ArrayList<>()).shortValue();
-                        Item3 itbag = new Item3();
-                        itbag.id = iditem;
-                        itbag.name = ItemTemplate3.item.get(iditem).getName();
-                        itbag.clazz = ItemTemplate3.item.get(iditem).getClazz();
-                        itbag.type = ItemTemplate3.item.get(iditem).getType();
-                        itbag.level = ItemTemplate3.item.get(iditem).getLevel();
-                        itbag.icon = ItemTemplate3.item.get(iditem).getIcon();
-                        itbag.op = new ArrayList<>();
-                        itbag.op.addAll(ItemTemplate3.item.get(iditem).getOp());
-                        itbag.color = ItemTemplate3.item.get(iditem).getColor();
-                        itbag.part = ItemTemplate3.item.get(iditem).getPart();
-                        itbag.tier = 0;
-                        itbag.islock = false;
-                        itbag.time_use = 0;
-                        conn.p.item.add_item_bag3(itbag);
-                        conn.p.item.char_inventory(5);
-                        ids.add(new box_item_template(iditem, (short) 1, (byte) 3));
-                    } else if (ran > 97 && ran < 99) { // rương
-                        short id = Util.random(ruong, new ArrayList<>()).shortValue();
-                        short quant = 1;
-                        ids.add(new box_item_template(id, quant, (byte) 4));
-                        conn.p.item.add_item_bag47(id, quant, (byte) 4);
-                    } else if (ran > 95 && ran < 97) { // vé sách nâng- đá nâng cấp
-                        short id = Util.random(sachnang, new ArrayList<>()).shortValue();
-                        short quant = 1;
-                        ids.add(new box_item_template(id, quant, (byte) 4));
-                        conn.p.item.add_item_bag47(id, quant, (byte) 4);
-                    } else if (ran > 90 && ran < 95) { // nro
-                        short id = (short) Util.random(464, 471);
-                        short quant = 1;
-                        ids.add(new box_item_template(id, quant, (byte) 7));
-                        conn.p.item.add_item_bag47(id, quant, (byte) 7);
-                    } else if (ran > 85 && ran < 90) {// ngọc khảm
-                        short id = Util.random(ngockham, new ArrayList<>()).shortValue();
-                        short quant = 1;
-                        ids.add(new box_item_template(id, quant, (byte) 7));
-                        conn.p.item.add_item_bag47(id, quant, (byte) 7);
-                    } else if (ran > 80 && ran < 85) { // rương sk đặc biệt
-                        short id = 193;
-                        short quant = 1;
-                        ids.add(new box_item_template(id, quant, (byte) 4));
-                        conn.p.item.add_item_bag47(id, quant, (byte) 4);
-                    } else if (ran > 75 && ran < 80) { // nlmd c3
-                        short id = (short) Util.random(246, 345);
-                        short quant = 1;
-                        ids.add(new box_item_template(id, quant, (byte) 7));
-                        conn.p.item.add_item_bag47(id, quant, (byte) 7);
-                    } else if (ran > 70 && ran < 75) { // vé pb
-                        short id = 330;
-                        short quant = 1;
-                        ids.add(new box_item_template(id, quant, (byte) 4));
-                        conn.p.item.add_item_bag47(id, quant, (byte) 4);
-                    } else if (ran > 50 && ran < 70) { // nltt
-                        short id = (short) Util.random(417, 464);
-                        short quant = 1;
-                        ids.add(new box_item_template(id, quant, (byte) 7));
-                        conn.p.item.add_item_bag47(id, quant, (byte) 7);
-                    } else if (ran > 30 && ran <50){
-                        conn.p.update_vang(vang_);
-                        conn.p.item.char_inventory(5);
-                        Service.send_notice_nobox_white(conn,"nhận được" + vang_ + "vàng.");
-                    } else if (ran > 10 && ran < 30) {
-                        conn.p.update_ngoc(ngoc_);
-                        conn.p.item.char_inventory(5);
-                        Service.send_notice_nobox_white(conn, "nhận được" + ngoc_ + "ngọc.");
-                    } else if (ran > 0 && ran < 10) {
-                        conn.p.update_coin(coin_);
-                        conn.p.item.char_inventory(5);
-                        Service.send_notice_nobox_white(conn,"nhận được" + coin_ + "coin.");
-                    } else {
-                        Service.send_notice_box(conn,"Đen vl bạn dell đc gì");
-                    }
-                }
-                conn.p.doiqua += 2;
-                Service.Show_open_box_notice_item(conn.p, "Bạn nhận được", ids);
-                break;
-            }
-            case 194: {// rương đổi = vàng
-                if(conn.p.item.get_bag_able() <= 1){
-                    Service.send_notice_box(conn, "Hành trang đầy");
-                    return;
-                }
-                conn.p.item.remove(4, 194, 1);
-                int vang_ = Util.random(100_000,500_000);
-                int ngoc_ = Util.random(1_000, 5_000);
-                int coin_ = Util.random(1_000, 5_000);
-                List<box_item_template> ids = new ArrayList<>();
-                List<Integer> ngockham = new ArrayList<>(java.util.Arrays.asList(356, 361, 366, 371, 376, 381));
-                List<Integer> ruong = new ArrayList<>(java.util.Arrays.asList(326, 427, 328));
-                List<Integer> sachnang = new ArrayList<>(java.util.Arrays.asList(262, 244));
-                List<Integer> tbsieucap = new ArrayList<>(java.util.Arrays.asList(4850, 4851, 4852, 4853, 4854, 4855));
-                for (int i = 0; i < 3; i++) {
-                    int ran = Util.random(101);
-                    if (ran > 100) {// tb siêu phẩm
-                        short iditem = Util.random(tbsieucap, new ArrayList<>()).shortValue();
-                        Item3 itbag = new Item3();
-                        itbag.id = iditem;
-                        itbag.name = ItemTemplate3.item.get(iditem).getName();
-                        itbag.clazz = ItemTemplate3.item.get(iditem).getClazz();
-                        itbag.type = ItemTemplate3.item.get(iditem).getType();
-                        itbag.level = ItemTemplate3.item.get(iditem).getLevel();
-                        itbag.icon = ItemTemplate3.item.get(iditem).getIcon();
-                        itbag.op = new ArrayList<>();
-                        itbag.op.addAll(ItemTemplate3.item.get(iditem).getOp());
-                        itbag.color = ItemTemplate3.item.get(iditem).getColor();
-                        itbag.part = ItemTemplate3.item.get(iditem).getPart();
-                        itbag.tier = 0;
-                        itbag.islock = false;
-                        itbag.time_use = 0;
-                        conn.p.item.add_item_bag3(itbag);
-                        conn.p.item.char_inventory(5);
-                        ids.add(new box_item_template(iditem, (short) 1, (byte) 3));
-                    } else if (ran > 95 && ran < 97) { // sách nâng cấp
-                        short id = 262;
-                        short quant = 1;
-                        ids.add(new box_item_template(id, quant, (byte) 4));
-                        conn.p.item.add_item_bag47(id, quant, (byte) 4);
-                    } else if (ran > 90 && ran < 95) { // nro
-                        short id = (short) Util.random(464, 471);
-                        short quant = 1;
-                        ids.add(new box_item_template(id, quant, (byte) 7));
-                        conn.p.item.add_item_bag47(id, quant, (byte) 7);
-                    } else if (ran > 80 && ran < 90) { // nlmd c3
-                        short id = (short) Util.random(246, 345);
-                        short quant = 1;
-                        ids.add(new box_item_template(id, quant, (byte) 7));
-                        conn.p.item.add_item_bag47(id, quant, (byte) 7);
-                    } else if (ran > 75 && ran < 80) { // vé pb
-                        short id = 330;
-                        short quant = 1;
-                        ids.add(new box_item_template(id, quant, (byte) 4));
-                        conn.p.item.add_item_bag47(id, quant, (byte) 4);
-                    } else if (ran > 50 && ran < 75) { // nltt
-                        short id = (short) Util.random(417, 464);
-                        short quant = 1;
-                        ids.add(new box_item_template(id, quant, (byte) 7));
-                        conn.p.item.add_item_bag47(id, quant, (byte) 7);
-                    } else if (ran > 30 && ran < 50){
-                        conn.p.update_vang(vang_);
-                        conn.p.item.char_inventory(5);
-                        Service.send_notice_nobox_white(conn,"nhận được" + vang_ + "vàng.");
-                    } else if (ran > 10 && ran < 30) {
-                        conn.p.update_ngoc(ngoc_);
-                        conn.p.item.char_inventory(5);
-                        Service.send_notice_nobox_white(conn, "nhận được" + ngoc_ + "ngọc.");
-                    } else if (ran >= 0 && ran < 6) {
-                        conn.p.update_coin(coin_);
-                        conn.p.item.char_inventory(5);
-                        Service.send_notice_nobox_white(conn,"nhận được" + coin_ + "coin.");
-                    } else {
-                        Service.send_notice_box(conn,"Đen vl bạn dell đc gì");
-                    }
-                }
-                conn.p.doiqua++;
-                Service.Show_open_box_notice_item(conn.p, "Bạn nhận được", ids);
-                break;
-            }
-            case 330: {
-                Service.send_notice_nobox_white(conn,"HI");
-                conn.p.item.remove(4,330,1);
-                conn.p.point_active[0]++;
-                Service.send_notice_box(conn,"Bạn cộng cộng thêm 1 lượt vào phó bản\n Tổng bạn đang có: "+ conn.p.point_active[0]);
-                break;
-            }
             case 57:
             case 58:
             case 59:
@@ -267,69 +79,100 @@ public class UseItem {
                 }
                 break;
             }
+            case 328: {
+                if (conn.p.get_EffDefault(EffTemplate.buffdame) != null){
+                    Service.send_notice_box(conn,"Bạn đang sử dụng buff rồi");
+                    return;
+                }
+                conn.p.item.remove(4,328,1);
+                conn.p.add_EffDefault(EffTemplate.buffdame,1,30 * 1000);
+                EffTemplate eff = conn.p.get_EffDefault(EffTemplate.buffdame);
+                Service.send_time_box(conn.p, (byte) 1, new short[]{(short) ((eff.time - System.currentTimeMillis()) / 1000)}, new String[]{"Buff dame"});
+                break;
+            }
+            case 332:{
+                if (conn.p.get_EffDefault(EffTemplate.buffhp) != null){
+                    Service.send_notice_box(conn,"Bạn đang sử dụng buff rồi");
+                    return;
+                }
+                conn.p.item.remove(4,332,1);
+                conn.p.add_EffDefault(EffTemplate.buffhp,1,30 * 1000);
+                EffTemplate eff = conn.p.get_EffDefault(EffTemplate.buffhp);
+                Service.send_time_box(conn.p, (byte) 1, new short[]{(short) ((eff.time - System.currentTimeMillis()) / 1000)}, new String[]{"Buff hp"});
+                break;
+            }
+            case 331:{
+                if (conn.p.get_EffDefault(EffTemplate.buffne) != null){
+                    Service.send_notice_box(conn,"Bạn đang sử dụng buff rồi");
+                    return;
+                }
+                conn.p.item.remove(4,331,1);
+                conn.p.add_EffDefault(EffTemplate.buffne,1,30 * 1000);
+                EffTemplate eff = conn.p.get_EffDefault(EffTemplate.buffne);
+                Service.send_time_box(conn.p, (byte) 1, new short[]{(short) ((eff.time - System.currentTimeMillis()) / 1000)}, new String[]{"Buff né"});
+                break;
+            }
+            case 330:{
+                if (conn.p.get_EffDefault(EffTemplate.buffpst) != null){
+                    Service.send_notice_box(conn,"Bạn đang sử dụng buff rồi");
+                    return;
+                }
+                conn.p.item.remove(4,330,1);
+                conn.p.add_EffDefault(EffTemplate.buffpst,1,30 * 1000);
+                EffTemplate eff = conn.p.get_EffDefault(EffTemplate.buffpst);
+                Service.send_time_box(conn.p, (byte) 1, new short[]{(short) ((eff.time - System.currentTimeMillis()) / 1000)}, new String[]{"Buff pst"});
+                break;
+            }
+            case 329:{
+                if (conn.p.get_EffDefault(EffTemplate.buffpt) != null){
+                    Service.send_notice_box(conn,"Bạn đang sử dụng buff rồi");
+                    return;
+                }
+                conn.p.item.remove(4,329,1);
+                conn.p.add_EffDefault(EffTemplate.buffpt,1,30 * 1000);
+                EffTemplate eff = conn.p.get_EffDefault(EffTemplate.buffpt);
+                Service.send_time_box(conn.p, (byte) 1, new short[]{(short) ((eff.time - System.currentTimeMillis()) / 1000)}, new String[]{"Buff pt"});
+                break;
+            }
+            case 333:{
+                if (conn.p.get_EffDefault(EffTemplate.buffhoihp) != null){
+                    Service.send_notice_box(conn,"Bạn đang sử dụng buff rồi");
+                    return;
+                }
+                conn.p.item.remove(4,333,1);
+                conn.p.add_EffDefault(EffTemplate.buffhoihp,1,30 * 1000);
+                EffTemplate eff = conn.p.get_EffDefault(EffTemplate.buffhoihp);
+                Service.send_time_box(conn.p, (byte) 1, new short[]{(short) ((eff.time - System.currentTimeMillis()) / 1000)}, new String[]{"Buff hồi hp"});
+                break;
+            }
+            case 334:{
+                if (conn.p.get_EffDefault(EffTemplate.bufftatca) != null){
+                    Service.send_notice_box(conn,"Bạn đang sử dụng buff rồi");
+                    return;
+                }
+                conn.p.item.remove(4,334,1);
+                conn.p.add_EffDefault(EffTemplate.bufftatca,1,60 * 1000);
+                EffTemplate eff = conn.p.get_EffDefault(EffTemplate.bufftatca);
+                Service.send_time_box(conn.p, (byte) 1, new short[]{(short) ((eff.time - System.currentTimeMillis()) / 1000)}, new String[]{"Buff a đến z"});
+                break;
+            }
             case 84: {
                 if (conn.p.map.zone_id != conn.p.map.maxzone) {
                     Service.send_notice_box(conn, "Chỉ dùng được trong khu đi buôn");
                     return;
                 }
-                if (conn.p.item.wear[11] == null || (conn.p.item.wear[11] != null && conn.p.item.wear[11].id != 3599
-                        && conn.p.item.wear[11].id != 3600 && conn.p.item.wear[11].id != 3601)) {
-                    Service.send_notice_box(conn, "Chỉ dùng được khi là thương nhân ");
-                    return;
-                }
-                if (conn.p.hp == 0 && conn.p.isdie == true){
-                    Service.send_notice_box(conn," Bạn đang đen xì không thể sử dụng bò");
-                    return;
-                }
-                if (conn.p.time_use_item_arena > System.currentTimeMillis()) {
-                    Service.send_notice_box(conn,
-                            "Chờ sau " + (conn.p.time_use_item_arena - System.currentTimeMillis()) / 1000 + " s");
+                if (!conn.p.isTrader()) {
+                    Service.send_notice_box(conn, "Chỉ dùng được khi là buôn ");
                     return;
                 }
                 if (conn.p.pet_di_buon == null) {
-                    concac(conn);
-                    conn.p.item.remove(4, id_potion, 1);
-                }else {
-                    Service.send_box_input_yesno(conn, -128, "bạn sẽ mất con bò đang sử dụng, bạn chắc muốn dùng?");
-                }
-
-
-
-//                } else {
-//                    Service.send_notice_box(conn,
-//                            "Bạn đang dắt 1 con rồi!\nVị trí:\n" + Map.get_map_by_id(conn.p.pet_di_buon.id_map)[0].name + "\n"
-//                            + conn.p.pet_di_buon.x + " " + conn.p.pet_di_buon.y);
-//                }
-                break;
-            }
-            case 86: {
-                if (conn.p.map.zone_id != conn.p.map.maxzone) {
-                    Service.send_notice_box(conn, "Chỉ dùng được trong khu đi buôn");
-                    return;
-                }
-                if (conn.p.item.wear[11] == null || (conn.p.item.wear[11] != null && conn.p.item.wear[11].id != 3593
-                        && conn.p.item.wear[11].id != 3594 && conn.p.item.wear[11].id != 3595)) {
-                    Service.send_notice_box(conn, "Chỉ dùng được khi là cướp ");
-                    return;
-                }
-                if (conn.p.hp == 0 && conn.p.isdie == true){
-                    Service.send_notice_box(conn," Bạn đang đen xì không thể sử dụng bò");
-                    return;
-                }
-                if (conn.p.time_use_item_arena > System.currentTimeMillis()) {
-                    Service.send_notice_box(conn,
-                            "Chờ sau " + (conn.p.time_use_item_arena - System.currentTimeMillis()) / 1000 + " s");
-                    return;
-                }
-                if (conn.p.pet_di_buon == null) {
-                    conn.p.time_use_item_arena = System.currentTimeMillis() + 10_000;
-                    conn.p.pet_di_buon = new Pet_di_buon(86, Manager.gI().get_index_mob_new(), conn.p.x, conn.p.y,
+                    conn.p.pet_di_buon = new Pet_di_buon(131, Manager.gI().get_index_mob_new(), conn.p.x, conn.p.y,
                             conn.p.map.map_id, conn.p.name, conn.p);
                     Pet_di_buon_manager.add(conn.p.name, conn.p.pet_di_buon);
                     //
                     Message m22 = new Message(4);
                     m22.writer().writeByte(1);
-                    m22.writer().writeShort(132);
+                    m22.writer().writeShort(131);
                     m22.writer().writeShort(conn.p.pet_di_buon.index);
                     m22.writer().writeShort(conn.p.pet_di_buon.x);
                     m22.writer().writeShort(conn.p.pet_di_buon.y);
@@ -340,16 +183,50 @@ public class UseItem {
                     conn.p.item.remove(4, id_potion, 1);
                 } else {
                     Service.send_notice_box(conn,
-                            "Bạn đang dắt 1 con rồi!\nVị trí:\n" + Map.get_map_by_id(conn.p.pet_di_buon.id_map)[0].name + "\n"
-                            + conn.p.pet_di_buon.x + " " + conn.p.pet_di_buon.y);
+                            "Vật đi buôn của bạn đang ở\nVị trí:\n" + Map.get_map_by_id(conn.p.pet_di_buon.id_map)[0].name + "\n"
+                                    + conn.p.pet_di_buon.x + " " + conn.p.pet_di_buon.y);
                 }
-                break;
+            break;
+        }
+        case 86: {
+            if (conn.p.map.zone_id != conn.p.map.maxzone) {
+                Service.send_notice_box(conn, "Chỉ dùng được trong khu đi buôn");
+                return;
             }
+            if (!conn.p.isRobber()) {
+                Service.send_notice_box(conn, "Chỉ dùng được khi là cướp ");
+                return;
+            }
+            if (conn.p.pet_di_buon == null) {
+                conn.p.pet_di_buon = new Pet_di_buon(132, Manager.gI().get_index_mob_new(), conn.p.x, conn.p.y,
+                        conn.p.map.map_id, conn.p.name, conn.p);
+                Pet_di_buon_manager.add(conn.p.name, conn.p.pet_di_buon);
+                //
+                Message m22 = new Message(4);
+                m22.writer().writeByte(1);
+                m22.writer().writeShort(132);
+                m22.writer().writeShort(conn.p.pet_di_buon.index);
+                m22.writer().writeShort(conn.p.pet_di_buon.x);
+                m22.writer().writeShort(conn.p.pet_di_buon.y);
+                m22.writer().writeByte(-1);
+                conn.addmsg(m22);
+                m22.cleanup();
+                //
+                conn.p.item.remove(4, id_potion, 1);
+            } else {
+                Service.send_notice_box(conn,
+                        "Vật đi buôn của bạn đang ở\nVị trí:\n" + Map.get_map_by_id(conn.p.pet_di_buon.id_map)[0].name + "\n"
+                                + conn.p.pet_di_buon.x + " " + conn.p.pet_di_buon.y);
+            }
+            break;
+        }
             case 0:
             case 1:
             case 25:
             case 2: {
-                if (conn.p.time_use_poition_hp < System.currentTimeMillis()) {
+                EffTemplate vet_thuong_sau = conn.p.get_EffDefault(StrucEff.VET_THUONG_SAU);
+                EffTemplate te_cong = conn.p.get_EffDefault(StrucEff.TE_CONG);
+                if (conn.p.time_use_poition_hp < System.currentTimeMillis() && te_cong == null && vet_thuong_sau == null) {
                     conn.p.time_use_poition_hp = System.currentTimeMillis() + 2000L;
                     conn.p.item.remove(4, id_potion, 1);
                     int param = ItemTemplate4.item.get(id_potion).getValue();
@@ -410,7 +287,7 @@ public class UseItem {
                 conn.p.item.remove(4, id_potion, 1);
                 break;
             }
-            case 19: {
+             case 19: {
                 conn.p.item.remove(4, id_potion, 1);
                 EffTemplate ef = conn.p.get_EffDefault(-125);
                 if (ef != null) {
@@ -426,12 +303,12 @@ public class UseItem {
                 break;
             }
             case 24: {
-                if (conn.p.hieuchien == 0) {
-                    Service.send_notice_box(conn, "Tính tình con còn tốt chán, chưa cần rửa tội đâu!");
-                    return;
-                }
-                conn.p.item.remove(4, id_potion, 1);
-                conn.p.hieuchien = 0;
+//                if (conn.p.hieuchien == 0) {
+//                    Service.send_notice_box(conn, "Tính tình con còn tốt chán, chưa cần rửa tội đâu!");
+//                    return;
+//                }
+//                conn.p.item.remove(4, id_potion, 1);
+//                conn.p.hieuchien = 0;
                 break;
             }
             case 26: {
@@ -447,6 +324,10 @@ public class UseItem {
                 break;
             }
             case 69: {
+//                if (conn.p.level < 40) {
+//                    Service.send_notice_nobox_white(conn, "Yêu cầu trình độ cấp 40");
+//                    return;
+//                }
                 if (conn.p.pet_follow == -1) {
                     Service.send_notice_nobox_white(conn, "Chưa mang theo pet!");
                     return;
@@ -472,18 +353,17 @@ public class UseItem {
                 }
                 break;
             }
-            case 142: {
-                Service.send_notice_box(conn, "Chức năng chưa được update");
-//                Vgo vgo = null;
-//                vgo = new Vgo();
-//                vgo.id_map_go = 1;
-//                vgo.x_new = 492;
-//                vgo.y_new = 366;
-//                conn.p.change_map(conn.p, vgo);
-//                conn.p.item.remove(4, id_potion, 1);
+             case 142: {
+                Vgo vgo = null;
+                vgo = new Vgo();
+                vgo.id_map_go = 1;
+                vgo.x_new = 492;
+                vgo.y_new = 366;
+                conn.p.change_map(conn.p, vgo);
+                conn.p.item.remove(4, id_potion, 1);
                 break;
             }
-            case 241: {
+              case 241: {
                 Vgo vgo = null;
                 vgo = new Vgo();
                 vgo.id_map_go = 103;
@@ -533,6 +413,7 @@ public class UseItem {
                 conn.p.item.remove(4, id_potion, 1);
                 break;
             }
+
             case 162: {
                 int exp_add = Util.random(conn.p.level * 100);
                 conn.p.update_Exp(exp_add, false);
@@ -586,130 +467,48 @@ public class UseItem {
                 conn.p.item.remove(4, id_potion, 1);
                 break;
             }
-            case 326 :{ // rương danh hieu
+//            case 328:{ // rương Vàng 777
+//                
+//                
+//                break;
+//            }
+//           
+//            case 329:{//Rương Kim Cương
+//                break;
+//            }
+//            case 330:{ // Rương Báu Vật
+//                break;
+//            }
+            
+            
+            case 318 :{ // rương Black FriDay
                 if (conn.p.item.get_bag_able() < 1) {
                     Service.send_notice_nobox_white(conn, "Hành trang đầy!");
                     return;
                 }
-                //conn.p.diemsukien += 10;
-                short[] allowedIds = {4720, 4721, 4722, 4723, 4724, 4725, 4726, 4727, 4765, 4766, 4767, 4775, 4776, 4777, 4778, 4779, 4780, 4781, 4782, 4783};
-                short iditem = allowedIds[Util.random(0, allowedIds.length - 1)];
-                Item3 itbag = new Item3();
-                itbag.id = iditem;
-                itbag.name = ItemTemplate3.item.get(iditem).getName();
-                itbag.clazz = ItemTemplate3.item.get(iditem).getClazz();
-                itbag.type = ItemTemplate3.item.get(iditem).getType();
-                itbag.level = ItemTemplate3.item.get(iditem).getLevel();
-                itbag.icon = ItemTemplate3.item.get(iditem).getIcon();
-                itbag.op = new ArrayList<>();
-                itbag.op.addAll(ItemTemplate3.item.get(iditem).getOp());
-                itbag.color = ItemTemplate3.item.get(iditem).getColor();
-                itbag.part = ItemTemplate3.item.get(iditem).getPart();
-                itbag.op = ItemTemplate3.item.get(iditem).getOp();
-                itbag.tier = 0;
-                itbag.islock = false;
-                itbag.time_use = 0;
-                if (Util.random(100) > 5) {
-                    itbag.expiry_date = System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 1;
-                }
-                conn.p.item.add_item_bag3(itbag);
-                conn.p.item.char_inventory(5);
-                conn.p.item.remove(4, 326, 1);
-                List<box_item_template> ids = new ArrayList<>();
-                ids.add(new box_item_template(iditem, (short) 1, (byte) 3));
-                Service.Show_open_box_notice_item(conn.p, "Bạn nhận được", ids);
-                break;
-            }
-            case 327 :{ // rương huy hieu
-                if (conn.p.item.get_bag_able() < 1) {
-                    Service.send_notice_nobox_white(conn, "Hành trang đầy!");
-                    return;
-                }
-              //  conn.p.diemsukien += 10;
-                short[] allowedIds = {4653, 4728, 4729};
-                short iditem = allowedIds[Util.random(0, allowedIds.length - 1)];
-                Item3 itbag = new Item3();
-                itbag.id = iditem;
-                itbag.name = ItemTemplate3.item.get(iditem).getName();
-                itbag.clazz = ItemTemplate3.item.get(iditem).getClazz();
-                itbag.type = ItemTemplate3.item.get(iditem).getType();
-                itbag.level = ItemTemplate3.item.get(iditem).getLevel();
-                itbag.icon = ItemTemplate3.item.get(iditem).getIcon();
-                itbag.op = new ArrayList<>();
-                itbag.op.addAll(ItemTemplate3.item.get(iditem).getOp());
-                itbag.color = ItemTemplate3.item.get(iditem).getColor();
-                itbag.part = ItemTemplate3.item.get(iditem).getPart();
-                itbag.op = ItemTemplate3.item.get(iditem).getOp();
-                itbag.tier = 0;
-                itbag.islock = false;
-                itbag.time_use = 0;
-                if (Util.random(100) > 5) {
-                    itbag.expiry_date = System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 1;
-                }
-                conn.p.item.add_item_bag3(itbag);
-                conn.p.item.remove(4, 327, 1);
-                conn.p.item.char_inventory(5);
-                List<box_item_template> ids = new ArrayList<>();
-                ids.add(new box_item_template(iditem, (short) 1, (byte) 3));
-                Service.Show_open_box_notice_item(conn.p, "Bạn nhận được", ids);
-                break;
-            }
-            case 328 :{ // rương huy chuong
-                if (conn.p.item.get_bag_able() < 1) {
-                    Service.send_notice_nobox_white(conn, "Hành trang đầy!");
-                    return;
-                }
-              //  conn.p.diemsukien += 10;
-                short[] allowedIds = {4649, 4650, 4651,4652};
-                short iditem = allowedIds[Util.random(0, allowedIds.length - 1)];
-                Item3 itbag = new Item3();
-                itbag.id = iditem;
-                itbag.name = ItemTemplate3.item.get(iditem).getName();
-                itbag.clazz = ItemTemplate3.item.get(iditem).getClazz();
-                itbag.type = ItemTemplate3.item.get(iditem).getType();
-                itbag.level = ItemTemplate3.item.get(iditem).getLevel();
-                itbag.icon = ItemTemplate3.item.get(iditem).getIcon();
-                itbag.op = new ArrayList<>();
-                itbag.op.addAll(ItemTemplate3.item.get(iditem).getOp());
-                itbag.color = ItemTemplate3.item.get(iditem).getColor();
-                itbag.part = ItemTemplate3.item.get(iditem).getPart();
-                itbag.op = ItemTemplate3.item.get(iditem).getOp();
-                itbag.tier = 0;
-                itbag.islock = false;
-                itbag.time_use = 0;
-                if (Util.random(100) > 5) {
-                    itbag.expiry_date = System.currentTimeMillis() + 1000L * 60 * 60 * 24 * 1;
-                }
-                conn.p.item.add_item_bag3(itbag);
-                conn.p.item.remove(4, 328, 1);
-                conn.p.item.char_inventory(5);
-                conn.p.item.char_inventory(3);
-                List<box_item_template> ids = new ArrayList<>();
-                ids.add(new box_item_template(iditem, (short) 1, (byte) 3));
-                Service.Show_open_box_notice_item(conn.p, "Bạn nhận được", ids);
-                break;
-            }
-            case 329: {
-                if (conn.p.item.get_bag_able() < 1) {
-                    Service.send_notice_nobox_white(conn, "Hành trang đầy!");
-                    return;
-                }
-                ItemTemplate4 iditem = ItemTemplate4.item.get(Util.random(254, 259));
-                int quant1_ = 1;
+                ItemTemplate7 item1 = ItemTemplate7.item.get(Util.random(316, 345));
+                ItemTemplate4 item2 = ItemTemplate4.item.get(246);
+                int quant1_ = Util.random(1,4);
+                int quant2_ = Util.random(0,10);
                 //
                 Message m = new Message(78);
-                m.writer().writeUTF("Rương sự kiện");
+                m.writer().writeUTF("");
                 m.writer().writeByte(3); // size
 //                for (int i = 0; i < 3; i++) {
                 m.writer().writeUTF(""); // name
-                m.writer().writeShort(iditem.getIcon()); // icon
+                m.writer().writeShort(item1.getIcon()); // icon
                 m.writer().writeInt(quant1_); // quantity
+                m.writer().writeByte(7); // type in bag
+                m.writer().writeByte(0); // tier
+                m.writer().writeByte(0); // color
+                //
+                m.writer().writeUTF(""); // name
+                m.writer().writeShort(item2.getIcon()); // icon
+                m.writer().writeInt(quant2_); // quantity
                 m.writer().writeByte(4); // type in bag
                 m.writer().writeByte(0); // tier
                 m.writer().writeByte(0); // color
                 //
-
-//                }
                 m.writer().writeUTF("");
                 m.writer().writeByte(1);
                 m.writer().writeByte(0);
@@ -717,16 +516,84 @@ public class UseItem {
                 m.cleanup();
                 //
                 Item47 itbag = new Item47();
-                itbag.id = iditem.getId();
+                itbag.id = item1.getId();
                 itbag.quantity = (short) quant1_;
-                itbag.category = 4;
-                conn.p.item.add_item_bag47(4, itbag);
-             //   conn.p.diemsukien += 1;
+                itbag.category = 7;
+                conn.p.item.add_item_bag47(7, itbag);
                 //
-                conn.p.item.remove(4, id_potion, 1);
+                Item47 itbag2 = new Item47();
+                itbag2.id = item2.getId();
+                itbag2.quantity = (short) quant2_;
+                itbag2.category = 4;
+                conn.p.item.add_item_bag47(4, itbag2);
+                //
+                conn.p.item.char_inventory(7);
                 conn.p.item.char_inventory(4);
+                conn.p.item.remove(4, id_potion, 1);
                 break;
             }
+//            case 327 :{ // rương vip
+//                if (conn.p.item.get_bag_able() < 1) {
+//                    Service.send_notice_nobox_white(conn, "Hành trang đầy!");
+//                    return;
+//                }
+//                 ItemTemplate7 item1 = ItemTemplate7.item.get(Util.random(319, 323));
+//                // ItemTemplate7 item2 = ItemTemplate7.item.get(Util.random(319, 323));
+////                 ItemTemplate7 item3 = ItemTemplate7.item.get(Util.random(246, 345));
+//                int quant1_ = Util.random(1, 2);
+//              //  int quant2_ = Util.random(1, 2);
+////                int quant3 = Util.random(1, 2);
+//                //
+//                Message m = new Message(78);
+//                m.writer().writeUTF("Rương V.I.P");
+//                m.writer().writeByte(3); // size
+////                for (int i = 0; i < 3; i++) {
+//                m.writer().writeUTF(""); // name
+//                m.writer().writeShort(item1.getIcon()); // icon
+//                m.writer().writeInt(quant1_); // quantity
+//                m.writer().writeByte(4); // type in bag
+//                m.writer().writeByte(0); // tier
+//                m.writer().writeByte(0); // color
+//                //
+////                m.writer().writeUTF(""); // name
+////                m.writer().writeShort(item2.getIcon()); // icon
+////                m.writer().writeInt(quant2_); // quantity
+////                m.writer().writeByte(7); // type in bag
+////                m.writer().writeByte(0); // tier
+////                m.writer().writeByte(0); // color
+//                //
+//                m.writer().writeUTF(""); // name
+//                m.writer().writeShort(0); // icon
+//
+//                m.writer().writeByte(4); // type in bag
+//                m.writer().writeByte(0); // tier
+//                m.writer().writeByte(0); // color
+////                }
+//                m.writer().writeUTF("");
+//                m.writer().writeByte(1);
+//                m.writer().writeByte(0);
+//                conn.addmsg(m);
+//                m.cleanup();
+//                //
+//                Item47 itbag = new Item47();
+//                itbag.id = item1.getId();
+//                itbag.quantity = (short) quant1_;
+//                itbag.category = 4;
+//                conn.p.item.add_item_bag47(4, itbag);
+//                //
+////                Item47 itbag2 = new Item47();
+////                itbag2.id = item2.getId();
+////                itbag2.quantity = (short) quant2_;
+////                itbag2.category = 4;
+////                conn.p.item.add_item_bag47(4, itbag2);
+//                //
+//
+//                //
+//                conn.p.item.char_inventory(7);
+//                conn.p.item.char_inventory(4);
+//                conn.p.item.remove(4, id_potion, 1); // remove item
+//                break;
+//            }
             case 207: // ruong tim
             case 205: { // ruong do
                 if (conn.p.item.get_bag_able() < 1) {
@@ -853,75 +720,68 @@ public class UseItem {
                 break;
             }
             case 206: {
-                    if (conn.p.item.get_bag_able() < 5) {
-                        Service.send_notice_box(conn, "Cần tối thiểu trống 5 ô hành trang");
-                        return;
-                    }
-                    ItemTemplate7 item1 = ItemTemplate7.item.get(Util.random(8, 12));
-                    ItemTemplate7 item2 = ItemTemplate7.item.get((50 > Util.random(0, 100)) ? 0 : 3);
-                    int quant1_ = Util.random(1, 6);
-                    int quant2_ = Util.random(1, 6);
-                    int quant3_ = Util.random(300, 500);
-                    //
-                    Message m = new Message(78);
-                    m.writer().writeUTF("Rương vàng");
-                    m.writer().writeByte(3); // size
+                ItemTemplate7 item1 = ItemTemplate7.item.get(Util.random(8, 12));
+                ItemTemplate7 item2 = ItemTemplate7.item.get((50 > Util.random(0, 100)) ? 0 : 3);
+                int quant1_ = Util.random(1, 6);
+                int quant2_ = Util.random(1, 6);
+                int quant3_ = Util.random(300, 500);
+                //
+                Message m = new Message(78);
+                m.writer().writeUTF("Rương vàng");
+                m.writer().writeByte(3); // size
 //                for (int i = 0; i < 3; i++) {
-                    m.writer().writeUTF(""); // name
-                    m.writer().writeShort(item1.getIcon()); // icon
-                    m.writer().writeInt(quant1_); // quantity
-                    m.writer().writeByte(7); // type in bag
-                    m.writer().writeByte(0); // tier
-                    m.writer().writeByte(0); // color
-                    //
-                    m.writer().writeUTF(""); // name
-                    m.writer().writeShort(item2.getIcon()); // icon
-                    m.writer().writeInt(quant2_); // quantity
-                    m.writer().writeByte(7); // type in bag
-                    m.writer().writeByte(0); // tier
-                    m.writer().writeByte(0); // color
-                    //
-                    m.writer().writeUTF(""); // name
-                    m.writer().writeShort(0); // icon
-                    m.writer().writeInt(quant3_); // quantity
-                    m.writer().writeByte(4); // type in bag
-                    m.writer().writeByte(0); // tier
-                    m.writer().writeByte(0); // color
+                m.writer().writeUTF(""); // name
+                m.writer().writeShort(item1.getIcon()); // icon
+                m.writer().writeInt(quant1_); // quantity
+                m.writer().writeByte(7); // type in bag
+                m.writer().writeByte(0); // tier
+                m.writer().writeByte(0); // color
+                //
+                m.writer().writeUTF(""); // name
+                m.writer().writeShort(item2.getIcon()); // icon
+                m.writer().writeInt(quant2_); // quantity
+                m.writer().writeByte(7); // type in bag
+                m.writer().writeByte(0); // tier
+                m.writer().writeByte(0); // color
+                //
+                m.writer().writeUTF(""); // name
+                m.writer().writeShort(0); // icon
+                m.writer().writeInt(quant3_); // quantity
+                m.writer().writeByte(4); // type in bag
+                m.writer().writeByte(0); // tier
+                m.writer().writeByte(0); // color
 //                }
-                    m.writer().writeUTF("");
-                    m.writer().writeByte(1);
-                    m.writer().writeByte(0);
-                    conn.addmsg(m);
-                    m.cleanup();
-                    //
-                    Item47 itbag = new Item47();
-                    itbag.id = item1.getId();
-                    itbag.quantity = (short) quant1_;
-                    itbag.category = 7;
-                    conn.p.item.add_item_bag47(7, itbag);
-                    //
-                    Item47 itbag2 = new Item47();
-                    itbag2.id = item2.getId();
-                    itbag2.quantity = (short) quant2_;
-                    itbag2.category = 7;
-                    conn.p.item.add_item_bag47(7, itbag2);
-                    //
-                    conn.p.update_vang(quant3_);
-                    //
-                    conn.p.item.char_inventory(7);
-                    conn.p.item.remove(4, id_potion, 1);
-                    break;
+                m.writer().writeUTF("");
+                m.writer().writeByte(1);
+                m.writer().writeByte(0);
+                conn.addmsg(m);
+                m.cleanup();
+                //
+                Item47 itbag = new Item47();
+                itbag.id = item1.getId();
+                itbag.quantity = (short) quant1_;
+                itbag.category = 7;
+                conn.p.item.add_item_bag47(7, itbag);
+                //
+                Item47 itbag2 = new Item47();
+                itbag2.id = item2.getId();
+                itbag2.quantity = (short) quant2_;
+                itbag2.category = 7;
+                conn.p.item.add_item_bag47(7, itbag2);
+                //
+                conn.p.update_vang(quant3_);
+                Log.gI().add_log(conn.p.name, "Nhận " + quant3_ + " từ rương vàng");
+                //
+                conn.p.item.char_inventory(7);
+                conn.p.item.remove(4, id_potion, 1);
+                break;
             }
-            case 273: {
-                if (conn.p.item.get_bag_able() < 5) {
-                    Service.send_notice_box(conn, "Cần tối thiểu trống 5 ô hành trang");
-                    return;
-                }
-                ItemTemplate7 item1 = ItemTemplate7.item.get(Util.random(246, 335));
+             case 273: {
+                ItemTemplate7 item1 = ItemTemplate7.item.get(Util.random(246, 345));
                 ItemTemplate7 item2 = ItemTemplate7.item.get((50 > Util.random(0, 100)) ? 0 : 3);
                 int quant1_ = Util.random(1, 2);
                 int quant2_ = Util.random(1, 6);
-                int quant3_ = Util.random(30000, 100000);
+                int quant3_ = Util.random(30000, 50000);
                 //
                 Message m = new Message(78);
                 m.writer().writeUTF("Rương boss phe");
@@ -967,19 +827,16 @@ public class UseItem {
                 conn.p.item.add_item_bag47(7, itbag2);
                 //
                 conn.p.update_vang(quant3_);
+                Log.gI().add_log(conn.p.name, "Nhận " + quant3_ + " từ rương boss phe");
                 //
                 conn.p.item.char_inventory(7);
                 conn.p.item.remove(4, id_potion, 1);
                 break;
             }
-            case 274: {
-                if (conn.p.item.get_bag_able() < 5) {
-                    Service.send_notice_box(conn, "Cần tối thiểu trống 5 ô hành trang");
-                    return;
-                }
+              case 274: {
                 ItemTemplate7 item1 = ItemTemplate7.item.get(Util.random(417, 456));
-                ItemTemplate7 item2 = ItemTemplate7.item.get(Util.random(457, 463));
-                ItemTemplate7 item3 = ItemTemplate7.item.get(Util.random(246, 345));
+                 ItemTemplate7 item2 = ItemTemplate7.item.get(Util.random(457, 463));
+                 ItemTemplate7 item3 = ItemTemplate7.item.get(Util.random(246, 345));
                 int quant1_ = Util.random(10, 11);
                 int quant2_ = Util.random(2, 3);
                 int quant3 = Util.random(1, 2);
@@ -1004,7 +861,7 @@ public class UseItem {
                 //
                 m.writer().writeUTF(""); // name
                 m.writer().writeShort(0); // icon
-
+               
                 m.writer().writeByte(4); // type in bag
                 m.writer().writeByte(0); // tier
                 m.writer().writeByte(0); // color
@@ -1027,115 +884,7 @@ public class UseItem {
                 itbag2.category = 7;
                 conn.p.item.add_item_bag47(7, itbag2);
                 //
-
-                //
-                conn.p.item.char_inventory(7);
-                conn.p.item.char_inventory(4);
-                conn.p.item.remove(4, id_potion, 1);
-                break;
-            }
-            case 318: {
-                ItemTemplate7 item1 = ItemTemplate7.item.get(Util.random(316, 345));
-                ItemTemplate4 item2 = ItemTemplate4.item.get(246);
-                ItemTemplate7 item3 = ItemTemplate7.item.get(Util.random(316, 345));
-                ItemTemplate7 item4 = ItemTemplate7.item.get(Util.random(316, 345));
-                ItemTemplate7 item5 = ItemTemplate7.item.get(Util.random(316, 345));
-                ItemTemplate7 item6 = ItemTemplate7.item.get(Util.random(316, 345));
-                int quant1_ = 5;
-                int quant2_ = 100;
-                int quant3_ = 5;
-                int quant4_ = 5;
-                int quant5_ = 5;
-                int quant6_ = 5;
-                //
-                Message m = new Message(78);
-                m.writer().writeUTF("");
-                m.writer().writeByte(3); // size
-//                for (int i = 0; i < 3; i++) {
-                m.writer().writeUTF(""); // name
-                m.writer().writeShort(item1.getIcon()); // icon
-                m.writer().writeInt(quant1_); // quantity
-                m.writer().writeByte(7); // type in bag
-                m.writer().writeByte(0); // tier
-                m.writer().writeByte(0); // color
-                //
-                m.writer().writeUTF(""); // name
-                m.writer().writeShort(item2.getIcon()); // icon
-                m.writer().writeInt(quant2_); // quantity
-                m.writer().writeByte(4); // type in bag
-                m.writer().writeByte(0); // tier
-                m.writer().writeByte(0); // color
-                //
-                m.writer().writeUTF(""); // name
-                m.writer().writeShort(item3.getIcon()); // icon
-                m.writer().writeInt(quant3_); // quantity
-                m.writer().writeByte(7); // type in bag
-                m.writer().writeByte(0); // tier
-                m.writer().writeByte(0); // color
-                //
-                m.writer().writeUTF(""); // name
-                m.writer().writeShort(item4.getIcon()); // icon
-                m.writer().writeInt(quant4_); // quantity
-                m.writer().writeByte(7); // type in bag
-                m.writer().writeByte(0); // tier
-                m.writer().writeByte(0); // color
-                //
-                m.writer().writeUTF(""); // name
-                m.writer().writeShort(item5.getIcon()); // icon
-                m.writer().writeInt(quant5_); // quantity
-                m.writer().writeByte(7); // type in bag
-                m.writer().writeByte(0); // tier
-                m.writer().writeByte(0); // color
-                //
-                m.writer().writeUTF(""); // name
-                m.writer().writeShort(item6.getIcon()); // icon
-                m.writer().writeInt(quant6_); // quantity
-                m.writer().writeByte(7); // type in bag
-                m.writer().writeByte(0); // tier
-                m.writer().writeByte(0); // color
-                //
-                m.writer().writeUTF("");
-                m.writer().writeByte(1);
-                m.writer().writeByte(0);
-                conn.addmsg(m);
-                m.cleanup();
-                //
-                Item47 itbag = new Item47();
-                itbag.id = item1.getId();
-                itbag.quantity = (short) quant1_;
-                itbag.category = 7;
-                conn.p.item.add_item_bag47(7, itbag);
-                //
-                Item47 itbag2 = new Item47();
-                itbag2.id = item2.getId();
-                itbag2.quantity = (short) quant2_;
-                itbag2.category = 4;
-                conn.p.item.add_item_bag47(4, itbag2);
-                //
-                Item47 itbag3 = new Item47();
-                itbag.id = item3.getId();
-                itbag.quantity = (short) quant1_;
-                itbag.category = 7;
-                conn.p.item.add_item_bag47(7, itbag);
-                //
-                Item47 itbag4 = new Item47();
-                itbag.id = item4.getId();
-                itbag.quantity = (short) quant1_;
-                itbag.category = 7;
-                conn.p.item.add_item_bag47(7, itbag);
-                //
-                Item47 itbag5 = new Item47();
-                itbag.id = item5.getId();
-                itbag.quantity = (short) quant1_;
-                itbag.category = 7;
-                conn.p.item.add_item_bag47(7, itbag);
-                //
-                Item47 itbag6 = new Item47();
-                itbag.id = item6.getId();
-                itbag.quantity = (short) quant1_;
-                itbag.category = 7;
-                conn.p.item.add_item_bag47(7, itbag);
-                //
+               
                 //
                 conn.p.item.char_inventory(7);
                 conn.p.item.char_inventory(4);
@@ -1219,15 +968,16 @@ public class UseItem {
                 }
                 break;
             }
-            case 245: {
-                Message m = new Message(23);
-                m.writer().writeUTF("Túi Hành Trang");
-                m.writer().writeByte(3);
-                m.writer().writeShort(0);
-                conn.addmsg(m);
-                m.cleanup();
-                break;
-            }
+            case 245 : {
+                            Message m = new Message(23);
+				m.writer().writeUTF("Túi Hành Trang");
+				m.writer().writeByte(3);
+				m.writer().writeShort(0);
+				conn.addmsg(m);
+				m.cleanup();
+				break;
+                        }
+			
 
             case 253: {
                 if (conn.p.item.total_item_by_id(4, id_potion) > 0) {
@@ -1237,6 +987,385 @@ public class UseItem {
                 }
                 break;
             }
+            case 195: { // bánh dày
+                if (conn.p.item.get_bag_able() < 3) {
+                    Service.send_notice_box(conn, "Cần 3 ô trống trong hành trang!");
+                    return;
+                }
+                if (conn.p.item.total_item_by_id(4, id_potion) > 0) {
+//                    try{
+                    conn.p.item.remove(4, id_potion, 1);
+                    List<box_item_template> ids = new ArrayList<>();
+
+                    List<Integer> it7 = new ArrayList<>(java.util.Arrays.asList(12, 13, 11));
+                    List<Integer> it7_vip = new ArrayList<>(java.util.Arrays.asList(14, 471, 346, 33));
+                    List<Integer> it4 = new ArrayList<>(java.util.Arrays.asList(294, 275, 52, 18));
+                    List<Integer> it4_vip = new ArrayList<>(java.util.Arrays.asList(206, 147));
+                    for (int i = 0; i < Util.random(1, 4); i++) {
+                        int ran = Util.random(100);
+                        if (ran < 0) {
+                            short id = Util.random(it7, new ArrayList<>()).shortValue();
+                            short quant = (short) Util.random(2, 5);
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 5) {//nlmd vang tim
+                            short id = (short) Util.random(126, 146);
+                            short quant = (short) 1;
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 15) { // nltt
+                            short id = (short) Util.random(417, 464);
+                            short quant = (short) Util.random(2);
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 28) {
+                            short id = Util.random(it7_vip, new ArrayList<>()).shortValue();
+                            short quant = (short) 1;
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 45) {
+                            short id = Util.random(it4_vip, new ArrayList<>()).shortValue();
+                            short quant = (short) 1;
+                            ids.add(new box_item_template(id, quant, (byte) 4));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 4);
+                        } else if (ran < 70) {
+                            short id = Util.random(it4, new ArrayList<>()).shortValue();
+                            short quant = (short) Util.random(1, 3);
+                            ids.add(new box_item_template(id, quant, (byte) 4));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 4);
+                        } else {
+                            short id = Util.random(it7, new ArrayList<>()).shortValue();
+                            short quant = (short) Util.random(1, 3);
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        }
+                    }
+//                    conn.p.item.char_inventory(3);
+//                    conn.p.item.char_inventory(4);
+//                    
+//                    conn.p.item.char_inventory(7);
+                    Service.Show_open_box_notice_item(conn.p, "Bạn nhận được", ids);
+//                    }catch(Exception e){e.printStackTrace();}
+                }
+                break;
+            }
+            case 31: { // bánh trưng
+                if (conn.p.item.get_bag_able() < 3) {
+                    Service.send_notice_box(conn, "Cần 3 ô trống trong hành trang!");
+                    return;
+                }
+                if (conn.p.item.total_item_by_id(4, id_potion) > 0) {
+//                    try{
+                    conn.p.item.remove(4, id_potion, 1);
+                    List<box_item_template> ids = new ArrayList<>();
+
+                    List<Integer> it7 = new ArrayList<>(java.util.Arrays.asList(12, 13, 11));
+                    List<Integer> it7_vip = new ArrayList<>(java.util.Arrays.asList(14, 471, 346, 33));
+                    List<Integer> it4 = new ArrayList<>(java.util.Arrays.asList(294, 275, 52, 18));
+                    List<Integer> it4_vip = new ArrayList<>(java.util.Arrays.asList(206, 147));
+                    for (int i = 0; i < Util.random(1, 4); i++) {
+                        int ran = Util.random(100);
+                        if (ran < 0) {
+                            short id = Util.random(it7, new ArrayList<>()).shortValue();
+                            short quant = (short) Util.random(2, 5);
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 5) {//nlmd vang tim
+                            short id = (short) Util.random(126, 146);
+                            short quant = (short) 1;
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 15) { // nltt
+                            short id = (short) Util.random(417, 464);
+                            short quant = (short) Util.random(2);
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 28) {
+                            short id = Util.random(it7_vip, new ArrayList<>()).shortValue();
+                            short quant = (short) 1;
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 45) {
+                            short id = Util.random(it4_vip, new ArrayList<>()).shortValue();
+                            short quant = (short) 1;
+                            ids.add(new box_item_template(id, quant, (byte) 4));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 4);
+                        } else if (ran < 70) {
+                            short id = Util.random(it4, new ArrayList<>()).shortValue();
+                            short quant = (short) Util.random(1, 3);
+                            ids.add(new box_item_template(id, quant, (byte) 4));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 4);
+                        } else {
+                            short id = Util.random(it7, new ArrayList<>()).shortValue();
+                            short quant = (short) Util.random(1, 3);
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        }
+                    }
+//                    conn.p.item.char_inventory(3);
+//                    conn.p.item.char_inventory(4);
+//                    
+//                    conn.p.item.char_inventory(7);
+                    Service.Show_open_box_notice_item(conn.p, "Bạn nhận được", ids);
+//                    }catch(Exception e){e.printStackTrace();}
+                }
+                break;
+            }
+            case 90:{ // bánh dẻo
+                 conn.p.update_Exp(10000L, false);
+                 break;
+            }
+            case 91:{ // bánh nướng
+                 conn.p.update_Exp(50000L, false);
+                 break;
+            }
+            case 101: { // rương huyền bí
+                if (conn.p.item.get_bag_able() < 3) {
+                    Service.send_notice_box(conn, "Cần 3 ô trống trong hành trang!");
+                    return;
+                }
+                if (conn.p.item.total_item_by_id(4, id_potion) > 0) {
+                    conn.p.item.remove(4, id_potion, 1);
+                    List<box_item_template> ids = new ArrayList<>();
+
+                    List<Integer> it7 = new ArrayList<>(java.util.Arrays.asList(12, 13, 11));
+                    List<Integer> it7_vip = new ArrayList<>(java.util.Arrays.asList(14, 471, 346, 33));
+                    List<Integer> it4 = new ArrayList<>(java.util.Arrays.asList(294, 275, 52, 18));
+                    List<Integer> it4_vip = new ArrayList<>(java.util.Arrays.asList(206, 147));
+                    for (int i = 0; i < Util.random(1, 4); i++) {
+                        int ran = Util.random(100);
+                        if (ran < 0) {
+                            short id = Util.random(it7, new ArrayList<>()).shortValue();
+                            short quant = (short) Util.random(2, 5);
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 5) {//nlmd vang tim
+                            short id = (short) Util.random(126, 146);
+                            short quant = (short) 1;
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 15) { // nltt
+                            short id = (short) Util.random(417, 464);
+                            short quant = (short) Util.random(2);
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 28) {
+                            short id = Util.random(it7_vip, new ArrayList<>()).shortValue();
+                            short quant = (short) 1;
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 45) {
+                            short id = Util.random(it4_vip, new ArrayList<>()).shortValue();
+                            short quant = (short) 1;
+                            ids.add(new box_item_template(id, quant, (byte) 4));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 4);
+                        } else if (ran < 70) {
+                            short id = Util.random(it4, new ArrayList<>()).shortValue();
+                            short quant = (short) Util.random(1, 3);
+                            ids.add(new box_item_template(id, quant, (byte) 4));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 4);
+                        } else {
+                            short id = Util.random(it7, new ArrayList<>()).shortValue();
+                            short quant = (short) Util.random(1, 3);
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        }
+                    }
+//                    conn.p.item.char_inventory(3);
+//                    conn.p.item.char_inventory(4);
+//                    
+//                    conn.p.item.char_inventory(7);
+                    Service.Show_open_box_notice_item(conn.p, "Bạn nhận được", ids);
+                }
+                break;
+            }
+            case 126:{// pháo hoa
+                if (conn.p.item.get_bag_able() < 3) {
+                    Service.send_notice_box(conn, "Cần 3 ô trống trong hành trang!");
+                    return;
+                }
+                if (conn.p.item.total_item_by_id(4, id_potion) > 0) {
+                    conn.p.item.remove(4, id_potion, 1);
+                    List<box_item_template> ids = new ArrayList<>();
+
+                    List<Integer> it7 = new ArrayList<>(java.util.Arrays.asList(12, 13, 11));
+                    List<Integer> it7_vip = new ArrayList<>(java.util.Arrays.asList(14, 471, 346, 33));
+                    List<Integer> it4 = new ArrayList<>(java.util.Arrays.asList(294, 275, 52, 18));
+                    List<Integer> it4_vip = new ArrayList<>(java.util.Arrays.asList(206, 147));
+                    for (int i = 0; i < Util.random(1, 4); i++) {
+                        int ran = Util.random(100);
+                        if (ran < 0) {
+                            short id = Util.random(it7, new ArrayList<>()).shortValue();
+                            short quant = (short) Util.random(2, 5);
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 5) {//nlmd vang tim
+                            short id = (short) Util.random(126, 146);
+                            short quant = (short) 1;
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 15) { // nltt
+                            short id = (short) Util.random(417, 464);
+                            short quant = (short) Util.random(2);
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 28) {
+                            short id = Util.random(it7_vip, new ArrayList<>()).shortValue();
+                            short quant = (short) 1;
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 45) {
+                            short id = Util.random(it4_vip, new ArrayList<>()).shortValue();
+                            short quant = (short) 1;
+                            ids.add(new box_item_template(id, quant, (byte) 4));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 4);
+                        } else if (ran < 70) {
+                            short id = Util.random(it4, new ArrayList<>()).shortValue();
+                            short quant = (short) Util.random(1, 3);
+                            ids.add(new box_item_template(id, quant, (byte) 4));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 4);
+                        } else {
+                            short id = Util.random(it7, new ArrayList<>()).shortValue();
+                            short quant = (short) Util.random(1, 3);
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        }
+                    }
+//                    conn.p.item.char_inventory(3);
+//                    conn.p.item.char_inventory(4);
+//                    
+//                    conn.p.item.char_inventory(7);
+                    Service.Show_open_box_notice_item(conn.p, "Bạn nhận được", ids);
+                }
+                break;
+            
+            }
+            case 193: { // hộp quà lộc
+                if (conn.p.item.get_bag_able() < 3) {
+                    Service.send_notice_box(conn, "Cần 3 ô trống trong hành trang!");
+                    return;
+                }
+                if (conn.p.item.total_item_by_id(4, id_potion) > 0) {
+                    conn.p.item.remove(4, id_potion, 1);
+                    List<box_item_template> ids = new ArrayList<>();
+
+                    List<Integer> it7 = new ArrayList<>(java.util.Arrays.asList(12, 13, 11));
+                    List<Integer> it7_vip = new ArrayList<>(java.util.Arrays.asList(14, 471, 346, 33));
+                    List<Integer> it4 = new ArrayList<>(java.util.Arrays.asList(294, 275, 52, 18));
+                    List<Integer> it4_vip = new ArrayList<>(java.util.Arrays.asList(206, 147));
+                    for (int i = 0; i < Util.random(1, 4); i++) {
+                        int ran = Util.random(100);
+                        if (ran < 0) {
+                            short id = Util.random(it7, new ArrayList<>()).shortValue();
+                            short quant = (short) Util.random(2, 5);
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 5) {//nlmd vang tim
+                            short id = (short) Util.random(126, 146);
+                            short quant = (short) 1;
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 15) { // nltt
+                            short id = (short) Util.random(417, 464);
+                            short quant = (short) Util.random(2);
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 28) {
+                            short id = Util.random(it7_vip, new ArrayList<>()).shortValue();
+                            short quant = (short) 1;
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 45) {
+                            short id = Util.random(it4_vip, new ArrayList<>()).shortValue();
+                            short quant = (short) 1;
+                            ids.add(new box_item_template(id, quant, (byte) 4));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 4);
+                        } else if (ran < 70) {
+                            short id = Util.random(it4, new ArrayList<>()).shortValue();
+                            short quant = (short) Util.random(1, 3);
+                            ids.add(new box_item_template(id, quant, (byte) 4));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 4);
+                        } else {
+                            short id = Util.random(it7, new ArrayList<>()).shortValue();
+                            short quant = (short) Util.random(1, 3);
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        }
+                    }
+//                    conn.p.item.char_inventory(3);
+//                    conn.p.item.char_inventory(4);
+//                    
+//                    conn.p.item.char_inventory(7);
+                    Service.Show_open_box_notice_item(conn.p, "Bạn nhận được", ids);
+                }
+                break;
+            }
+            case 32: { // bánh trung vip
+                if (conn.p.item.get_bag_able() < 3) {
+                    Service.send_notice_box(conn, "Cần 3 ô trống trong hành trang!");
+                    return;
+                }
+                conn.p.update_Exp(5400L, false);
+                if (conn.p.item.total_item_by_id(4, id_potion) > 0) {
+//                    try{
+                    conn.p.item.remove(4, id_potion, 1);
+                    List<box_item_template> ids = new ArrayList<>();
+
+                    List<Integer> it7 = new ArrayList<>(java.util.Arrays.asList(12, 13, 11));
+                    List<Integer> it7_vip = new ArrayList<>(java.util.Arrays.asList(14, 471, 346, 33));
+                    List<Integer> it4 = new ArrayList<>(java.util.Arrays.asList(294, 275, 52, 18,28,29,89,5,4));
+                    List<Integer> it4_vip = new ArrayList<>(java.util.Arrays.asList(206, 147,299,230));
+                    for (int i = 0; i < Util.random(1, 4); i++) {
+                        int ran = Util.random(100);
+                        if (ran < 0) {
+                            short id = Util.random(it7, new ArrayList<>()).shortValue();
+                            short quant = (short) Util.random(2, 5);
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 2) { //sách
+                            short idsach = (short) Util.random(4577, 4585);
+                            ids.add(new box_item_template(idsach, (short) 1, (byte) 3));
+                            conn.p.item.add_item_bag3_default(idsach, 0, false);
+                        } else if (ran < 5) {//nlmd vang tim
+                            short id = (short) Util.random(126, 146);
+                            short quant = (short) 1;
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 15) { // nltt
+                            short id = (short) Util.random(417, 464);
+                            short quant = (short) Util.random(2);
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 28) {
+                            short id = Util.random(it7_vip, new ArrayList<>()).shortValue();
+                            short quant = (short) 1;
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        } else if (ran < 45) {
+                            short id = Util.random(it4_vip, new ArrayList<>()).shortValue();
+                            short quant = (short) 1;
+                            ids.add(new box_item_template(id, quant, (byte) 4));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 4);
+                        } else if (ran < 70) {
+                            short id = Util.random(it4, new ArrayList<>()).shortValue();
+                            short quant = (short) Util.random(1, 3);
+                            ids.add(new box_item_template(id, quant, (byte) 4));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 4);
+                        } else {
+                            short id = Util.random(it7, new ArrayList<>()).shortValue();
+                            short quant = (short) Util.random(1, 3);
+                            ids.add(new box_item_template(id, quant, (byte) 7));
+                            conn.p.item.add_item_bag47(id, quant, (byte) 7);
+                        }
+                    }
+//                    conn.p.item.char_inventory(3);
+//                    conn.p.item.char_inventory(4);
+//                    
+//                    conn.p.item.char_inventory(7);
+                    Service.Show_open_box_notice_item(conn.p, "Bạn nhận được", ids);
+                }
+                break;
+            } 
             case 303: { // đèn hoa đăng
                 Service.send_box_input_text(conn, 28, "Thả đèn", new String[]{"Tên bạn thả cùng"});
                 break;
@@ -1262,10 +1391,10 @@ public class UseItem {
                             short quant = (short) Util.random(2, 5);
                             ids.add(new box_item_template(id, quant, (byte) 7));
                             conn.p.item.add_item_bag47(id, quant, (byte) 7);
-//                        } else if (ran < 2) { //sách
-//                            short idsach = (short) Util.random(4577, 4585);
-//                            ids.add(new box_item_template(idsach, (short) 1, (byte) 3));
-//                            conn.p.item.add_item_bag3_default(idsach, 0, false);
+                        } else if (ran < 2) { //sách
+                            short idsach = (short) Util.random(4577, 4585);
+                            ids.add(new box_item_template(idsach, (short) 1, (byte) 3));
+                            conn.p.item.add_item_bag3_default(idsach, 0, false);
                         } else if (ran < 5) {//nlmd vang tim
                             short id = (short) Util.random(126, 146);
                             short quant = (short) 1;
@@ -1379,9 +1508,10 @@ public class UseItem {
                 } else {
                     Service.send_notice_box(conn, "Chưa co de tu");
                 }
+                break;
             }
             default: {
-                // Service.send_notice_nobox_white(conn, "4Chưa có chức năng này");
+                Service.send_notice_nobox_white(conn, "4Chưa có chức năng này");
                 break;
             }
         }
@@ -1417,11 +1547,11 @@ public class UseItem {
             }
             case 124: {
                 conn.p.item.remove(4, id, 1);
-                conn.p.type_use_mount = (byte) 5;
+                conn.p.type_use_mount = Horse.TUAN_LOC;
                 conn.p.map.send_mount(conn.p);
                 break;
             }
-            case 125: {
+            case 125, 223, 247, 272, 276, 295, 282, 280, 300, 324, 270, 302: {
                 if (conn.p.item.get_bag_able() < 1) {
                     Service.send_notice_nobox_white(conn, "Hành trang đầy!");
                     return;
@@ -1434,84 +1564,55 @@ public class UseItem {
                 break;
             }
             case 146: {
-                conn.p.item.remove(4, id, 1);
-                conn.p.type_use_mount = (byte) 6;
+                conn.p.type_use_mount = Horse.SOI_XAM;
                 conn.p.map.send_mount(conn.p);
                 break;
             }
             case 159: {
-                conn.p.item.remove(4, id, 1);
-                conn.p.type_use_mount = (byte) 7;
+                conn.p.type_use_mount = Horse.SOI_GIO_TUYET;
                 conn.p.map.send_mount(conn.p);
                 break;
             }
             case 160: {
-                conn.p.item.remove(4, id, 1);
-                conn.p.type_use_mount = (byte) 8;
+                conn.p.type_use_mount = Horse.SOI_BAO_LUA;
                 conn.p.map.send_mount(conn.p);
                 break;
             }
             case 161: {
-                conn.p.item.remove(4, id, 1);
-                conn.p.type_use_mount = (byte) 9;
+                conn.p.type_use_mount = Horse.SOI_BONG_MA;
                 conn.p.map.send_mount(conn.p);
                 break;
             }
             case 163: {
-                conn.p.item.remove(4, id, 1);
-                conn.p.type_use_mount = (byte) 10;
+                conn.p.type_use_mount = Horse.SU_TU;
                 conn.p.map.send_mount(conn.p);
                 break;
             }
             case 222: {
                 conn.p.item.remove(4, id, 1);
-                conn.p.type_use_mount = (byte) 11;
+                conn.p.type_use_mount = Horse.HEO_RUNG;
                 conn.p.map.send_mount(conn.p);
-                break;
-            }
-            case 223: {
-                if (conn.p.item.get_bag_able() < 1) {
-                    Service.send_notice_nobox_white(conn, "Hành trang đầy!");
-                    return;
-                }
-                conn.p.item.remove(4, id, 1);
-                Item47 itbag = new Item47();
-                itbag.id = (short) (id - 1);
-                itbag.quantity = 99;
-                conn.p.item.add_item_bag47(4, itbag);
                 break;
             }
             case 246: {
                 conn.p.item.remove(4, id, 1);
-                conn.p.type_use_mount = (byte) 12;
+                conn.p.type_use_mount = Horse.CON_LAN;
                 conn.p.map.send_mount(conn.p);
                 break;
             }
-            case 247: {
-                if (conn.p.item.get_bag_able() < 1) {
-                    Service.send_notice_nobox_white(conn, "Hành trang đầy!");
-                    return;
-                }
-                conn.p.item.remove(4, id, 1);
-                Item47 itbag = new Item47();
-                itbag.id = (short) (id - 1);
-                itbag.quantity = 99;
-                conn.p.item.add_item_bag47(4, itbag);
-                break;
-            }
             case 248: {
-                conn.p.type_use_mount = (byte) 12;
+                conn.p.type_use_mount = Horse.CON_LAN;
                 conn.p.map.send_mount(conn.p);
                 break;
             }
             case 250: {
-                conn.p.type_use_mount = (byte) 13;
+                conn.p.type_use_mount = Horse.SKELETON;
                 conn.p.map.send_mount(conn.p);
                 break;
             }
             case 251: {
                 conn.p.item.remove(4, id, 1);
-                conn.p.type_use_mount = (byte) 20;
+                conn.p.type_use_mount = Horse.CHUOT_TUYET;
                 conn.p.map.send_mount(conn.p);
                 conn.p.id_horse = 69;
                 MapService.update_in4_2_other_inside(conn.p.map, conn.p);
@@ -1519,7 +1620,7 @@ public class UseItem {
                 break;
             }
             case 268: {
-                conn.p.type_use_mount = (byte) 20;
+                conn.p.type_use_mount = Horse.CHUOT_TUYET;
                 conn.p.map.send_mount(conn.p);
                 conn.p.id_horse = 69;
                 MapService.update_in4_2_other_inside(conn.p.map, conn.p);
@@ -1528,92 +1629,44 @@ public class UseItem {
             }
             case 271: {
                 conn.p.item.remove(4, id, 1);
-                conn.p.type_use_mount = (byte) 20;
+                conn.p.type_use_mount = Horse.TRAU_RUNG;
                 conn.p.map.send_mount(conn.p);
                 conn.p.id_horse = 107;
                 MapService.update_in4_2_other_inside(conn.p.map, conn.p);
                 Service.send_char_main_in4(conn.p);
                 break;
             }
-            case 272: {
-                if (conn.p.item.get_bag_able() < 1) {
-                    Service.send_notice_nobox_white(conn, "Hành trang đầy!");
-                    return;
-                }
-                conn.p.item.remove(4, id, 1);
-                Item47 itbag = new Item47();
-                itbag.id = (short) (id - 1);
-                itbag.quantity = 99;
-                conn.p.item.add_item_bag47(4, itbag);
-                break;
-            }
 
             case 275: {
                 conn.p.item.remove(4, id, 1);
-                conn.p.type_use_mount = (byte) 17;
+                conn.p.type_use_mount = Horse.CAN_DAU_VAN;
                 conn.p.map.send_mount(conn.p);
                 conn.p.id_horse = 111;
                 MapService.update_in4_2_other_inside(conn.p.map, conn.p);
                 Service.send_char_main_in4(conn.p);
                 break;
             }
-            case 276: {
-                if (conn.p.item.get_bag_able() < 1) {
-                    Service.send_notice_nobox_white(conn, "Hành trang đầy!");
-                    return;
-                }
-                conn.p.item.remove(4, id, 1);
-                Item47 itbag = new Item47();
-                itbag.id = (short) (id - 1);
-                itbag.quantity = 99;
-                conn.p.item.add_item_bag47(4, itbag);
-                break;
-            }
             case 294: {
                 conn.p.item.remove(4, id, 1);
-                conn.p.type_use_mount = (byte) 20;
+                conn.p.type_use_mount = Horse.HOA_KY_LAN;
                 conn.p.map.send_mount(conn.p);
                 conn.p.id_horse = 116;
                 MapService.update_in4_2_other_inside(conn.p.map, conn.p);
                 Service.send_char_main_in4(conn.p);
                 break;
             }
-            case 295: {
-                if (conn.p.item.get_bag_able() < 1) {
-                    Service.send_notice_nobox_white(conn, "Hành trang đầy!");
-                    return;
-                }
-                conn.p.item.remove(4, id, 1);
-                Item47 itbag = new Item47();
-                itbag.id = (short) (id - 1);
-                itbag.quantity = 99;
-                conn.p.item.add_item_bag47(4, itbag);
-                break;
-            }
             case 281: {
                 conn.p.item.remove(4, id, 1);
-                conn.p.type_use_mount = (byte) 20;
+                conn.p.type_use_mount = Horse.XE_TRUOT_TUYET;
                 conn.p.map.send_mount(conn.p);
                 conn.p.id_horse = 115;
                 MapService.update_in4_2_other_inside(conn.p.map, conn.p);
                 Service.send_char_main_in4(conn.p);
                 break;
             }
-            case 282: {
-                if (conn.p.item.get_bag_able() < 1) {
-                    Service.send_notice_nobox_white(conn, "Hành trang đầy!");
-                    return;
-                }
-                conn.p.item.remove(4, id, 1);
-                Item47 itbag = new Item47();
-                itbag.id = (short) (id - 1);
-                itbag.quantity = 99;
-                conn.p.item.add_item_bag47(4, itbag);
-                break;
-            }
             case 279: {
                 conn.p.item.remove(4, id, 1);
-                conn.p.type_use_mount = (byte) 20;
+                conn.p.type_use_mount = Horse.MA_TOC_DO;
                 conn.p.map.send_mount(conn.p);
                 conn.p.id_horse = 114;
                 MapService.update_in4_2_other_inside(conn.p.map, conn.p);
@@ -1622,72 +1675,25 @@ public class UseItem {
             }
 
             case 317: {
-                conn.p.type_use_mount = (byte) 20;
+                conn.p.type_use_mount = Horse.XE_TRUOT_TUYET;
                 conn.p.map.send_mount(conn.p);
                 conn.p.id_horse = 115;
                 MapService.update_in4_2_other_inside(conn.p.map, conn.p);
                 Service.send_char_main_in4(conn.p);
                 break;
             }
-            case 280: {
-                if (conn.p.item.get_bag_able() < 1) {
-                    Service.send_notice_nobox_white(conn, "Hành trang đầy!");
-                    return;
-                }
-                conn.p.item.remove(4, id, 1);
-                Item47 itbag = new Item47();
-                itbag.id = (short) (id - 1);
-                itbag.quantity = 99;
-                conn.p.item.add_item_bag47(4, itbag);
-                break;
-            }
             case 299: {
                 conn.p.item.remove(4, id, 1);
-                conn.p.type_use_mount = (byte) 22;
+                conn.p.type_use_mount = Horse.PHUONG_HOANG_LUA;
                 conn.p.map.send_mount(conn.p);
                 conn.p.id_horse = 117;
                 MapService.update_in4_2_other_inside(conn.p.map, conn.p);
                 Service.send_char_main_in4(conn.p);
                 break;
             }
-
-            case 300: {
-                if (conn.p.item.get_bag_able() < 1) {
-                    Service.send_notice_nobox_white(conn, "Hành trang đầy!");
-                    return;
-                }
-                conn.p.item.remove(4, id, 1);
-                Item47 itbag = new Item47();
-                itbag.id = (short) (id - 1);
-                itbag.quantity = 99;
-                conn.p.item.add_item_bag47(4, itbag);
-                break;
-            }
-            case 323: {
-                conn.p.item.remove(4, id, 1);
-                conn.p.type_use_mount = (byte) 22;
-                conn.p.map.send_mount(conn.p);
-                conn.p.id_horse = 145;
-                MapService.update_in4_2_other_inside(conn.p.map, conn.p);
-                Service.send_char_main_in4(conn.p);
-                break;
-            }
-
-            case 324: {
-                if (conn.p.item.get_bag_able() < 1) {
-                    Service.send_notice_nobox_white(conn, "Hành trang đầy!");
-                    return;
-                }
-                conn.p.item.remove(4, id, 1);
-                Item47 itbag = new Item47();
-                itbag.id = (short) (id - 1);
-                itbag.quantity = 99;
-                conn.p.item.add_item_bag47(4, itbag);
-                break;
-            }
             case 269: {
                 conn.p.item.remove(4, id, 1);
-                conn.p.type_use_mount = (byte) 15;
+                conn.p.type_use_mount = Horse.VOI_MA_MUT;
                 conn.p.map.send_mount(conn.p);
                 conn.p.id_horse = 106;
                 MapService.update_in4_2_other_inside(conn.p.map, conn.p);
@@ -1695,48 +1701,24 @@ public class UseItem {
                 break;
             }
             case 296: {
-                conn.p.type_use_mount = (byte) 15;
+                conn.p.type_use_mount = Horse.VOI_MA_MUT;
                 conn.p.map.send_mount(conn.p);
                 conn.p.id_horse = 106;
                 MapService.update_in4_2_other_inside(conn.p.map, conn.p);
                 Service.send_char_main_in4(conn.p);
                 break;
             }
-            case 270: {
-                if (conn.p.item.get_bag_able() < 1) {
-                    Service.send_notice_nobox_white(conn, "Hành trang đầy!");
-                    return;
-                }
-                conn.p.item.remove(4, id, 1);
-                Item47 itbag = new Item47();
-                itbag.id = (short) (id - 1);
-                itbag.quantity = 99;
-                conn.p.item.add_item_bag47(4, itbag);
-                break;
-            }
             case 301: {
                 conn.p.item.remove(4, id, 1);
-                conn.p.type_use_mount = (byte) 20;
+                conn.p.type_use_mount = Horse.RONG_BANG;
                 conn.p.map.send_mount(conn.p);
                 conn.p.id_horse = 121;
                 MapService.update_in4_2_other_inside(conn.p.map, conn.p);
                 Service.send_char_main_in4(conn.p);
                 break;
             }
-            case 302: {
-                if (conn.p.item.get_bag_able() < 1) {
-                    Service.send_notice_nobox_white(conn, "Hành trang đầy!");
-                    return;
-                }
-                conn.p.item.remove(4, id, 1);
-                Item47 itbag = new Item47();
-                itbag.id = (short) (id - 1);
-                itbag.quantity = 99;
-                conn.p.item.add_item_bag47(4, itbag);
-                break;
-            }
             case 313: {
-                conn.p.type_use_mount = (byte) 22;
+                conn.p.type_use_mount = Horse.PHUONG_HOANG_LUA;
                 conn.p.map.send_mount(conn.p);
                 conn.p.id_horse = 117;
                 MapService.update_in4_2_other_inside(conn.p.map, conn.p);
@@ -1744,46 +1726,36 @@ public class UseItem {
                 break;
             }
             case 314: {
-                conn.p.type_use_mount = (byte) 20;
+                conn.p.type_use_mount = Horse.RONG_BANG;
                 conn.p.map.send_mount(conn.p);
                 conn.p.id_horse = 121;
                 MapService.update_in4_2_other_inside(conn.p.map, conn.p);
                 Service.send_char_main_in4(conn.p);
                 break;
             }
-            case 315: {
-                conn.p.type_use_mount = (byte) 20;
-                conn.p.map.send_mount(conn.p);
-                conn.p.id_horse = 116;
-                MapService.update_in4_2_other_inside(conn.p.map, conn.p);
-                Service.send_char_main_in4(conn.p);
-                break;
-            }
             case 316: {
-                conn.p.type_use_mount = (byte) 20;
+                conn.p.type_use_mount = Horse.MA_TOC_DO;
                 conn.p.map.send_mount(conn.p);
                 conn.p.id_horse = 114;
                 MapService.update_in4_2_other_inside(conn.p.map, conn.p);
                 Service.send_char_main_in4(conn.p);
                 break;
             }
-            case 325: {
-                conn.p.type_use_mount = (byte) 22;
+            case 323: {
+                conn.p.item.remove(4, id, 1);
+                conn.p.type_use_mount = Horse.CA_CHEP;
                 conn.p.map.send_mount(conn.p);
                 conn.p.id_horse = 145;
                 MapService.update_in4_2_other_inside(conn.p.map, conn.p);
                 Service.send_char_main_in4(conn.p);
                 break;
             }
-            case 326: {
-                conn.p.type_use_mount = (byte) 5;
+            case 325: {
+                conn.p.type_use_mount = Horse.CA_CHEP;
                 conn.p.map.send_mount(conn.p);
+                conn.p.id_horse = 145;
                 MapService.update_in4_2_other_inside(conn.p.map, conn.p);
                 Service.send_char_main_in4(conn.p);
-                break;
-            }
-            default: {
-                //System.out.println("mount id " + id);
                 break;
             }
         }
@@ -1806,10 +1778,10 @@ public class UseItem {
                 Service.send_notice_nobox_white(conn, "Level quá thấp");
                 return;
             }
-//            if (temp3.type == 14) {
-//                Service.send_notice_nobox_white(conn, "đem đi ấp ở vườn thú đi chứ dùng thế đéo nào đc hả?");
-//                return;
-//            }
+            if (temp3.type == 14) {
+                Service.send_notice_nobox_white(conn, "đem đi ấp ở vườn thú đi chứ dùng thế đéo nào đc hả?");
+                return;
+            }
             if (temp3.time_use > 0) {
                 long time_ = temp3.time_use - System.currentTimeMillis();
                 time_ /= 60_000;
@@ -1843,11 +1815,11 @@ public class UseItem {
                         conn.p.player_wear(conn, temp3, id, index);
                         break;
                     }
-                    case 55:{ // weapon
+                    case 55: { // weapon
                         conn.p.player_wear(conn, temp3, id, index);
                         break;
                     }
-                    case 102:{ // weapon
+                    case 102: { // weapon
                         conn.p.player_wear(conn, temp3, id, index);
                         break;
                     }

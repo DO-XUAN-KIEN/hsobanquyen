@@ -17,6 +17,7 @@ import template.Mob_MoTaiNguyen;
 import template.Part_player;
 
 public class NhanBan extends MainObject{
+
     public List<Part_player> part_p;//
     private byte head;//
     private byte eye;//
@@ -26,7 +27,7 @@ public class NhanBan extends MainObject{
     private int clan_id = -1;
     private String clan_name_clan_shorted;
     private byte clan_mem_type;
-    private byte[] fashion;//
+    private short[] fashion;//
     private short mat_na;//
     private short phi_phong;//
 	private short danh_hieu;
@@ -40,7 +41,7 @@ public class NhanBan extends MainObject{
     public boolean is_move;//
     public Player p_target;
     public int p_skill_id;//
-
+    
     public long timeATK;
     public long time_hp_buff;
     private int pierce;
@@ -49,7 +50,7 @@ public class NhanBan extends MainObject{
     public NhanBan() {
     }
 
-    public NhanBan(int mapid, int id, String name, int x, int y, int clzz, int head, int eye, int hair, int lv, int hpMax, int pk, byte[] fashions, int mount, int matna,
+    public NhanBan(int mapid, int id, String name, int x, int y, int clzz, int head, int eye, int hair, int lv, int hpMax, int pk, short[] fashions, int mount, int matna,
             int phiphong, int weapon, int id_horse, int id_hair, int id_wing, int danhhieu, int dame, int def, int crit, List<Part_player> part_p, int id_img_mob) {
         this.map_id = map_id;
         this.index = id;
@@ -64,7 +65,7 @@ public class NhanBan extends MainObject{
         this.hp = this.hp_max = hpMax;
         this.pointpk = (byte) pk;
         if(fashions == null)
-            fashions = new byte[]{-1,-1,-1,-1,-1,-1,-1};
+            fashions = new short[]{-1,-1,-1,-1,-1,-1,-1};
         this.fashion = fashions;
         this.type_use_mount = (byte) mount;
         this.mat_na = (short) matna;
@@ -82,7 +83,7 @@ public class NhanBan extends MainObject{
         clan_name_clan_shorted = "";
         this.part_p = part_p;
         this.id_img_mob = (short)id_img_mob;
-
+        
     }
 
     public NhanBan(JSONArray jar) {
@@ -123,7 +124,7 @@ public class NhanBan extends MainObject{
         clan_mem_type = ((Long) jar.get(17)).byteValue();
         jar2 = (JSONArray) jar.get(18);
         if (jar2 != null) {
-            fashion = new byte[jar2.size()];
+            fashion = new short[jar2.size()];
             for (int i = 0; i < jar2.size(); i++) {
                 fashion[i] = ((Long) jar2.get(i)).byteValue();
             }
@@ -181,7 +182,7 @@ public class NhanBan extends MainObject{
             jar.add(clan_mem_type);
             JSONArray jar4 = new JSONArray();
             if (fashion != null) {
-                for (byte b : fashion) {
+                for (short b : fashion) {
                     jar4.add(b);
                 }
             }
@@ -214,8 +215,6 @@ public class NhanBan extends MainObject{
         //
     }
 
-
-
     public void setup(Player p0) {
         this.index = Short.toUnsignedInt((short) Manager.gI().get_index_mob_new());
         this.x = p0.x;
@@ -243,8 +242,8 @@ public class NhanBan extends MainObject{
         this.eye = p0.eye;
         this.hair = p0.hair;
         this.level = p0.level;
-        this.hp = (int) Math.min(p0.hp, Integer.MAX_VALUE);
-        this.hp_max = (int) Math.min(p0.body.get_HpMax(), Integer.MAX_VALUE);
+        this.hp = p0.hp;
+        this.hp_max = p0.body.get_HpMax();
         this.pointpk = p0.pointpk;
         this.clan_icon = p0.myclan.icon;
         this.clan_id = Clan.get_id_clan(p0.myclan);
@@ -257,8 +256,9 @@ public class NhanBan extends MainObject{
         this.id_horse = p0.id_horse;
         this.id_hair = Service.get_id_hair(p0);
         this.id_wing = Service.get_id_wing(p0);
+        this.danh_hieu = Service.get_id_danhhieu(p0);
         this.type_use_mount = p0.type_use_mount;
-        this.dame = (p0.body.get_DameBase() + p0.body.get_DameProp(1) + p0.body.get_DameProp(2)
+        this.dame = (p0.body.get_DameProp(0) + p0.body.get_DameProp(1) + p0.body.get_DameProp(2)
                 + p0.body.get_DameProp(3) + p0.body.get_DameProp(4)) / 2;
         this.map_id = p0.map.map_id;
         this.crit = p0.body.get_Crit();
@@ -308,10 +308,14 @@ public class NhanBan extends MainObject{
         m.writer().writeByte(-1); // pet
         m.writer().writeByte(this.fashion.length);
         for (int i = 0; i < this.fashion.length; i++) {
-            m.writer().writeByte(this.fashion[i]);
+            if (p.conn.version >= 280) {
+                m.writer().writeShort(this.fashion[i]);
+            } else {
+                m.writer().writeByte(this.fashion[i]);
+            }
         }
         //
-        m.writer().writeShort(-1);//id_img_mob
+        m.writer().writeShort(id_img_mob);//id_img_mob
         m.writer().writeByte(this.type_use_mount);
         m.writer().writeBoolean(false);
         m.writer().writeByte(1);
@@ -329,17 +333,17 @@ public class NhanBan extends MainObject{
         p.conn.addmsg(m);
         m.cleanup();
     }
-
+    
     @Override
     public int get_TypeObj(){
         return 0;
     }
-
+    
     @Override
     public int get_DefBase(){
         return def;
     }
-
+    
     @Override
     public void SetDie(Map map, MainObject mainAtk){
         try{

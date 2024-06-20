@@ -54,7 +54,6 @@ public class SQL {
     public Connection getConnection() throws SQLException {
         return dataSource.getConnection();
     }
-
     public void close() {
         if (SQL.is_connected) {
             if (dataSource != null) {

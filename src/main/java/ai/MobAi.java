@@ -1,19 +1,24 @@
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package ai;
 
 import client.Player;
 import io.Message;
-import io.Session;
+
 import java.io.IOException;
 import java.util.List;
 import map.Map;
-import map.MapService;
 import map.Mob_in_map;
 import template.MainObject;
 import template.Mob;
 import template.Part_player;
 
-
+/**
+ *
+ * @author chien
+ */
 public class MobAi extends Mob_in_map{
     public long timeATK;
     
@@ -134,7 +139,11 @@ public class MobAi extends Mob_in_map{
         m.writer().writeByte(-1); // pet
         m.writer().writeByte(this.fashion.length);
         for (int i = 0; i < this.fashion.length; i++) {
-            m.writer().writeByte(this.fashion[i]);
+            if (p.conn.version >= 280) {
+                m.writer().writeShort(this.fashion[i]);
+            } else {
+                m.writer().writeByte(this.fashion[i]);
+            }
         }
         //
         m.writer().writeShort(id_img_mob);//id_img_mob
@@ -166,7 +175,7 @@ public class MobAi extends Mob_in_map{
         try{
             if(this.hp >0)return;
             this.hp =0;
-            this.isdie = true;
+            this.isDie = true;
             this.time_back = System.currentTimeMillis() + 120_000;
         }catch(Exception e){}
     }

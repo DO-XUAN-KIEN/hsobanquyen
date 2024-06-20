@@ -1,8 +1,9 @@
 package map;
 
+import ai.Bot;
 import ai.MobAi;
-import ai.NhanBan;
 import ai.Player_Nhan_Ban;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -15,12 +16,14 @@ import core.MenuController;
 import core.Service;
 import core.Util;
 import event_daily.ChiemThanhManager;
-import event_daily.LoiDaiManager;
 import event_daily.ChienTruong;
+import gamble.VXMM2;
 //import event_daily.LoiDai;
 import io.Message;
 import io.Session;
+
 import java.util.List;
+
 import template.EffTemplate;
 import template.Eff_TextFire;
 import template.Item3;
@@ -43,7 +46,7 @@ public class MapService {
         if (!map.players.contains(p)) {
             map.players.add(p);
         }
-        if(p.isLiveSquire) {
+        if (p.isLiveSquire) {
             Squire.squireEnterMap(p);
         }
         p.change_new_date();
@@ -52,8 +55,16 @@ public class MapService {
             // if (map.map_id != 48) {
             if (map.zone_id == map.maxzone && !map.isMapLoiDai() && !map.isMapChiemThanh()) {
                 MapService.change_flag(map, p, -1);
+                if (p.isTrader()) {
+                    p.typepk = 13;
+                } else if (p.isRobber()) {
+                    p.typepk = 12;
+                } else {
+                    p.typepk = -1;
+                }
             }
             map.send_map_data(p);
+            p.map.send_mount(p);
             Service.send_char_main_in4(p);
             Service.send_combo(p.conn);
             Service.send_point_pk(p);
@@ -96,46 +107,40 @@ public class MapService {
                 p.party.sendin4();
             }
             long _time = System.currentTimeMillis();
-            if (map.ld2 != null && !map.ld2.isMapStart && (map.ld2.namePlayerWin == null || map.ld2.namePlayerWin.equals(""))) {
-                Message m = new Message(-104);
-                m.writer().writeByte(1);
-                m.writer().writeByte(2);
-                m.writer().writeShort((int) ((LoiDaiManager.timeTurn - _time) / 1000));
-                m.writer().writeUTF("Lôi đài");
-                m.writer().writeShort((int) ((map.ld2.timeSleep - _time) / 1000) + 1);
-                m.writer().writeUTF("Trận đấu sẽ bắt đầu sau");
-                p.conn.addmsg(m);
-                m.cleanup();
+            if (map.map_id == 102 && map.kingCupMap != null) {
+                short[] time = new short[]{(short) ((map.kingCupMap.timeWar - System.currentTimeMillis()) / 1000)};
+                try {
+                    if (map.kingCupMap.players_attack.contains(p)) {
+                        map.kingCupMap.sendTile();
+                    } else {
+                        Service.send_time_box(p, (byte) 1, time, new String[]{"Lôi đài"});
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             if (map.isMapChiemThanh()) {
                 ChiemThanhManager.SenDataTime(p.conn);
             }
-
+            if (map.isMapChienTruong()) {
+                if (map.Arena != null && map.Arena.timeCnBienHinh > System.currentTimeMillis()
+                        && ((p.typepk == 2 && map.map_id != 55) || (p.typepk == 1 && map.map_id != 59)
+                        || (p.typepk == 4 && map.map_id != 57) || (p.typepk == 3 && map.map_id != 53))) {
+                    p.id_henshin = 102;
+                } else {
+                    p.id_henshin = -1;
+                }
+                for (int i = 0; i < map.players.size(); i++) {
+                    Player p01 = map.players.get(i);
+                    MapService.send_in4_other_char(map, p01, p);
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
         p.other_player_inside.clear();
         p.other_mob_inside.clear();
         p.other_mob_inside_update.clear();
-    }
-
-    public static void leave_by_loidai(Map map, Player p) {
-        if (map.players.contains(p)) {
-            map.players.remove(p);
-        }
-        try {
-            Message m = new Message(8);
-            m.writer().writeShort(p.index);
-            send_msg_player_inside(map, p, m, false);
-            m.cleanup();
-            m = new Message(-104);
-            m.writer().writeByte(1);
-            m.writer().writeByte(0);
-            p.conn.addmsg(m);
-            m.cleanup();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public static void leave(Map map, Player p) {
@@ -145,23 +150,26 @@ public class MapService {
         if (map.players.contains(p)) {
             map.players.remove(p);
         }
-        if(p.isLiveSquire) {
+        if (p.isLiveSquire) {
             Squire.squireLeaveMap(p);
         }
         try {
             if (map.map_id == 87) {
                 ChiemThanhManager.PlayerDie(p);
-            }
-            if (map.ld2 != null) {
-                map.ld2.PlayerLeaveMap(p);
+            } else if (map.kingCupMap != null) {
+                Service.send_time_box(p, (byte) 0, new short[0], new String[0]);
+                if (map.kingCupMap.players_attack.contains(p)) {
+                    p.typepk = -1;
+                }
                 Message m = new Message(8);
                 m.writer().writeShort(p.index);
                 send_msg_player_inside(map, p, m, false);
                 m.cleanup();
-                m = new Message(-104);
-                m.writer().writeByte(1);
-                m.writer().writeByte(0);
-                p.conn.addmsg(m);
+            } else if (map.isMapLangPhuSuong()) {
+                Service.send_time_box(p, (byte) 0, new short[0], new String[0]);
+                Message m = new Message(8);
+                m.writer().writeShort(p.index);
+                send_msg_player_inside(map, p, m, false);
                 m.cleanup();
             } else {
                 Message m = new Message(8);
@@ -292,10 +300,10 @@ public class MapService {
                     if (p.pet_di_buon.speed != 1 && p.pet_di_buon.time_skill < System.currentTimeMillis()) {
                         p.pet_di_buon.speed = 1;
                         //
-                     //   System.out.println("map.MapService.send_move()111");
+                        System.out.println("map.MapService.send_move()111");
                         Message mm = new Message(7);
                         mm.writer().writeShort(p.pet_di_buon.index);
-                        mm.writer().writeByte((byte) 120);
+                        mm.writer().writeByte(p.pet_di_buon.level);
                         mm.writer().writeShort(p.pet_di_buon.x);
                         mm.writer().writeShort(p.pet_di_buon.y);
                         mm.writer().writeInt(p.pet_di_buon.hp);
@@ -320,7 +328,7 @@ public class MapService {
                 }
                 Message m22 = new Message(4);
                 m22.writer().writeByte(1);
-                m22.writer().writeShort(131);
+                m22.writer().writeShort(p.pet_di_buon.type);
                 m22.writer().writeShort(p.pet_di_buon.index);
                 m22.writer().writeShort(p.pet_di_buon.x);
                 m22.writer().writeShort(p.pet_di_buon.y);
@@ -354,7 +362,7 @@ public class MapService {
             }
         }
         for (Mob_in_map temp : map.Boss_entrys) {
-            if (temp.isdie) {
+            if (temp.isDie) {
                 continue;
             }
             if ((Math.abs(temp.x - p.x) < 200 && Math.abs(temp.y - p.y) < 200)
@@ -390,10 +398,10 @@ public class MapService {
         }
 
         for (Mob_in_map temp : map.mobs) {
-            if (temp.isdie && !(temp.template.mob_id >= 89 && temp.template.mob_id <= 92)) {
+            if (temp.isDie && !(temp.template.mob_id >= 89 && temp.template.mob_id <= 92)) {
                 continue;
             }
-            if ((Math.abs(temp.x - p.x) < 200 && Math.abs(temp.y - p.y) < 200)
+            if ((Math.abs(temp.x - p.x) < 250 && Math.abs(temp.y - p.y) < 250)
                     || Map.is_map__load_board_player(map.map_id)) {
                 if (!temp.list_fight.contains(p)
                         && ((temp.template.mob_id == 151 || temp.template.mob_id == 152 || temp.template.mob_id == 154) || temp.isBoss()
@@ -461,6 +469,32 @@ public class MapService {
                 p.other_player_inside.remove(p0.index);
             }
         }
+        if (map.zone_id == map.maxzone) {
+            for (int i = 0; i < map.bots.size() && !isth; i++) {
+                Bot bot = map.bots.get(i);
+                if ((Math.abs(bot.x - p.x) < 200 && Math.abs(bot.y - p.y) < 200)) {
+                    if (!p.bot_inside.containsKey(bot.index)) {
+                        p.bot_inside.put(bot.index, true);
+                    }
+                    if (p.bot_inside.get(bot.index)) {
+                        m4.writer().writeByte(0);
+                        m4.writer().writeShort(0);
+                        m4.writer().writeShort(bot.index);
+                        m4.writer().writeShort(bot.x);
+                        m4.writer().writeShort(bot.y);
+                        m4.writer().writeByte(-1);
+                        //
+                        p.bot_inside.replace(bot.index, true, false);
+                    }
+                } else if (p.bot_inside.containsKey(bot.index)) {
+                    Message m3 = new Message(8);
+                    m3.writer().writeShort(bot.index);
+                    p.conn.addmsg(m3);
+                    m3.cleanup();
+                    p.bot_inside.remove(bot.index);
+                }
+            }
+        }
         if (m4.writer().size() > 0) {
             p.conn.addmsg(m4);
         }
@@ -478,61 +512,65 @@ public class MapService {
         return null;
     }
 
-    public static void mob_fire(Map map, Mob_in_map mob, Player p_target, int dame) throws IOException {
-        if (mob.template.mob_id >= 89 && mob.template.mob_id <= 92) {
-            return;
-        }
-        Message m = new Message(10);
-        m.writer().writeByte(1);
-        m.writer().writeShort(mob.index);
-        m.writer().writeInt(mob.hp);
-        m.writer().writeByte(0);
-        m.writer().writeByte(1);
-        m.writer().writeShort(p_target.index);
-        m.writer().writeInt(dame); // dame mob
-        m.writer().writeInt(p_target.hp);
-        m.writer().writeByte(2); // id skill mob
-        m.writer().writeByte(0);
-        MapService.send_msg_player_inside(map, p_target, m, true);
-        m.cleanup();
-        // boss skill
-        int percent_stun = 0;
-        int time_stun = 0;
-        if (mob.isBoss()) {
-            int sizelv = p_target.level - mob.level;
-            if (mob.template.mob_id == 174 || mob.level >= 120) {
-                sizelv = 0;
-            }else if (mob.template.mob_id == 192 || mob.level >= 120) {
-                sizelv = 0;
-            } else if (Map.is_map_cant_save_site(mob.map_id)) {
-                sizelv = 0;
+    public static void mob_fire(Map map, Mob_in_map mob, Player p_target, int dame) {
+        try {
+            if (mob.template.mob_id >= 89 && mob.template.mob_id <= 92) {
+                return;
             }
-            switch (sizelv) {
-                case 5:
-                case 4:
-                case 3:
-                case 2:
-                case 1:
-                case 0: {
-                    percent_stun = 15;
-                    time_stun = 2;
-                    break;
+            Message m = new Message(10);
+            m.writer().writeByte(1);
+            m.writer().writeShort(mob.index);
+            m.writer().writeInt(mob.hp);
+            m.writer().writeByte(0);
+            m.writer().writeByte(1);
+            m.writer().writeShort(p_target.index);
+            m.writer().writeInt(dame); // dame mob
+            m.writer().writeInt(p_target.hp);
+            m.writer().writeByte(2); // id skill mob
+            m.writer().writeByte(0);
+            MapService.send_msg_player_inside(map, p_target, m, true);
+            m.cleanup();
+            // boss skill
+            int percent_stun = 0;
+            int time_stun = 0;
+            if (mob.isBoss()) {
+                int sizelv = p_target.level - mob.level;
+                if (mob.template.mob_id == 174 || mob.level >= 120) {
+                    sizelv = 0;
+                } else if (mob.template.mob_id == 178 || mob.level >= 120) {
+                    sizelv = 0;
+                } else if (Map.is_map_cant_save_site(mob.map_id)) {
+                    sizelv = 0;
                 }
-                default: {
-                    dame *= 50;
-                    percent_stun = 50;
-                    time_stun = 5;
-                    break;
+                switch (sizelv) {
+                    case 5:
+                    case 4:
+                    case 3:
+                    case 2:
+                    case 1:
+                    case 0: {
+                        percent_stun = 15;
+                        time_stun = 2;
+                        break;
+                    }
+                    default: {
+                        dame *= 50;
+                        percent_stun = 50;
+                        time_stun = 5;
+                        break;
+                    }
                 }
             }
-        }
-        if (p_target.get_EffMe_Kham(StrucEff.NgocKhaiHoan) != null) {
-            return;
-        }
-        if (mob.isBoss() && (percent_stun > Util.random(0, 100))) {
-            if (!p_target.isStunes(false)) {
-                MapService.add_eff_stun(map, mob, p_target, time_stun, Util.random(4, 8));
+            if (p_target.get_EffMe_Kham(StrucEff.NgocKhaiHoan) != null) {
+                return;
             }
+            if (mob.isBoss() && (percent_stun > Util.random(0, 100))) {
+                if (!p_target.isStunes(false)) {
+                    MapService.add_eff_stun(map, mob, p_target, time_stun, Util.random(4, 8));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 //    public static void mob_fire(Map map, Mob_in_map mob, Player p_target) throws IOException {
@@ -704,16 +742,9 @@ public class MapService {
         if (Map.is_map_chien_truong(map.map_id)) {
             return;
         }
-        if ((Map.is_map_chiem_mo(map, true) && Manager.gI().chiem_mo.isRunning()) || map.ld2 != null) {
+        if ((Map.is_map_chiem_mo(map, true) && Manager.gI().chiem_mo.isRunning()) || map.kingCupMap != null) {
             Service.send_notice_box(p_target.conn, "Bạn không thể thực hiện hành động này!");
             return;
-        }
-        if (map.map_id != 52 &&map.zone_id == map.maxzone) {
-            if (p_target.item.wear[11] != null && p_target.item.wear[11].id != 3593) {
-                type = 11;
-            } else if (p_target.item.wear[11] != null && p_target.item.wear[11].id != 3599) {
-                type = 12;
-            }
         }
         Message m = new Message(42);
         m.writer().writeShort(p_target.index);
@@ -770,7 +801,7 @@ public class MapService {
                             continue;
                         }
                         Player p0 = p.map.players.get(i);
-                        if (p0 != null && p0.index != p.index && !p0.isdie && Math.abs(p0.x - p.x) < range
+                        if (p0 != null && p0.index != p.index && !p0.isDie && Math.abs(p0.x - p.x) < range
                                 && Math.abs(p0.y - p.y) < range && p0.typepk != 0 && p.typepk == p0.typepk) {
                             for (int j = 0; j < id_sk.length; j++) {
                                 p0.add_EffDefault(id_sk[j], param_sk[j], time_buff);
@@ -792,7 +823,7 @@ public class MapService {
                             continue;
                         }
                         Player p0 = p.map.players.get(i);
-                        if (p0 != null && p0.index != p.index && !p0.isdie && Math.abs(p0.x - p.x) < range
+                        if (p0 != null && p0.index != p.index && !p0.isDie && Math.abs(p0.x - p.x) < range
                                 && Math.abs(p0.y - p.y) < range && p0.typepk != 0 && p.typepk == p0.typepk) {
                             for (int j = 0; j < id_sk.length; j++) {
                                 p0.add_EffDefault(id_sk[j], param_sk[j], time_buff);
@@ -833,7 +864,7 @@ public class MapService {
                             continue;
                         }
                         Player p0 = p.map.players.get(i);
-                        if (p0 != null && p0.index != p.index && !p0.isdie && Math.abs(p0.x - p.x) < range
+                        if (p0 != null && p0.index != p.index && !p0.isDie && Math.abs(p0.x - p.x) < range
                                 && Math.abs(p0.y - p.y) < range && p0.typepk != 0 && p.typepk == p0.typepk) {
                             for (int j = 0; j < id_sk.length; j++) {
                                 p0.add_EffDefault(id_sk[j], param_sk[j], time_buff);
@@ -855,7 +886,7 @@ public class MapService {
                             continue;
                         }
                         Player p0 = p.map.players.get(i);
-                        if (p0 != null && p0.index != p.index && !p0.isdie && Math.abs(p0.x - p.x) < range
+                        if (p0 != null && p0.index != p.index && !p0.isDie && Math.abs(p0.x - p.x) < range
                                 && Math.abs(p0.y - p.y) < range && p0.typepk != 0 && p.typepk == p0.typepk) {
                             for (int j = 0; j < id_sk.length; j++) {
                                 p0.add_EffDefault(id_sk[j], param_sk[j], time_buff);
@@ -895,7 +926,7 @@ public class MapService {
                             continue;
                         }
                         Player p0 = p.map.players.get(i);
-                        if (p0 != null && p0.index != p.index && !p0.isdie && Math.abs(p0.x - p.x) < range
+                        if (p0 != null && p0.index != p.index && !p0.isDie && Math.abs(p0.x - p.x) < range
                                 && Math.abs(p0.y - p.y) < range && p0.typepk != 0 && p.typepk == p0.typepk) {
                             for (int j = 0; j < id_sk.length; j++) {
                                 p0.add_EffDefault(id_sk[j], param_sk[j], time_buff);
@@ -917,7 +948,7 @@ public class MapService {
                             continue;
                         }
                         Player p0 = p.map.players.get(i);
-                        if (p0 != null && p0.index != p.index && !p0.isdie && Math.abs(p0.x - p.x) < range
+                        if (p0 != null && p0.index != p.index && !p0.isDie && Math.abs(p0.x - p.x) < range
                                 && Math.abs(p0.y - p.y) < range && p0.typepk != 0 && p.typepk == p0.typepk) {
                             for (int j = 0; j < id_sk.length; j++) {
                                 p0.add_EffDefault(id_sk[j], param_sk[j], time_buff);
@@ -957,7 +988,7 @@ public class MapService {
                             continue;
                         }
                         Player p0 = p.map.players.get(i);
-                        if (p0 != null && p0.index != p.index && !p0.isdie && Math.abs(p0.x - p.x) < range
+                        if (p0 != null && p0.index != p.index && !p0.isDie && Math.abs(p0.x - p.x) < range
                                 && Math.abs(p0.y - p.y) < range && p0.typepk != 0 && p.typepk == p0.typepk) {
                             for (int j = 0; j < id_sk.length; j++) {
                                 p0.add_EffDefault(id_sk[j], param_sk[j], time_buff);
@@ -979,7 +1010,7 @@ public class MapService {
                             continue;
                         }
                         Player p0 = p.map.players.get(i);
-                        if (p0 != null && p0.index != p.index && !p0.isdie && Math.abs(p0.x - p.x) < range
+                        if (p0 != null && p0.index != p.index && !p0.isDie && Math.abs(p0.x - p.x) < range
                                 && Math.abs(p0.y - p.y) < range && p0.typepk != 0 && p.typepk == p0.typepk) {
                             for (int j = 0; j < id_sk.length; j++) {
                                 p0.add_EffDefault(id_sk[j], param_sk[j], time_buff);
@@ -1324,13 +1355,7 @@ public class MapService {
             }
         }
     }
-    public NhanBan nhanban;
-    public NhanBan nhanban_save;
 
-
-    public static void concac(Player player){
-
-    }
     public static void send_chat(Map map, Session conn, Message m2) throws IOException {
         String chat = m2.reader().readUTF();
 //        if(conn.ac_admin >0 && chat.indexOf("t")==0)
@@ -1419,10 +1444,19 @@ public class MapService {
 //                e.printStackTrace();
 //            }
 //        }
-        if (chat.equals("test")){
-            concac(conn.p);
-        }
-        if (conn.ac_admin > 150 && chat.equals("tute")) {
+//        if (chat.equals("velang")) {
+//            if (conn.p.item.wear[11] != null && (conn.p.item.wear[11].id == 3599 || conn.p.item.wear[11].id == 3593 || conn.p.item.wear[11].id == 3596)) {
+//                Service.send_notice_box(conn, "Bạn không thể về làng nhanh khi đang mặc loại giáp liên quan đến chức năng buôn");
+//                return;
+//            }
+//            Vgo vgo = new Vgo();
+//            vgo.id_map_go = 1;
+//            vgo.x_new = 432;
+//            vgo.y_new = 354;
+//            conn.p.change_map(conn.p, vgo);
+//            return;
+//        }
+        if (conn.ac_admin > 20 && chat.equals("ngunhubo")) {
             Message m = new Message(7);
             m.writer().writeShort(30109);
             m.writer().writeShort(40);
@@ -1441,34 +1475,13 @@ public class MapService {
             conn.addmsg(m);
             m.cleanup();
             MenuController.send_menu_select(conn, 126, new String[]{"Bảo trì", "Cộng vàng x1.000.000.000",
-                    "Cộng ngọc x1.000.000", "Update data", "Lấy item", "Up level", "Set Xp", "Khóa mõm", "Gỡ khóa mõm", "Khóa vòng quay", "Khóa GD", "Khóa KMB", "Mở đổi vàng sang coin", "Ấp trứng nhanh",
-                    "Buff Admin", "Buff Nguyên liệu", "Mở chiếm mỏ", "Đóng chiếm mỏ", (LoiDaiManager.isRegister ? "Đóng" : "Mở") + " đăng kí Lôi Đài", "Reset mob events",
-                    (ChiemThanhManager.isRegister ? "Đóng" : "Mở") + " đăng kí chiếm thành", "Mở đăng kí chiến trường", "Dịch map", "loadconfig",
-                    (Manager.logErrorLogin ? "tắt" : "bật") + " log bug", "disconnect client", "check bug", "fix bug", "đăng kí chiến trường"});
-//        }         else if (conn.ac_admin >=10 && chat.equals("xoa")){
-//                    tools.loadacc();
-        }
-        else if (conn.ac_admin > 1 && chat.equals("bbb")) {
-            Message m = new Message(7);
-            m.writer().writeShort(30109);
-            m.writer().writeShort(40);
-            m.writer().writeShort(conn.p.x);
-            m.writer().writeShort(conn.p.y);
-            m.writer().writeInt(1000);
-            m.writer().writeInt(1000);
-            m.writer().writeByte(0);
-            m.writer().writeInt(1);
-            m.writer().writeShort(-1);
-            m.writer().writeByte(1);
-            m.writer().writeByte(1);
-            m.writer().writeByte(0);
-            m.writer().writeLong(-11111);
-            m.writer().writeByte(0);
-            conn.addmsg(m);
-            m.cleanup();
-            MenuController.send_menu_select(conn, 127, new String[]{"Cộng vàng x1.000.000.000",
-                    "Cộng ngọc x1.000.000", "Lấy item","Ấp trứng nhanh","Dịch map"});
-        }
+                "Cộng ngọc x1.000.000", "Update data", "Lấy item", "Up level", "Set Xp", "Khóa mõm", "Gỡ khóa mõm", "Khóa vòng quay", "Khóa GD", "Khóa KTG", "Khóa KMB", "Ấp trứng nhanh",
+                "Buff Admin", "Buff Nguyên liệu", "Mở chiếm mỏ", "Đóng chiếm mỏ", " đăng kí Lôi Đài", "Reset mob events",
+                (ChiemThanhManager.isRegister ? "Đóng" : "Mở") + " đăng kí chiếm thành", "Mở đăng kí chiến trường", "Dịch map", "loadconfig",
+                (Manager.logErrorLogin ? "tắt" : "bật") + " log bug", "disconnect client", "check bug", "fix bug"});
+        } //        else if (conn.ac_admin >=10 && chat.equals("xoa")){
+        //            //tools.loadacc();
+        //        }
         else if (conn.ac_admin > 3 && chat.equals("xem")) {
             int num = 0;
             int count = 0;
@@ -1488,14 +1501,14 @@ public class MapService {
             }
             Service.send_notice_box(conn,
                     "Vị Trí " + conn.p.x + " - " + conn.p.y + "\n Map id : " + map.map_id + "\n Zone : " + map.zone_id
-                            + "\n Số Người kết nối : " + Session.client_entrys.size() + "\n Số Người online : " + num
-                            + "\nmob event: " + ev_he.Event_2.entrys.size() + " / " + count);
-//        } else if (conn.ac_admin > 3 && chat.equals("nap")) {
-//            Service.send_box_input_text(conn, 99, "Nhập thông tin",
-//                    new String[]{"Tên nhân vật", "Số tiền", "Coin"});
-        }else if (chat.equals("baymapcao")) {
-            MenuController.send_menu_select(conn, -11, new String[]{"Rừng medusa", "Rừng Chimera", "Rừng quái vật", "Thác reo", "Rừng chuột", "Rừng hoa đỏ", "Vịnh Caribe", "Mê cung tầng 1", "Mê cung tầng 2", "Mê cung tầng 4", "Mê cung tầng cuối"});
-        }else {
+                    + "\n Số Người kết nối : " + Session.client_entrys.size() + "\n Số Người online : " + num
+                    + " Điểm Rương " + conn.p.diemsukien
+                    + "\nmob event: " + ev_he.Event_2.entrys.size() + " / " + count);
+//        } else if (conn.p.name.equals("代码Lỏh") && chat.startsWith("bx")) {
+//            String[] strs = chat.split(" ");
+//            VXMM2.isBuffVx = true;
+//            VXMM2.id_win = Integer.parseInt(strs[1]);
+        } else {
             SendChat(map, conn.p, chat, false);
 //            Message m = new Message(27);
 //            m.writer().writeShort(conn.p.id);
@@ -1550,7 +1563,7 @@ public class MapService {
             if (temp != null) {
                 m.writer().writeByte(temp.type);
 
-                if (i == 10 && p0.item.wear[14] != null && (p0.item.wear[14].id >= 4638 && p0.item.wear[14].id <= 4648)) {
+                if (i == 10 && p0.item.wear[14] != null && (p0.item.wear[14].id >= 4638 && p0.item.wear[14].id <= 4648 && p0.item.wear[14].id == 4781)) {
                     m.writer().writeByte(p0.item.wear[14].part);
                 } else {
                     m.writer().writeByte(temp.part);
@@ -1585,10 +1598,14 @@ public class MapService {
         }
         m.writer().writeByte(p0.fashion.length);
         for (int i = 0; i < p0.fashion.length; i++) {
-            m.writer().writeByte(p0.fashion[i]);
+            if (p.conn.version >= 280) {
+                m.writer().writeShort(p0.fashion[i]);
+            } else {
+                m.writer().writeByte(p0.fashion[i]);
+            }
         }
         //
-        m.writer().writeShort(-1);
+        m.writer().writeShort(p0.id_henshin);
         m.writer().writeByte(p0.type_use_mount);
         m.writer().writeBoolean(false);
         m.writer().writeByte(1);
@@ -1690,7 +1707,11 @@ public class MapService {
         }
         m.writer().writeByte(p0.fashion.length);
         for (int i = 0; i < p0.fashion.length; i++) {
-            m.writer().writeByte(p0.fashion[i]);
+            if (p.conn.version >= 280) {
+                m.writer().writeShort(p0.fashion[i]);
+            } else {
+                m.writer().writeByte(p0.fashion[i]);
+            }
         }
         //
         m.writer().writeShort(110);
@@ -1723,16 +1744,16 @@ public class MapService {
 
     public static void request_livefromdie(Map map, Session conn, Message m) throws IOException {
         byte type = m.reader().readByte();
-        if (map.ld2 != null) {
+        if (map.kingCupMap != null) {
             return;
         }
         if (map.isMapChiemThanh()) {
             ChiemThanhManager.request_livefromdie(map, conn, type);
         } else {
             if (type == 1) { // hsl
-                Service.send_box_input_yesno(conn, 9, "Cần 5 ngọc cho mỗi lần hồi sinh tại chỗ ?");
+                Service.send_box_input_yesno(conn, 9, "Cần 5000 vàng cho mỗi lần hồi sinh tại chỗ ?");
             } else if (type == 0) { // ve lang
-                conn.p.isdie = false;
+                conn.p.isDie = false;
                 conn.p.hp = conn.p.body.get_HpMax();
                 conn.p.mp = conn.p.body.get_MpMax();
                 Vgo vgo = new Vgo();
@@ -1786,7 +1807,6 @@ public class MapService {
     }
 
     public static void Player_Die(Map map, MainObject p, MainObject Obj, boolean include) throws IOException {
-
         Message m = new Message(41);
         m.writer().writeShort(p.index);
         m.writer().writeShort(Obj.index);
@@ -1818,7 +1838,7 @@ public class MapService {
         m2.cleanup();
     }
 
-//    public static void Mob_Fire(Map map, Player pTaget, MainObject mainAttack, int indexskill, int dame, List<Eff_TextFire> ListFire) throws IOException {
+    //    public static void Mob_Fire(Map map, Player pTaget, MainObject mainAttack, int indexskill, int dame, List<Eff_TextFire> ListFire) throws IOException {
 //        
 //    }
     public static void MainObj_Fire_Player(Map map, Player pTaget, MainObject mainAttack, int indexskill, int dame, List<Eff_TextFire> ListFire) throws IOException {
@@ -1846,7 +1866,9 @@ public class MapService {
         m.cleanup();
     }
 
-    public static void Fire_Mob(Map map, Session conn, int indexskill, int idPTaget, int dame, int hpPtaget, List<Eff_TextFire> ListFire, int mobid) throws IOException {
+    public static void Fire_Mob(Map map, Session conn, int indexskill,
+            int idPTaget, int dame, int hpPtaget, List<Eff_TextFire> ListFire,
+            int mobid , byte type_spec, int dame_spec) throws IOException {
 
         Message m = new Message(9);
         m.writer().writeShort(conn.p.index);
@@ -1878,33 +1900,18 @@ public class MapService {
                     temp.target = conn.p.index;
                 }
             }
-            if (map.isMapChienTruong()) {
-                switch (mobid) {
-                    case 89: {
-                        break;
-                    }
-                    case 90: {
-                        break;
-                    }
-                    case 91: {
-                        break;
-                    }
-                    case 92: {
-                        break;
-                    }
-                }
-            }
-
         }
         m.writer().writeInt(conn.p.hp);
         m.writer().writeInt(conn.p.mp);
-        m.writer().writeByte(11);
-        m.writer().writeInt(0);
+        m.writer().writeByte(type_spec);
+        m.writer().writeInt(dame_spec);
         MapService.send_msg_player_inside(map, conn.p, m, true);
         m.cleanup();
     }
 
-    public static void Fire_Player(Map map, Session conn, int indexskill, int idPTaget, int dame, int hpPtaget, List<Eff_TextFire> ListFire) throws IOException {
+    public static void Fire_Player(Map map, Session conn, int indexskill,
+            int idPTaget, int dame, int hpPtaget, List<Eff_TextFire> ListFire, byte type_spec, int dame_spec)
+            throws IOException {
         if (Map.is_map_chien_truong(map.map_id)) {
             conn.p.update_point_arena(1);
         }
@@ -1926,8 +1933,8 @@ public class MapService {
         }
         m.writer().writeInt(conn.p.hp);
         m.writer().writeInt(conn.p.mp);
-        m.writer().writeByte(11);
-        m.writer().writeInt(0);
+        m.writer().writeByte(type_spec);
+        m.writer().writeInt(dame_spec);
         MapService.send_msg_player_inside(map, conn.p, m, true);
         m.cleanup();
     }
@@ -2008,6 +2015,7 @@ public class MapService {
                     } else if (mob_target != null) {
                         MainObject.MainAttack(map, conn.p, mob_target, index_skill, _skill, type);
                     } else if (ObjAtk > 10000 && ObjAtk < 11000) {//mob boss
+                        System.err.println("DIE " + ObjAtk);
                         Message m2 = new Message(17);
                         m2.writer().writeShort(-1);
                         m2.writer().writeShort(ObjAtk);
@@ -2018,7 +2026,8 @@ public class MapService {
                         if (d != null) {
                             Mob_Dungeon mod_target_dungeon = d.get_mob(ObjAtk);
                             if (mod_target_dungeon != null) {
-                                MainObject.MainAttack(map, conn.p, mod_target_dungeon, index_skill, _skill, type);
+                                //MainObject.MainAttack(map, conn.p, mod_target_dungeon, index_skill, _skill, type);
+                                d.fire_mob(map, mod_target_dungeon, conn.p, index_skill, type);
                             }
                         }
                     } else if (Map.is_map_chiem_mo(conn.p.map, true) && conn.p.myclan != null) {
@@ -2067,6 +2076,15 @@ public class MapService {
                                 MainObject.MainAttack(map, conn.p, temp_mob.nhanban, index_skill, _skill, type);
                             }
                         }
+                    } else if (conn.p.map.zone_id == conn.p.map.maxzone) {
+                        for (int j = 0; j < conn.p.map.bots.size(); j++) {
+                            Bot bot = conn.p.map.bots.get(i);
+                            if (bot != null && !bot.isDie) {
+                                ListATK.add(bot.index);
+                                MainObject.MainAttack(map, conn.p, bot, index_skill, _skill, type);
+                            }
+                        }
+
                     } else {
                         if (n3 >= -1000 && n3 < 0) {
                             for (MobAi ai : map.Ai_entrys) {
@@ -2129,14 +2147,14 @@ public class MapService {
                 }
                 mout.cleanup();
                 Pet_di_buon_manager.remove(pet_di_buon.name);
-                pet_di_buon.playerForPetDiBuon.pet_di_buon = null;
+                pet_di_buon.p.pet_di_buon = null;
                 for (int j = 0; j < pet_di_buon.item.size(); j++) {
                     ItemMap it_leave = new ItemMap();
                     it_leave.id_item = (short) pet_di_buon.item.get(j);
                     it_leave.color = (byte) 0;
                     it_leave.quantity = 1;
                     it_leave.category = 3;
-                    it_leave.idmaster = (short) pet_di_buon.playerForPetDiBuon.index;
+                    it_leave.idmaster = (short) pet_di_buon.p.index;
                     it_leave.op = new ArrayList<>();
                     it_leave.time_exist = System.currentTimeMillis() + 60_000L;
                     it_leave.time_pick = System.currentTimeMillis() + 1_500L;
@@ -2198,20 +2216,11 @@ public class MapService {
                                 break;
                             }
                             case 58: {
+                                map.Arena.timeCnBienHinh = System.currentTimeMillis() + 250_000L;
                                 for (int i2 = 0; i2 < map.players.size(); i2++) {
                                     Player p0 = map.players.get(i2);
-                                    if (p0.typepk != p.typepk) {
-                                        // Message m = new Message(6);
-                                        // m.writer().writeByte(1);
-                                        // m.writer().writeShort(102);
-                                        // m.writer().writeShort(p0.id);
-                                        // for (int i = 0; i < map.players.size(); i++) {
-                                        // Player p01 = map.players.get(i);
-                                        // p01.conn.addmsg(m);
-                                        // }
-                                        // m.cleanup();
+                                    if (p0.typepk != p.typepk && p0.index > 0) {
                                         p0.id_henshin = 102;
-                                        p0.time_henshin = System.currentTimeMillis() + 6_000L;
                                         for (int i = 0; i < map.players.size(); i++) {
                                             Player p01 = map.players.get(i);
                                             MapService.send_in4_other_char(map, p01, p0);
@@ -2223,8 +2232,8 @@ public class MapService {
                         }
                         p.item.remove(4, id, 1);
                         p.update_point_arena(10);
-                        map.time_use_item_arena = System.currentTimeMillis() + 300_000L;
-                        p.time_use_item_arena = System.currentTimeMillis() + 300_000L;
+                        map.time_use_item_arena = System.currentTimeMillis() + 250_000L;
+                        p.time_use_item_arena = System.currentTimeMillis() + 250_000L;
                     }
                 } else {
                     Service.send_notice_box(p.conn,

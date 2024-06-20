@@ -18,14 +18,17 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-
+/**
+ *
+ * @author chien
+ */
 public class Event_3 {
     private static String name_event = "sự kiện vu lan";
     public static final List<BXH_DoiQua> list_HoaDang = new ArrayList<>();
     
     public static void LeaveItemMap(Map map, MainObject focus, MainObject objAtk)throws IOException{
         if(!objAtk.isPlayer())return;
-        
+
         Player p = (Player)objAtk;
         LeaveItemMap.leave_item_by_type4(map, (short)306,p,focus.index);
     }

@@ -1,3 +1,3 @@
 :g
-java -jar -server target/HSO.jar
+java -jar -server out/artifacts/Knightageonline.jar
 goto :g

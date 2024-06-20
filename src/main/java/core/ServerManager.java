@@ -7,20 +7,16 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Calendar;
-import client.Clan;
-import client.Player;
+
 import event_daily.ChiemThanhManager;
 import event_daily.ChienTruong;
-import event_daily.LoiDai;
-import event_daily.LoiDaiManager;
+import event_daily.KingCup;
+import event_daily.KingCupManager;
 import io.Session;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import map.Map;
-import map.Mob_in_map;
-import template.MainObject;
 
 public class ServerManager implements Runnable {
 
@@ -33,7 +29,8 @@ public class ServerManager implements Runnable {
     public long time_l;
     private long time2;
     private byte checkError;
-
+    private static final int HOUR_START_KING_CUP = 18;
+    private static final int MIN_START_KING_CUP = 30;
     public ServerManager() {
         this.time = System.currentTimeMillis();
         this.time_l = System.currentTimeMillis() + 60_000L;
@@ -93,7 +90,9 @@ public class ServerManager implements Runnable {
                             fileOutputStream.close();
                             System.out.println("Đã lưu mảng byte vào file ERROR/check.txt");
                         }
-                    } catch (Exception eee) {
+                    }catch (Exception e) {
+                        System.out.println("Lỗi: " + e.getMessage());
+                        e.printStackTrace();
                     }
                 }
             }
@@ -103,15 +102,15 @@ public class ServerManager implements Runnable {
 
     public void running() {
         Calendar now;
-        int hour, min, sec, millis, DayOfWeek;
+        int min, sec, millis;
         while (ServerManager.gI().running) {
             try {
                 now = Calendar.getInstance();
-                hour = now.get(Calendar.HOUR_OF_DAY);
+                now.get(Calendar.HOUR_OF_DAY);
                 min = now.get(Calendar.MINUTE);
                 sec = now.get(Calendar.SECOND);
                 millis = now.get(Calendar.MILLISECOND);
-                DayOfWeek = now.get(Calendar.DAY_OF_WEEK);
+                now.get(Calendar.DAY_OF_WEEK);
                 if (min % 1 == 0 && sec == 10) { // update BXH + luu data
                     try {
                         SaveData.process();
@@ -122,10 +121,24 @@ public class ServerManager implements Runnable {
                 if (time_sleep > 0) {
                     Thread.sleep(time_sleep);
                 }
-            } catch (Exception e) {
+            }catch (Exception e) {
+                System.out.println("Lỗi: " + e.getMessage());
+                e.printStackTrace();
             }
         }
     }
+    
+//    public static void maintance(){
+//       try {
+//           Manager.gI().chatKTGprocess ( "Máy chủ bảo trì sau 5 phút, vui lòng thoát game để tránh mất dữ liệu. Nếu cố tình không thoát chúng tôi không chịu trách nhiệm!");
+//            Thread.sleep(240000);
+//           Manager.gI().chatKTGprocess ("Máy chủ bảo trì sau 1 phút, vui lòng thoát game để tránh mất dữ liệu. Nếu cố tình không thoát chúng tôi không chịu trách nhiệm!");
+//            Thread.sleep(60000);
+//            ServerManager.gI().close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public void run() {
         try {
@@ -170,15 +183,65 @@ public class ServerManager implements Runnable {
                     sec = now.get(Calendar.SECOND);
                     millis = now.get(Calendar.MILLISECOND);
                     DayOfWeek = now.get(Calendar.DAY_OF_WEEK);
+
+                    if (hour == HOUR_START_KING_CUP && min == MIN_START_KING_CUP && sec == 0 && KingCup.kingCup == null) {
+                        if (KingCupManager.TURN_KING_CUP < KingCupManager.MAX_TURN) {
+                            KingCup.start();
+                            KingCupManager.TURN_KING_CUP++;
+                            KingCupManager.updateTurn();
+                            Manager.gI().chatKTGprocess("Bắt đầu lôi đài");
+                        }
+                        if (KingCupManager.TURN_KING_CUP >= KingCupManager.MAX_TURN && KingCup.kingCup == null) {
+                            KingCupManager.TURN_KING_CUP++;
+                            KingCupManager.updateTurn();
+                        }
+
+                    }
+                    if (KingCupManager.TURN_KING_CUP >= KingCupManager.DAY_OFF + KingCupManager.MAX_TURN) {
+                        KingCupManager.TURN_KING_CUP = 0;
+                        KingCupManager.updateTurn();
+                    }
+                    if (KingCup.kingCup == null && sec % 10 == 0 && KingCupManager.TURN_KING_CUP < KingCupManager.MAX_TURN) {
+                        Map[] tapKet = Map.get_map_by_id(100);
+                        int h = (HOUR_START_KING_CUP - hour + 24) % 24;
+                        int m = (MIN_START_KING_CUP - min + 59) % 60;
+                        if (HOUR_START_KING_CUP == hour && MIN_START_KING_CUP <= min) {
+                            h = 23;
+                            if (m == 0) {
+                                m = 59;
+                            }
+                        }
+                        int s = 60 - sec;
+                        for (Map map : tapKet) {
+                            Service.npcChat(map, -82, String.format("Lôi đài bắt đầu đợt %s sau: %s giờ %s phút %s giây.", KingCupManager.TURN_KING_CUP + 1, h, m, s));
+                        }
+                        if (h == 0 && min == 1 && sec == 0) {
+                            Manager.gI().chatKTGprocess("Lôi đài sẽ bắt đầu sau 1 phút");
+                        }
+                    }
+                    if (KingCup.kingCup == null && sec % 10 == 0 && KingCupManager.TURN_KING_CUP >= KingCupManager.MAX_TURN) {
+                        Map[] tapKet = Map.get_map_by_id(100);
+                        for (Map map : tapKet) {
+                            Service.npcChat(map, -82, "Lôi đài đang trong thời gian nghỉ giữa 2 mùa");
+                        }
+                    }
+                    if (KingCup.kingCup != null && KingCup.count < 10 && sec % 10 == 0) {
+                        Map[] tapKet = Map.get_map_by_id(100);
+                        int time = (int) ((KingCup.NEXT_MATCHES - System.currentTimeMillis()) / 1000);
+                        for (Map map : tapKet) {
+                            Service.npcChat(map, -82, String.format("Hiệp đấu " + (KingCup.count + 1) + " bắt đầu sau %s giây.", time));
+                        }
+                    }
+
                     //
                     checkError = 2;
                     if (min % 5 == 0 && sec == 0) {
-                        Manager.gI().chatKTGprocess("Bạn Đang Chơi Server" + " Hiệp Sĩ ADMIN " + "Chúc Bạn Chơi Game Vui Vẻ.");
+                        Manager.gI().chatKTGprocess("Bạn Đang Chơi Server" + " Hiệp Sĩ Mango " + "Chúc Bạn Chơi Game Vui Vẻ.");
                     }
-                    checkError = 5;
-                    if (min % 4 == 0 && sec == 0) {
-                        Manager.gI().chatKTGprocess("Lưu Ý Không Để Cho Hành Trang Đầy Chừa 30 Ô Trong Hành Trang Để Tránh Gây Ra Lỗi Mất Đồ! Mua Túi Hành Trang Npc Lisa.");
-                    }
+//                    checkError = 5;
+//                    if (min % 4 == 0 && sec == 0) {
+//                        Manager.gI().chatKTGprocess("Lưu Ý Không Để Cho Hành Trang Đầy Chừa 30 Ô Trong Hành Trang Để Tránh Gây Ra Lỗi Mất Đồ! Mua Túi Hành Trang Npc Lisa.");
+//                    }
                    //  checkError = 5;
                    // if (min % 2 == 0 && sec == 0) {
                      //   Manager.gI().chatKTGprocess("Code Test: 1-10.  Nguyên liệu Trắng Cấp 3 Mua Ở Npc Pháp Sư");
@@ -220,7 +283,6 @@ public class ServerManager implements Runnable {
                         }
                     }
                     checkError = 8;
-
                     if (Manager.gI().event == 1) {
                         if (Event_1.naukeo == null) {
                             Event_1.naukeo = new NauKeo();
@@ -239,15 +301,12 @@ public class ServerManager implements Runnable {
                             Event_1.sort_bxh();
                         }
                     }
-                    if (DayOfWeek % 2 != 0 && hour == 21 && min == 0 && sec == 0) {
+                    if (DayOfWeek % 2 !=0 && hour == 20 && min ==45 && sec == 0) {
                         ChienTruong.gI().open_register();
-                      //   Manager.gI().chatKTGprocess("Chiến Trường Đã Bắt Đầu mở đăng ký");
+                         Manager.gI().chatKTGprocess("Chiến Trường Đã Bắt Đầu Nhanh Tay Lẹ Chân Lên");
                     }
-                    if (sec % 1 == 0) {
-                        LoiDaiManager.gI().Update();
-                        ChienTruong.gI().update();
-                    }
-                    if(DayOfWeek % 2 == 0 && hour >= 20 && hour <= 23){
+                    ChienTruong.gI().update();
+                    if(DayOfWeek % 2==0 && hour >= 20 && hour <= 23){
                         checkError = 16;
                         if(hour == 20 && min == 45)
                             ChiemThanhManager.StartRegister();
@@ -263,10 +322,6 @@ public class ServerManager implements Runnable {
                     } else if (sec == 3 && min == 0 && (hour == 9 || hour == 21)) {
                         Manager.gI().chiem_mo.mo_close_atk();
                         Manager.gI().chatKTGprocess(" Thời gian chiếm mỏ đã đóng!");
-                    }
-                    checkError = 10;
-                    if (hour == 18 && min == 0 && !LoiDaiManager.isRegister) {
-                        LoiDaiManager.gI().startRegister();
                     }
                     checkError = 11;
                     if (min % 1 == 0 && sec == 4) {
@@ -286,13 +341,16 @@ public class ServerManager implements Runnable {
                     if (Manager.gI().event == 3 && min % 5 == 0 && sec == 0) {
                         ev_he.Event_3.sort_bxh();
                     }
-                    checkError = 14;
-                    if (sec % 1 == 0) {
-                        LoiDaiManager.gI().Update();
+                    if (Manager.gI().event == 4 && min % 5 == 0 && sec == 0) {
+                        ev_he.Event_4.sort_bxh();
                     }
-                    checkError = 15;
-
-                    //
+                    if (Manager.gI().event == 5 && min % 5 == 0 && sec == 0) {
+                        ev_he.Event_5.sort_bxh();
+                    }
+                    if (Manager.gI().event == 6 && min % 5 == 0 && sec == 0) {
+                        ev_he.Event_6.sort_bxh();
+                    }
+                    checkError = 14;
                     _Time.timeDay = _Time.GetTime();
                     checkError = 21;
                     long time_sleep = 1000 - millis;

@@ -22,11 +22,7 @@ import map.Map;
 import map.MapService;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
-import template.Item3;
-import template.Item47;
-import template.ItemTemplate3;
-import template.Mob_MoTaiNguyen;
-import template.Option;
+import template.*;
 
 public class ChiemMo {
     
@@ -86,21 +82,10 @@ public class ChiemMo {
         setRunning(false);
         for (Mob_MoTaiNguyen mob_MoTaiNguyen : list_mo_tai_nguyen) {
             mob_MoTaiNguyen.is_atk = false;
-            mob_MoTaiNguyen.Set_hpMax(4_000_000);
+            mob_MoTaiNguyen.Set_hpMax(10_000_000);
             mob_MoTaiNguyen.hp = mob_MoTaiNguyen.get_HpMax();
             //
-             Message m_hp = new Message(32);
-            m_hp.writer().writeByte(1);
-            m_hp.writer().writeShort(mob_MoTaiNguyen.index);
-            m_hp.writer().writeShort(-1); // id potion in bag
-            m_hp.writer().writeByte(0);
-            m_hp.writer().writeInt(mob_MoTaiNguyen.get_HpMax()); // max hp
-            m_hp.writer().writeInt(mob_MoTaiNguyen.hp); // hp
-            m_hp.writer().writeInt(0); // param use
-            for (int i = 0; i <  mob_MoTaiNguyen.map.players.size(); i++) {
-                mob_MoTaiNguyen.map.players.get(i).conn.addmsg(m_hp);
-            }
-            m_hp.cleanup();
+            MainObject.upHP(mob_MoTaiNguyen.map, mob_MoTaiNguyen, 0);
         }
     }
     
@@ -126,115 +111,115 @@ public class ChiemMo {
         }
     }
     
-    public void ResetChiemMo() {
-        try {
-            synchronized (list_mo_tai_nguyen) {
-                if (list_mo_tai_nguyen != null)
+    public void ResetChiemMo(){
+        try{
+            synchronized(list_mo_tai_nguyen){
+                if(list_mo_tai_nguyen!=null)
                     list_mo_tai_nguyen.clear();
                 init();
             }
             Clan.ResetMoTaiNguyen();
-        } catch (Exception e) {
-            core.Log.gI().add_Log_Server("ChiemMo", "Reset: " + e.getMessage());
+        }catch(Exception e){
+            core.Log.gI().add_Log_Server("ChiemMo", "Reset: "+e.getMessage());
         }
     }
     
-//    public boolean LoadData(){
-//        try (Connection connection = SQL.gI().getConnection();
-//            Statement st = connection.createStatement();
-//            ) {
-//            for(Mob_MoTaiNguyen m:list_mo_tai_nguyen){
-//                ResultSet rs = st.executeQuery("SELECT * FROM `chiem_mo` WHERE `idx` = '" + m.index + "' ;");
-//                if(rs.next())
-//                {
-//                    m.isbuff_hp = rs.getBoolean("isbuff_hp");
-//                    String nameClan = rs.getString("name_clan");
-//                    String nb = rs.getString("nhanban");
-//                    String nbs = rs.getString("nhanban_save");
-//                    if(nameClan == null)continue;
-//
-//                    JSONArray jar = null;
-//                    if(nb!=null){
-//                        jar = (JSONArray) JSONValue.parse(nb);
-//                        if(jar != null && !jar.isEmpty())
-//                        {
-//                            m.nhanban = new NhanBan(jar);
-//                            Manager.gI().add_list_nhanbban(m.nhanban);
-//                        }
-//                    }
-//                    if(jar!=null)
-//                        jar.clear();
-//                    if(nbs!=null){
-//                        jar = (JSONArray) JSONValue.parse(nbs);
-//                        if(jar != null && !jar.isEmpty())
-//                            m.nhanban_save = new NhanBan(jar);
-//                    }
-//                    if(jar!=null)
-//                        jar.clear();
-//
-//                    for(Clan c: Clan.entrys){
-//                        if(c.name_clan.equals(nameClan)){
-//                            c.add_mo_tai_nguyen(m);
-//                            break;
-//                        }
-//                    }
-//                }
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//            return true;
-//        }
-//        catch(Exception e){
-//            e.printStackTrace();
-//            return true;
-//        }
-//        return true;
-//    }
-//
-//    public void SaveData(Connection connection){
-//        try (
-//                //Connection connection = SQL.gI().getConnection();
-//            Statement st = connection.createStatement();
-//            //Statement ps = connection.createStatement();
-//            PreparedStatement ps = connection.prepareStatement("UPDATE `chiem_mo` SET `isbuff_hp` = ?, `name_clan` = ?, `nhanban` = ?, `nhanban_save` = ?  WHERE `idx` = ?;");
-//            ) {
-//            synchronized (list_mo_tai_nguyen) {
-//                for(Mob_MoTaiNguyen m:list_mo_tai_nguyen){
-//                    ResultSet rs = st.executeQuery("SELECT `idx` FROM `chiem_mo` WHERE `idx` = '" + m.index + "' ;");
-//                    if(!rs.next())
-//                    {//chưa có
-//                        String query
-//                        = "INSERT INTO `chiem_mo` (`idx`) VALUES ('"+ m.index +"')";
-//                        if (st.executeUpdate(query) > 0) {
-//                            connection.commit();
-//                        }
-//                    }else{
-//                        ps.setBoolean(1, m.isbuff_hp );
-//                        if(m.clan!=null)
-//                            ps.setString(2, m.clan.name_clan);
-//                        else
-//                            ps.setString(2, null);
-//                        if(m.nhanban != null)
-//                            ps.setString(3, m.nhanban.GetData().toJSONString());
-//                        else
-//                            ps.setString(3, null);
-//                        if(m.nhanban_save != null)
-//                            ps.setString(4, m.nhanban_save.GetData().toJSONString());
-//                        else
-//                            ps.setString(4, null);
-//                        ps.setInt(5, m.index);
-//                        ps.executeUpdate();
-//                        ps.clearParameters();
-//                    }
-//                }
-//            }
-//
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        catch(Exception e){
-//            e.printStackTrace();
-//        }
-//    }
-//
+    public boolean LoadData(){
+        try (Connection connection = SQL.gI().getConnection(); 
+            Statement st = connection.createStatement(); 
+            ) {
+            for(Mob_MoTaiNguyen m:list_mo_tai_nguyen){
+                ResultSet rs = st.executeQuery("SELECT * FROM `chiem_mo` WHERE `idx` = '" + m.index + "' ;");
+                if(rs.next())
+                {
+                    m.isbuff_hp = rs.getBoolean("isbuff_hp");
+                    String nameClan = rs.getString("name_clan");
+                    String nb = rs.getString("nhanban");
+                    String nbs = rs.getString("nhanban_save");
+                    if(nameClan == null)continue;
+                    
+                    JSONArray jar = null;
+                    if(nb!=null){
+                        jar = (JSONArray) JSONValue.parse(nb);
+                        if(jar != null && !jar.isEmpty())
+                        {
+                            m.nhanban = new NhanBan(jar);
+                            Manager.gI().add_list_nhanbban(m.nhanban);
+                        }
+                    }
+                    if(jar!=null)
+                        jar.clear();
+                    if(nbs!=null){
+                        jar = (JSONArray) JSONValue.parse(nbs);
+                        if(jar != null && !jar.isEmpty())
+                            m.nhanban_save = new NhanBan(jar);
+                    }
+                    if(jar!=null)
+                        jar.clear();
+                    
+                    for(Clan c: Clan.entrys){
+                        if(c.name_clan.equals(nameClan)){
+                            c.add_mo_tai_nguyen(m);
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+    
+    public void SaveData(Connection connection){
+        try (
+                //Connection connection = SQL.gI().getConnection(); 
+            Statement st = connection.createStatement(); 
+            //Statement ps = connection.createStatement(); 
+            PreparedStatement ps = connection.prepareStatement("UPDATE `chiem_mo` SET `isbuff_hp` = ?, `name_clan` = ?, `nhanban` = ?, `nhanban_save` = ?  WHERE `idx` = ?;");
+            ) {
+            synchronized (list_mo_tai_nguyen) {
+                for(Mob_MoTaiNguyen m:list_mo_tai_nguyen){
+                    ResultSet rs = st.executeQuery("SELECT `idx` FROM `chiem_mo` WHERE `idx` = '" + m.index + "' ;");
+                    if(!rs.next())
+                    {//chưa có
+                        String query
+                        = "INSERT INTO `chiem_mo` (`idx`) VALUES ('"+ m.index +"')";
+                        if (st.executeUpdate(query) > 0) {
+                            connection.commit();
+                        }
+                    }else{
+                        ps.setBoolean(1, m.isbuff_hp );
+                        if(m.clan!=null)
+                            ps.setString(2, m.clan.name_clan);
+                        else
+                            ps.setString(2, null);
+                        if(m.nhanban != null)
+                            ps.setString(3, m.nhanban.GetData().toJSONString());
+                        else
+                            ps.setString(3, null);
+                        if(m.nhanban_save != null)
+                            ps.setString(4, m.nhanban_save.GetData().toJSONString());
+                        else
+                            ps.setString(4, null);
+                        ps.setInt(5, m.index);
+                        ps.executeUpdate();
+                        ps.clearParameters();
+                    }
+                }
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    
 }

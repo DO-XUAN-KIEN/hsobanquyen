@@ -1,20 +1,16 @@
 package client;
 
+import ai.Bot;
 import ai.MobAi;
 import ai.NhanBan;
 import ai.Player_Nhan_Ban;
-import core.BXH;
-import core.CheckDDOS;
+
 import java.io.IOException;
-import java.util.Map.Entry;
-import core.GameSrc;
-import core.Manager;
-import core.MenuController;
-import core.MenuController;
-import core.Service;
+
+import core.*;
+
 import static core.Service.send_notice_nobox_white;
-import core.SessionManager;
-import core.Util;
+
 import event_daily.MoLy;
 import event_daily.ChienTruong;
 import io.Message;
@@ -23,6 +19,7 @@ import map.Dungeon;
 import map.DungeonManager;
 import map.Map;
 import map.MapService;
+import template.Horse;
 
 public class MessageHandler {
 
@@ -48,7 +45,7 @@ public class MessageHandler {
                 } else if (m.reader().available() == 2) {
                     MoLy.Lottery_process(conn.p, m);
                 } else {
-                    String[] menu = new String[]{"Mở ly", "Vòng xoay", "Điểm pk", "Điểm chiếm thành", "Thoát kẹt", "Rơi nguyên liệu mề đay", "Xem lôi đài",
+                    String[] menu = new String[]{"Mở ly", "Vòng xoay", "Điểm pk", "Thoát kẹt", "Rơi nguyên liệu mề đay", "Xem lôi đài",
                         (conn.p.isShowMobEvents ? "Tắt " : "Bật ") + "hiển thị sự kiện"};
                     MenuController.send_menu_select(conn, -91, menu);
                 }
@@ -61,6 +58,12 @@ public class MessageHandler {
             case -105: {
                 if (conn.p.isCreateItemStar) {
                     GameSrc.ActionsItemStar(conn, m);
+                } else if (conn.p.isCreateArmor) {
+                    GameSrc.ActionsItemArmor(conn, m);
+                } else if (conn.p.isdothan) {
+                    DoSieucap.nangdothan(conn,m);
+                } else if (conn.p.ismdthan) {
+                    DoSieucap.nangmdthan(conn,m);
                 } else {
                     GameSrc.Create_Medal(conn, m);
                 }
@@ -84,7 +87,7 @@ public class MessageHandler {
             }
             case 36: {
                 if (conn.status != 0) {
-                    Service.send_notice_box(conn, "Tài khoản chưa được kích hoạt, hãy ib cho key vàng-key bạc để kích hoạt");
+                    Service.send_notice_box(conn, "Tài khoản chưa được kích hoạt, hãy kích hoạt");
                     return;
                 }
                 GameSrc.trade_process(conn, m);
@@ -320,12 +323,20 @@ public class MessageHandler {
                 int id = m.reader().readShort();
                 if (id >= -1000 && id < 0) {
                     for (MobAi temp : conn.p.map.Ai_entrys) {
-                        if (temp != null && temp.index == id) {
+                        if (temp != null && temp.index == id && !temp.isDie) {
                             temp.send_in4(conn.p);
                             return;
                         }
                     }
                     id = Short.toUnsignedInt((short) id);
+                }
+                if (conn.p.map.zone_id == conn.p.map.maxzone) {
+                    for (Bot temp : conn.p.map.bots) {
+                        if (temp != null && temp.index == id && !temp.isDie) {
+                            temp.send_info(conn.p);
+                            return;
+                        }
+                    }
                 }
 
                 Player p0 = null;
@@ -512,23 +523,18 @@ public class MessageHandler {
         Service.send_msg_data(conn, 1, Manager.gI().msg_1);
         Service.send_skill(conn.p);
         Service.send_login_rms(conn);
-        Service.send_notice_nobox_yellow(conn, ("Trò chơi dành cho người chơi 18 tuổi trở lên. Chơi quá 180 phút mỗi ngày sẽ có hại cho sức khỏe ")); //Số người online : " + (Session.client_entrys.size() + 30)));
-        send_notice_nobox_white(conn, ("Số người online: " + ( Session.client_entrys.size())));
-        send_notice_nobox_white(conn, ("Bang " +  Manager.nameClanThue  + " Đang Sở Hữu  Quyền Thu Thuế Trong Khu Mua Bán. " + "("+" Thuế " + Manager.thue + " % "+")"));
-         Service.send_notice_nobox_yellow(conn, ("Bang " + Manager.nameClanThue + " - Đang Là Bang Hùng Mạnh Nhất Thế Giới Hiệp Sĩ"));
-          if (Map.name_mo.equals(conn.p.name)) {
-                    }
-   Service.send_notice_nobox_yellow(conn, ("Hiệp SĨ " + conn.p.name + " Hiện Tại Đang Là Người Hùng Mạnh Nhất Thế Giới Hiệp SĨ."));
+        Service.send_notice_nobox_yellow(conn, ("Chào Mừng Bạn Đến Với Hiệp Sĩ Mango !! ")); //Số người online : " + (Session.client_entrys.size() + 30)));
+//        send_notice_nobox_white(conn, ("Đổi Coin Sang Vàng Ngọc Tại Npc Zuru - Nạp Coin Tại hsomeobeo.pro  "));
+//        send_notice_nobox_white(conn, ("Số người online : " + (Session.client_entrys.size())));
+        send_notice_nobox_white(conn, ("Bang " +  Manager.nameClanThue  + " Đang Sở Hữu  Quyền Thu Thuế Trên Toàn Sever " + " Thuế " + Manager.thue + " % "));
+        Service.send_notice_nobox_yellow(conn, ("Bang " + Manager.nameClanThue + " - Đang Là Bang Hùng Mạnh Nhất Thế Giới Hiệp Sĩ"));
+        Service.send_tab_chat(conn.p,"Thông báo quan trọng","Hello 500 ae");
         // add x2 xp
         conn.p.set_x2_xp(1);
+        if (conn.p.myclan == null || !Horse.isHorseClan(conn.p.type_use_mount)) {
+            conn.p.type_use_mount = -1;
+        }
         MapService.enter(conn.p.map, conn.p);
-        //
-        if (Map.name_mo.equals(conn.p.name)) {
-            Manager.gI().chatKTGprocess("Chào Mừng Đại Hiệp Sĩ  " + conn.p.name + " Đã Đăng Nhập Vào Game");
-        }
-        if (conn.p.myclan != null && BXH.BXH_clan.indexOf(conn.p.myclan) < 1) {
-            Manager.gI().chatKTGprocess("Chào Mừng Thủ lĩnh Bang " + (BXH.BXH_clan.indexOf(conn.p.myclan) + 1)  +  conn.p.name + " Đăng Nhập Vào Game");
-        }
     }
 
 }
