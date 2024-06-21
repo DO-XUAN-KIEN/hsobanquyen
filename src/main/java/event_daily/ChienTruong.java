@@ -21,6 +21,7 @@ import map.Mob_in_map;
 import map.Vgo;
 import template.ItemTemplate3;
 import template.MainObject;
+import template.Horse;
 import template.Member_ChienTruong;
 import BossHDL.*;
 
@@ -453,15 +454,15 @@ public class ChienTruong {
 				m.writer().writeUTF("Lính canh");
 				m.writer().writeShort(temp.x);
 				m.writer().writeShort(temp.y);
-				m.writer().writeByte(1); // clazz
-				m.writer().writeByte(-1);
-				m.writer().writeByte(0); // head
-				m.writer().writeByte(8); // eye
-				m.writer().writeByte(8); // hair
-				m.writer().writeShort(50); // level
+				m.writer().writeByte(Util.random(0, 4)); // clazz
+				m.writer().writeByte(126);
+				m.writer().writeByte(1); // head
+				m.writer().writeByte(1); // eye
+				m.writer().writeByte(Util.random(32, 34)); // hair
+				m.writer().writeShort(40); // level
 				m.writer().writeInt(temp.hp); // hp
 				m.writer().writeInt(temp.hp_max); // hp max
-				m.writer().writeByte(0); // type
+				m.writer().writeByte(temp.typePk); // type
 				m.writer().writeShort(0); // point pk
 				m.writer().writeByte(3); // size part
 				//
@@ -480,11 +481,15 @@ public class ChienTruong {
 				m.writer().writeByte(-1); // pet
 				m.writer().writeByte(7);
 				for (int i1 = 0; i1 < 7; i1++) {
-					m.writer().writeByte(-1);
+					if (p.conn.version >= 280) {
+						m.writer().writeShort(-1);
+					} else {
+						m.writer().writeByte(-1);
+					}
 				}
 				//
-				m.writer().writeShort(-1);
-				m.writer().writeByte(-1); // type use mount
+				m.writer().writeShort(temp.henshin);
+				m.writer().writeByte(Horse.SOI_BAO_LUA); // type use mount
 				m.writer().writeBoolean(false);
 				m.writer().writeByte(1);
 				m.writer().writeByte(0);

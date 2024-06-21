@@ -31,14 +31,16 @@ public class MainObject {
 
     public String name;
     public int hp, mp;
-    protected int hp_max, mp_max;
+    public int hp_max;
+    protected int mp_max;
     public boolean isDie, isATK = true;
     public int index;
     public short x, x_old, y, y_old;
     public short level;
     public short map_id;
     public byte zone_id;
-    protected int dame, def;
+    public int dame;
+    public int def;
     public boolean isExp = true;
     public byte color_name;
     public byte typepk;
@@ -368,7 +370,7 @@ public class MainObject {
             if ((focus.level - ObjAtk.level >=10 || focus.level - ObjAtk.level <= -10) && map.zone_id == map.maxzone){
                 return;
             }
-            if (ObjAtk.isPlayer() && focus.isPlayer() && map.zone_id == 1 && !Map.is_map_not_zone2(map.map_id) && ((Player) ObjAtk).conn.ac_admin < 66) {
+            if (ObjAtk.isPlayer() && focus.isPlayer() && (map.zone_id == 1 || map.zone_id == 7 || map.zone_id == 8) && !Map.is_map_not_zone2(map.map_id) && ((Player) ObjAtk).conn.ac_admin < 66) {
                 return;
             }
             if (ObjAtk.isPlayer() && focus.isPlayer() && !map.isMapChiemThanh() && (map.ismaplang || ObjAtk.level < 11 || focus.level < 11
@@ -411,7 +413,7 @@ public class MainObject {
                     Service.send_notice_box(((Player) ObjAtk).conn, "Đối phương có hiệu ứng chống pk");
                     return;
                 }
-                if (map.zone_id == 1 && !Map.is_map_not_zone2(map.map_id) && ((Player) ObjAtk).conn.ac_admin < 66) {
+                if ((map.zone_id == 1 || map.zone_id == 7 || map.zone_id == 8) && !Map.is_map_not_zone2(map.map_id) && ((Player) ObjAtk).conn.ac_admin < 66) {
                     return;
                 }
                 if (((Player) focus).pet_follow == 4708) {
@@ -761,9 +763,11 @@ public class MainObject {
                 Mob_MoTaiNguyen mo = (Mob_MoTaiNguyen) focus;
                 if (!mo.is_atk) {
                     dame = 0;
-                } else if (mo.nhanban != null && !mo.nhanban.isDie) {
-                    mo.nhanban.p_target = (Player) ObjAtk;
-                    mo.nhanban.is_move = false;
+                } else if (mo.nhanBans != null) {
+                    for (int i = 0; i < mo.nhanBans.size(); i++) {
+                        mo.nhanBans.get(i).p_target = (Player) ObjAtk;
+                        mo.nhanBans.get(i).is_move = false;
+                    }
                 }
             }
 
@@ -1087,10 +1091,12 @@ public class MainObject {
                         ChienTruong.Obj_Die(map, ObjAtk, focus);
                     }
                     focus.SetDie(map, ObjAtk);
-                    if (!focus.isPlayer() && !focus.isBot() && !focus.isMobDiBuon() && focus.template != null 
-                            && focus.template.mob_id >= 89 && focus.template.mob_id <= 92) { // house chien truong
-                        p.update_point_arena(20);
-                        Manager.gI().chatKTGprocess("@Server : " + p.name + " đã đánh sập " + focus.template.name);
+                    if (!focus.isMobDiBuon() && !focus.isPlayer() && map.isMapChienTruong()
+                            && focus.template.mob_id >= 89 && focus.template.mob_id <= 92 && p != null) { // house chien truong
+                        p.update_point_arena(100);
+                        String[] name = focus.template.name.split(" ");
+                        String name_mob = name.length == 2 ? name[1] : name[1] + " " + name[2];
+                        Manager.gI().chatKTGprocess(p.name + " đã đánh sập nhà chính của làng " + name_mob);
                         ChienTruong.gI().update_house_die(focus.template.mob_id);
                     }
                     if (focus.isPlayer()) {

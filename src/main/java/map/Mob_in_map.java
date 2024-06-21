@@ -143,6 +143,9 @@ public class Mob_in_map extends MainObject {
             } else {
                 mob.time_back = System.currentTimeMillis() + mob.time_refresh * 1000L - 1000L;
                 p.danhvong += 1;
+                if (zone_id == 7 || zone_id == 8){
+                    p.update_exptt(1);
+                }
                 p.item.char_inventory(5);
                 if (mainAtk.isPlayer()) {
                     if (Math.abs(mob.level - mainAtk.level) <= 10 && !check_mob_roi_ngoc_kham) {
@@ -164,7 +167,7 @@ public class Mob_in_map extends MainObject {
                             }
                         } else {
                             int percent = 20;
-                            if (zone_id == 1 && !Map.is_map_not_zone2(map_id)
+                            if ((zone_id == 1 || zone_id == 7 || zone_id == 8) && !Map.is_map_not_zone2(map_id)
                                     && p.get_EffDefault(-127) != null) {
                                 percent = 40;
                             }
@@ -183,6 +186,13 @@ public class Mob_in_map extends MainObject {
                                 }
                                 if (Util.random(0, 10) < 2) {
                                     LeaveItemMap.leave_item_by_type7(map, (short) Util.random(116, 126), p, mob.index);
+                                } else {
+                                    LeaveItemMap.leave_item_by_type7(map, (short) 13, p, mob.index);
+                                }
+                            }
+                            else if (percent > Util.random(0, 500) && zone_id == 8 && !Map.is_map_not_zone2(map_id)) {
+                                if (Util.random(0, 10) < 2) {
+                                    LeaveItemMap.leave_item_by_type7(map, (short) Util.random(417, 464), p, mob.index);
                                 } else {
                                     LeaveItemMap.leave_item_by_type7(map, (short) 13, p, mob.index);
                                 }

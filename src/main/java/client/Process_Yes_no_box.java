@@ -14,10 +14,7 @@ import event_daily.st.*;
 
 import io.Message;
 import io.Session;
-import map.Dungeon;
-import map.DungeonManager;
-import map.Map;
-import map.MapService;
+import map.*;
 import template.*;
 
 public class Process_Yes_no_box {
@@ -488,7 +485,7 @@ public class Process_Yes_no_box {
                         Service.send_notice_box(conn, "Nhẫn đã nâng cấp tối đa");
                         return;
                     }
-                    long vang_req = (3 * (temp.it.tier + 1)) * 5_000_000L;
+                    long vang_req = (3 * (temp.it.tier + 1)) * 15_000_000L;
                     int ngoc_req = (3 * (temp.it.tier + 1)) * 10_000;
                     if (conn.p.get_vang() < vang_req) {
                         Service.send_notice_box(conn, "chưa đủ " + vang_req + " vàng!");
@@ -811,6 +808,58 @@ public class Process_Yes_no_box {
                             conn.p.myclan.max_mem += 5;
                         }
                         Service.send_notice_box(conn, "Nâng bang lên cấp " + conn.p.myclan.level + " thành công");
+                    }
+                    break;
+                }
+                case -118: {
+                    try {
+                        Leo_thap d = Leo_thapManager.get_list(conn.p.name);
+                        if (d == null) {
+                            try {
+                                d = new Leo_thap();
+                                conn.p.item.remove(4,345,1);
+                                conn.p.item.char_inventory(7);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            if (d != null) {
+                                d.name_party = conn.p.name;
+                                if(conn.p.dokho == 1){
+                                    d.setMode(0);
+                                    d.wave = 1;
+                                }else if(conn.p.dokho == 2){
+                                    d.setMode(1);
+                                    d.wave = 3;
+                                }else if(conn.p.dokho == 3){
+                                    d.setMode(2);
+                                    d.state = 4;
+                                }else if(conn.p.dokho == 4){
+                                    d.setMode(3);
+                                    d.wave = 5;
+                                }else if(conn.p.dokho == 5){
+                                    d.setMode(4);
+                                    d.wave = 6;
+                                }
+                                //
+                                MapService.leave(conn.p.map, conn.p);
+                                conn.p.map = d.template;
+                                conn.p.x = 550;
+                                conn.p.y = 400;
+                                MapService.enter(conn.p.map, conn.p);
+                                //
+                                Leo_thapManager.add_list(d);
+                                Service.send_char_main_in4(conn.p);
+                            } else {
+                                Service.send_notice_box(conn, "Lỗi, hãy thử lại sau!");
+                            }
+                        } else {
+                            MapService.leave(conn.p.map, conn.p);
+                            conn.p.map = d.template;
+                            MapService.enter(conn.p.map, conn.p);
+                            d.send_mob_move_when_exit(conn.p);
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
                     break;
                 }

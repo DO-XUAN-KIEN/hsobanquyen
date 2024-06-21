@@ -19,9 +19,8 @@ import template.Part_player;
  *
  * @author chien
  */
-public class MobAi extends Mob_in_map{
+public class MobAi extends Mob_in_map {
     public long timeATK;
-    
     public List<Part_player> part_p;//
     private byte head;//
     private byte eye;//
@@ -47,60 +46,8 @@ public class MobAi extends Mob_in_map{
     public int crit;
     public long time_hp_buff;
     public int pierce;
-    
-    
-    public MobAi(int map_id, int zone_id, int id_temp_mob, int index, int x, int y, int clazz, int head, int eye, int hair, int lv, int hp, int pk, int dame, int def, int crit,List<Part_player> part, int id_img_mob){
-        Mob temp = Mob.entrys.get(id_temp_mob);
-        this.map_id = (byte)map_id;
-        this.zone_id = (byte)zone_id;
-        this.name = temp.name;
-        this.clazz = (byte) clazz;
-        this.index = index;
-        this.x = this.x_old = (short)x;
-        this.y = this.y_old = (short)y;
-        this.head = (byte)head;
-        this.eye = (byte) eye;
-        this.hair = (byte) hair;
-        this.level = (short) lv;
-        this.hp = hp_max = hp;
-        this.pointpk = (byte)pk;
-        this.dame = dame;
-        this.def = def;
-        this.crit = crit;
-        this.part_p = part;
-        this.id_img_mob = (short)id_img_mob;
-        this.template = temp;
-        this.time_refresh = 11;
-    }
-    @Override
-    public boolean isMobCTruong(){
-        return true;
-    }
-    
-    public MobAi(int map_id, int zone_id, int id_temp_mob,String name, int index, int x, int y, int clazz, int head, int eye, int hair, int lv, int hp, int pk, int dame, int def, int crit,List<Part_player> part, int id_img_mob){
-        Mob temp = Mob.entrys.get(id_temp_mob);
-        this.map_id = (byte)map_id;
-        this.zone_id = (byte)zone_id;
-        this.name = name;
-        this.clazz = (byte) clazz;
-        this.index = index;
-        this.x = this.x_old = (short)x;
-        this.y = this.y_old = (short)y;
-        this.head = (byte)head;
-        this.eye = (byte) eye;
-        this.hair = (byte) hair;
-        this.level = (short) lv;
-        this.hp = this.hp_max = hp;
-        this.pointpk = (byte)pk;
-        this.dame = dame;
-        this.def = def;
-        this.crit = crit;
-        this.part_p = part;
-        this.id_img_mob = (short)id_img_mob;
-        this.template = temp;
-        this.time_refresh = 11;
-    }
-    
+
+
     public void send_in4(Player p)throws IOException{
         Message m = new Message(5);
         m.writer().writeShort(this.index);
@@ -115,7 +62,7 @@ public class MobAi extends Mob_in_map{
         m.writer().writeShort(this.level);
         m.writer().writeInt(this.hp);
         m.writer().writeInt(this.hp_max);
-        m.writer().writeByte(0); // type pk
+        m.writer().writeByte(this.typepk); // type pk
         m.writer().writeShort(this.pointpk);
         m.writer().writeByte(this.part_p.size());
         //
@@ -164,19 +111,22 @@ public class MobAi extends Mob_in_map{
         p.conn.addmsg(m);
         m.cleanup();
     }
-    
+
     @Override
     public int get_TypeObj(){
         return 0;
     }
-    
+
     @Override
     public void SetDie(Map map, MainObject mainAtk){
+        if (isDie) return;
         try{
             if(this.hp >0)return;
             this.hp =0;
             this.isDie = true;
             this.time_back = System.currentTimeMillis() + 120_000;
-        }catch(Exception e){}
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }

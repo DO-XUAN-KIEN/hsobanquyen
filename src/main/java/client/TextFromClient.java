@@ -95,11 +95,11 @@ public class TextFromClient {
                     }
                     switch (quant) {
                         case 4: {
-                            if (conn.p.checkcoin() < 100_000) {
-                                Service.send_notice_box(conn, "Không đủ 100k coin");
+                            if (conn.p.checkcoin() < 10_000_000) {
+                                Service.send_notice_box(conn, "Không đủ 10tr coin");
                                 return;
                             }
-                            conn.p.update_coin(-100_000);
+                            conn.p.update_coin(-10_000_000);
                             break;
                         }
                         default: {

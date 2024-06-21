@@ -756,7 +756,7 @@ public class Service {
                     mm.writer().writeByte(2);
                     mm.writer().writeByte(0);
                     mm.writer().writeUTF("");
-                    mm.writer().writeLong(-11111);
+                    mm.writer().writeLong(-1);
                     mm.writer().writeByte(4);
                     p.conn.addmsg(mm);
                     mm.cleanup();
@@ -1383,7 +1383,7 @@ public class Service {
         if (p0 == null) {
         } else {
             EffTemplate ef = p0.get_EffDefault(-125);
-            if (p0.map.zone_id == 1 && !Map.is_map_not_zone2(p0.map_id)) {
+            if ((p0.map.zone_id == 1 || p0.map.zone_id == 7 || p0.map.zone_id == 8) && !Map.is_map_not_zone2(p0.map_id)) {
                 send_notice_box(conn, "Kẻ thù đang trong khu vực không thể đến");
                 return;
             }

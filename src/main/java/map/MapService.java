@@ -2,6 +2,7 @@ package map;
 
 import ai.Bot;
 import ai.MobAi;
+import ai.NhanBan;
 import ai.Player_Nhan_Ban;
 
 import java.io.IOException;
@@ -24,16 +25,7 @@ import io.Session;
 
 import java.util.List;
 
-import template.EffTemplate;
-import template.Eff_TextFire;
-import template.Item3;
-import template.LvSkill;
-import template.MainObject;
-import template.Mob_Dungeon;
-import template.Mob_MoTaiNguyen;
-import template.Pet_di_buon;
-import template.Pet_di_buon_manager;
-import template.StrucEff;
+import template.*;
 
 public class MapService {
 
@@ -1893,13 +1885,6 @@ public class MapService {
                     m.writer().writeInt(ef.dame); // par
                 }
             }
-            for (int i = 0; i < ChienTruong.gI().list_ai.size(); i++) {
-                Player_Nhan_Ban temp = ChienTruong.gI().list_ai.get(i);
-                if (!temp.isdie && temp.map.equals(map) && temp.time_change_target < System.currentTimeMillis()) {
-                    temp.time_change_target = System.currentTimeMillis() + 5000L;
-                    temp.target = conn.p.index;
-                }
-            }
         }
         m.writer().writeInt(conn.p.hp);
         m.writer().writeInt(conn.p.mp);
@@ -2030,27 +2015,21 @@ public class MapService {
                                 d.fire_mob(map, mod_target_dungeon, conn.p, index_skill, type);
                             }
                         }
+                    }else if (conn.p.map.map_id == 46){
+                        Leo_thap d = Leo_thapManager.get_list(conn.p.name);
+                        if (d != null) {
+                            Mob_Leothap mod_target_Leothap = d.get_mob(ObjAtk);
+                            if (mod_target_Leothap != null) {
+                                d.fire_mob(map, mod_target_Leothap, conn.p, index_skill, type);
+                            }
+                        }
                     } else if (Map.is_map_chiem_mo(conn.p.map, true) && conn.p.myclan != null) {
                         Mob_MoTaiNguyen temp_mob = conn.p.myclan.get_mo_tai_nguyen(ObjAtk);
                         if (temp_mob == null) {
                             temp_mob = Manager.gI().chiem_mo.get_mob_in_map(map);
                             MainObject.MainAttack(map, conn.p, temp_mob, index_skill, _skill, type);
-                        } else if (conn.p.myclan.mems.get(0).name.equals(conn.p.name) && conn.p.myclan.kimcuong >= 100
-                                && temp_mob.nhanban_save != null && temp_mob.nhanban == null) {
-                            conn.p.myclan.kimcuong -= 100;
-                            temp_mob.nhanban_save.hp = temp_mob.nhanban_save.get_HpMax();
-                            temp_mob.nhanban = temp_mob.nhanban_save;
-                            Manager.gI().add_list_nhanbban(temp_mob.nhanban);
-                            //
-                            Message m12 = new Message(4);
-                            m12.writer().writeByte(0);
-                            m12.writer().writeShort(0);
-                            m12.writer().writeShort(temp_mob.nhanban.index);
-                            m12.writer().writeShort(temp_mob.nhanban.x);
-                            m12.writer().writeShort(temp_mob.nhanban.y);
-                            m12.writer().writeByte(-1);
-                            MapService.send_msg_player_inside(map, conn.p, m12, true);
-                            m12.cleanup();
+                        } else {
+                            MenuController.send_menu_select(conn, -129, new String[]{"Triệu hồi (" + (temp_mob.nhanBans.size() + 1) + ")", "Nâng cấp"});
                         }
                     }
                     if (mob_target != null && mob_target.isBoss()) {
@@ -2068,12 +2047,15 @@ public class MapService {
                         ListATK.add(p_target.index);
                     } else if (Map.is_map_chiem_mo(conn.p.map, true) && conn.p.myclan != null) {
                         // đánh nhân bản
-                        Mob_MoTaiNguyen temp_mob = conn.p.myclan.get_mo_tai_nguyen(n2);
+                        Mob_MoTaiNguyen temp_mob = conn.p.myclan.get_mo_tai_nguyen(conn.p.map.map_id);
                         if (temp_mob == null) {
                             temp_mob = Manager.gI().chiem_mo.get_mob_in_map(conn.p.map);
-                            if (temp_mob.nhanban != null && temp_mob.nhanban.index == n2) {
-                                ListATK.add(temp_mob.nhanban.index);
-                                MainObject.MainAttack(map, conn.p, temp_mob.nhanban, index_skill, _skill, type);
+                            if (temp_mob.nhanBans != null) {
+                                NhanBan nhanBan = temp_mob.getNhanban(n2);
+                                if (nhanBan != null) {
+                                    ListATK.add(temp_mob.nhanban.index);
+                                    MainObject.MainAttack(map, conn.p, nhanBan, index_skill, _skill, type);
+                                }
                             }
                         }
                     } else if (conn.p.map.zone_id == conn.p.map.maxzone) {
@@ -2087,15 +2069,24 @@ public class MapService {
 
                     } else {
                         if (n3 >= -1000 && n3 < 0) {
-                            for (MobAi ai : map.Ai_entrys) {
-                                if (ai != null && ai.index == n3) {
-                                    try {
-                                        MainObject.MainAttack(map, conn.p, ai, index_skill, _skill, type);
-                                        ListATK.add(ai.index);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
+                            if (map.isMapChienTruong()) {
+                                for (Player_Nhan_Ban ai : ChienTruong.gI().list_ai) {
+                                    if (!ai.isdie && ai.map.equals(conn.p.map) && ai.id == n3) {
+                                        Player_Nhan_Ban.player_attack(conn, map, ai, index_skill);
+                                        ai.target = conn.p.index;
                                     }
-                                    break;
+                                }
+                            }else {
+                                for (MobAi ai : map.Ai_entrys) {
+                                    if (ai != null && ai.index == n3) {
+                                        try {
+                                            MainObject.MainAttack(map, conn.p, ai, index_skill, _skill, type);
+                                            ListATK.add(ai.index);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                        break;
+                                    }
                                 }
                             }
                         } else {

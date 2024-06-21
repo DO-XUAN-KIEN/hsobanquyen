@@ -45,6 +45,9 @@ public class Player extends Body2 {
     public Date date;
     public byte diemdanh;
     public byte chucphuc;
+    public byte banclone;
+    public byte dokho;
+    public byte boss_rieng;
     public byte type_use_mount;
     // public int hieuchien;
     public int dibuon;
@@ -385,6 +388,9 @@ public class Player extends Body2 {
                 date = Util.getDate(rs.getString("date"));
                 diemdanh = rs.getByte("diemdanh");
                 chucphuc = rs.getByte("chucphuc");
+                banclone = rs.getByte("banclone");
+                dokho = rs.getByte("dokho");
+                boss_rieng = rs.getByte("boss_rieng");
                 khu2 = rs.getByte("khu2");
                 hieuchien = rs.getInt("hieuchien");
                 dibuon = rs.getInt("dibuon");
@@ -1376,6 +1382,9 @@ public class Player extends Body2 {
                 a += ",`kynang` = " + kynang;
                 a += ",`diemdanh` = " + diemdanh;
                 a += ",`chucphuc` = " + chucphuc;
+                a += ",`banclone` = " + banclone;
+                a += ",`dokho` = " + dokho;
+                a += ",`boss_rieng` = " + boss_rieng;
                 a += ",`khu2` = " + khu2;
                 a += ",`hieuchien` = " + hieuchien;
                 a += ",`chuyensinh` = " + chuyensinh;
@@ -1561,8 +1570,9 @@ public class Player extends Body2 {
             // diem danh
             diemdanh = 1;
             chucphuc = 1;
+            boss_rieng = 0;
             khu2 = 2;
-            point_active[0] = 10;
+            point_active[0] = 5;
             point_active[1] = 0;
             quest_daily = new int[]{-1, -1, 0, 0, 10};
             date = Date.from(Instant.now());
@@ -1735,6 +1745,12 @@ public class Player extends Body2 {
         if (this.map.zone_id == 1 && !Map.is_map_not_zone2(this.map.map_id)) { // Khu 2
             dame_exp += ((dame_exp * 5) / 100);
         }
+        if (this.map.zone_id == 7 && !Map.is_map_not_zone2(this.map.map_id)) { // Khu 8
+            dame_exp += ((dame_exp * 7) / 100);
+        }
+        if (this.map.zone_id == 8 && !Map.is_map_not_zone2(this.map.map_id)) { // Khu 9
+            dame_exp += ((dame_exp * 10) / 100);
+        }
         if (level >= Manager.gI().lvmax || type_exp == 0) {
             return;
         }
@@ -1836,6 +1852,24 @@ public class Player extends Body2 {
                         return;
                     }
                 }
+                if (zone == 7 && !Map.is_map_not_zone2(map_change.map_id)) {
+                    if (checkvip() < 1){
+                        Service.send_notice_box(conn, "Bạn chưa đủ vip 1 để vào");
+                        return;
+                    }
+                    MapService.leave(conn.p.map, conn.p);
+                    conn.p.map = map_change;
+                    MapService.enter(conn.p.map, conn.p);
+                }
+                if (zone == 8 && !Map.is_map_not_zone2(map_change.map_id)) {
+                    if (checkvip() < 2){
+                        Service.send_notice_box(conn, "Bạn chưa đủ vip 2 để vào");
+                        return;
+                    }
+                    MapService.leave(conn.p.map, conn.p);
+                    conn.p.map = map_change;
+                    MapService.enter(conn.p.map, conn.p);
+                }
                 MapService.leave(this.map, this);
                 this.map = map_change;
                 MapService.enter(this.map, this);
@@ -1887,6 +1921,17 @@ public class Player extends Body2 {
         try ( Connection connection = SQL.gI().getConnection();  Statement ps = connection.createStatement();  ResultSet rs = ps.executeQuery(query)) {
             rs.next();
             result = rs.getInt("coin");
+        } catch (SQLException e) {
+            result = 0;
+        }
+        return result;
+    }
+    public synchronized int checkvip() {
+        int result = 0;
+        String query = "SELECT `Vip` FROM `account` WHERE `user` = '" + conn.user + "' LIMIT 1;";
+        try ( Connection connection = SQL.gI().getConnection();  Statement ps = connection.createStatement();  ResultSet rs = ps.executeQuery(query)) {
+            rs.next();
+            result = rs.getByte("Vip");
         } catch (SQLException e) {
             result = 0;
         }

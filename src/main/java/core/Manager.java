@@ -218,14 +218,13 @@ public class Manager {
                 System.exit(0);
                 return;
             }
-            list_nhanban = new ArrayList<>();
             chiem_mo = new ChiemMo();
             chiem_mo.init();
-//            if (!chiem_mo.LoadData()) {
-//                System.err.println("load database err");
-//                System.exit(0);
-//                return;
-//            }
+            if (!chiem_mo.LoadData()) {
+                System.err.println("load database err");
+                System.exit(0);
+                return;
+            }
             System.out.println("cache loaded!");
             this.vxmm = new VXMM2();
             this.vxkc = new VXKC2();

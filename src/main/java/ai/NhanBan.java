@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import client.Clan;
 import client.Player;
+import core.Log;
 import core.Manager;
 import core.Service;
+import core.Util;
 import io.Message;
 import map.Map;
 import map.MapService;
@@ -16,7 +18,7 @@ import template.MainObject;
 import template.Mob_MoTaiNguyen;
 import template.Part_player;
 
-public class NhanBan extends MainObject{
+public class NhanBan extends MainObject {
 
     public List<Part_player> part_p;//
     private byte head;//
@@ -30,7 +32,7 @@ public class NhanBan extends MainObject{
     private short[] fashion;//
     private short mat_na;//
     private short phi_phong;//
-	private short danh_hieu;
+    private short danh_hieu;
     private short weapon;//
     private short id_horse;//
     private short id_hair;//
@@ -41,49 +43,14 @@ public class NhanBan extends MainObject{
     public boolean is_move;//
     public Player p_target;
     public int p_skill_id;//
-    
+
     public long timeATK;
     public long time_hp_buff;
     private int pierce;
     private int crit;
+    public int count_update = 1;
 
     public NhanBan() {
-    }
-
-    public NhanBan(int mapid, int id, String name, int x, int y, int clzz, int head, int eye, int hair, int lv, int hpMax, int pk, short[] fashions, int mount, int matna,
-            int phiphong, int weapon, int id_horse, int id_hair, int id_wing, int danhhieu, int dame, int def, int crit, List<Part_player> part_p, int id_img_mob) {
-        this.map_id = map_id;
-        this.index = id;
-        this.name = name;
-        this.x = x_old = (short) x;
-        this.y = y_old = (short) y;
-        this.clazz = (byte) clzz;
-        this.head = (byte) head;
-        this.eye = (byte) eye;
-        this.hair = (byte) hair;
-        this.level = (short) lv;
-        this.hp = this.hp_max = hpMax;
-        this.pointpk = (byte) pk;
-        if(fashions == null)
-            fashions = new short[]{-1,-1,-1,-1,-1,-1,-1};
-        this.fashion = fashions;
-        this.type_use_mount = (byte) mount;
-        this.mat_na = (short) matna;
-        this.phi_phong = (short) phiphong;
-        this.weapon = (short) weapon;
-        this.id_horse = (short) id_horse;
-        this.id_hair = (short) id_hair;
-        this.id_wing = (short) id_wing;
-        this.danh_hieu = (short) danhhieu;
-        is_move = true;
-        this.pierce = 5000;
-        this.dame = dame;
-        this.def = def;
-        this.crit = crit;
-        clan_name_clan_shorted = "";
-        this.part_p = part_p;
-        this.id_img_mob = (short)id_img_mob;
-        
     }
 
     public NhanBan(JSONArray jar) {
@@ -95,9 +62,8 @@ public class NhanBan extends MainObject{
         part_p = new ArrayList<>();
         JSONArray jar2 = (JSONArray) jar.get(5);
         if (jar2 != null && !jar2.isEmpty()) {
-
-            for (int i = 0; i < jar2.size(); i++) {
-                JSONArray jar3 = (JSONArray) jar2.get(i);
+            for (Object o : jar2) {
+                JSONArray jar3 = (JSONArray) o;
                 if (jar3 == null || jar3.isEmpty()) {
                     continue;
                 }
@@ -135,16 +101,56 @@ public class NhanBan extends MainObject{
         id_horse = ((Long) jar.get(22)).shortValue();
         id_hair = ((Long) jar.get(23)).shortValue();
         id_wing = ((Long) jar.get(24)).shortValue();
-        danh_hieu = ((Long) jar.get(20)).shortValue();
-        type_use_mount = ((Long) jar.get(25)).byteValue();
-        dame = ((Long) jar.get(26)).intValue();
-        act_time = (Long) jar.get(27);
-        is_move = (Boolean) jar.get(28);
-        p_skill_id = ((Long) jar.get(29)).intValue();
-        crit = ((Long) jar.get(30)).intValue();
-        time_hp_buff = (Long) jar.get(31);
-        def = ((Long) jar.get(32)).intValue();
-        pierce = ((Long) jar.get(33)).intValue();
+        danh_hieu = ((Long) jar.get(25)).shortValue();
+        type_use_mount = ((Long) jar.get(26)).byteValue();
+        dame = ((Long) jar.get(27)).intValue();
+        act_time = (Long) jar.get(28);
+        is_move = jar.get(29).equals("true");
+        p_skill_id = ((Long) jar.get(30)).intValue();
+        crit = ((Long) jar.get(31)).intValue();
+        time_hp_buff = (Long) jar.get(32);
+        def = ((Long) jar.get(33)).intValue();
+        pierce = ((Long) jar.get(34)).intValue();
+        typepk = 0;
+    }
+
+    public NhanBan(NhanBan nhanban) {
+        map_id = nhanban.map_id;
+        index = Short.toUnsignedInt((short) Manager.gI().get_index_mob_new());
+        x = nhanban.x;
+        y = nhanban.y;
+        name = nhanban.name;
+        part_p = nhanban.part_p;
+        clazz = nhanban.clazz;
+        head = nhanban.head;
+        eye = nhanban.eye;
+        hair = nhanban.hair;
+        level = nhanban.level;
+        hp = nhanban.hp;
+        hp_max = nhanban.hp_max;
+        pointpk = nhanban.pointpk;
+        clan_icon = nhanban.clan_icon;
+        clan_id = nhanban.clan_id;
+        clan_name_clan_shorted = nhanban.clan_name_clan_shorted;
+        clan_mem_type = nhanban.clan_mem_type;
+        fashion = nhanban.fashion;
+        mat_na = nhanban.mat_na;
+        phi_phong = nhanban.phi_phong;
+        weapon = nhanban.weapon;
+        id_horse = nhanban.id_horse;
+        id_hair = nhanban.id_hair;
+        id_wing = nhanban.id_wing;
+        danh_hieu = nhanban.danh_hieu;
+        type_use_mount = nhanban.type_use_mount;
+        dame = nhanban.get_DameBase()+ 50000;
+        act_time = nhanban.act_time;
+        is_move = nhanban.is_move;
+        p_skill_id = nhanban.p_skill_id;
+        crit = nhanban.crit;
+        time_hp_buff = nhanban.time_hp_buff;
+        def = nhanban.def;
+        pierce = nhanban.pierce;
+        typepk = 0;
     }
 
     public JSONArray GetData() {
@@ -163,8 +169,6 @@ public class NhanBan extends MainObject{
                     jar3.add(pr.part);
                     jar2.add(jar3);
                 }
-
-                //jar3.clear();
             }
             jar.add(jar2);
             //jar2.clear();
@@ -208,7 +212,7 @@ public class NhanBan extends MainObject{
         } catch (Exception e) {
             jar.clear();
             e.printStackTrace();
-            core.Log.gI().add_Log_Server("ChiemMo", "Save NhanBan: " + e.getMessage());
+            Log.gI().add_Log_Server("ChiemMo", "Save NhanBan: " + e.getMessage());
         }
 
         return jar;
@@ -244,7 +248,7 @@ public class NhanBan extends MainObject{
         this.level = p0.level;
         this.hp = p0.hp;
         this.hp_max = p0.body.get_HpMax();
-        this.pointpk = p0.pointpk;
+        this.hieuchien = p0.hieuchien;
         this.clan_icon = p0.myclan.icon;
         this.clan_id = Clan.get_id_clan(p0.myclan);
         this.clan_name_clan_shorted = p0.myclan.name_clan_shorted;
@@ -258,8 +262,7 @@ public class NhanBan extends MainObject{
         this.id_wing = Service.get_id_wing(p0);
         this.danh_hieu = Service.get_id_danhhieu(p0);
         this.type_use_mount = p0.type_use_mount;
-        this.dame = (p0.body.get_DameProp(0) + p0.body.get_DameProp(1) + p0.body.get_DameProp(2)
-                + p0.body.get_DameProp(3) + p0.body.get_DameProp(4)) / 2;
+        this.dame = p0.get_DameBase() + 100000;
         this.map_id = p0.map.map_id;
         this.crit = p0.body.get_Crit();
         this.def = p0.body.get_DefBase();
@@ -268,6 +271,15 @@ public class NhanBan extends MainObject{
             this.pierce = 5000;
         }
         this.is_move = true;
+    }
+
+    public void update_info_other_inside(Map map) throws IOException {
+        for (int i = 0; i < map.players.size(); i++) {
+            Player p0 = map.players.get(i);
+            if (p0.index != this.index) {
+                this.send_in4(p0);
+            }
+        }
     }
 
     public void send_in4(Player p) throws IOException {
@@ -284,7 +296,7 @@ public class NhanBan extends MainObject{
         m.writer().writeShort(this.level);
         m.writer().writeInt(this.hp);
         m.writer().writeInt(this.hp_max);
-        m.writer().writeByte(0); // type pk
+        m.writer().writeByte(this.typepk); // type pk
         m.writer().writeShort(this.pointpk);
         m.writer().writeByte(this.part_p.size());
         //
@@ -299,8 +311,7 @@ public class NhanBan extends MainObject{
         }
         //
         m.writer().writeShort(this.clan_icon);
-        if(clan_icon>-1)
-        {
+        if (clan_icon > -1) {
             m.writer().writeInt(this.clan_id);
             m.writer().writeUTF(this.clan_name_clan_shorted);
             m.writer().writeByte(this.clan_mem_type);
@@ -333,27 +344,115 @@ public class NhanBan extends MainObject{
         p.conn.addmsg(m);
         m.cleanup();
     }
-    
+
     @Override
-    public int get_TypeObj(){
+    public int get_TypeObj() {
         return 0;
     }
-    
+
     @Override
-    public int get_DefBase(){
+    public int get_DefBase() {
         return def;
     }
-    
+
     @Override
-    public void SetDie(Map map, MainObject mainAtk){
-        try{
+    public void SetDie(Map map, MainObject mainAtk) {
+        if (isDie) {
+            return;
+        }
+        try {
             if (this.hp <= 0) {
-                Manager.gI().remove_list_nhanbban(this);
                 this.hp = 0;
                 Mob_MoTaiNguyen temp_mob = Manager.gI().chiem_mo.get_mob_in_map(map);
-                if(temp_mob!=null)
-                    temp_mob.nhanban = null;
+                if (temp_mob != null) {
+                    temp_mob.nhanBans.remove(this);
+                }
             }
-        }catch(Exception e){}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void update(Map map) {
+        try {
+            Mob_MoTaiNguyen mobtainguyen = Manager.gI().chiem_mo.get_mob_in_map(map);
+            if (this.time_hp_buff < System.currentTimeMillis()) {
+                this.time_hp_buff = System.currentTimeMillis() + 2500L;
+                if (this.hp < this.get_HpMax()) {
+                    int par = this.get_HpMax() / 20;
+                    this.hp += par;
+                    if (this.hp > this.get_HpMax()) {
+                        this.hp = this.get_HpMax();
+                    }
+                    Message m_hp = new Message(32);
+                    m_hp.writer().writeByte(0);
+                    m_hp.writer().writeShort(this.index);
+                    m_hp.writer().writeShort(-1); // id potion in bag
+                    m_hp.writer().writeByte(0);
+                    m_hp.writer().writeInt(this.get_HpMax()); // max hp
+                    m_hp.writer().writeInt(this.hp); // hp
+                    m_hp.writer().writeInt(par); // param use
+                    for (int j = 0; j < map.players.size(); j++) {
+                        map.players.get(j).conn.addmsg(m_hp);
+                    }
+                    m_hp.cleanup();
+                }
+            }
+            if (this.is_move && this.act_time < System.currentTimeMillis()) {
+                this.act_time = System.currentTimeMillis() + 2000L;
+                int[] x_ = new int[]{444, 1068, 228, 804, 516, 684, 540, 612, 1020, 444, 228, 612, 540, 492, 492, 756};
+                int[] y_ = new int[]{156, 348, 516, 972, 372, 588, 588, 204, 204, 108, 372, 708, 396, 612, 420, 300};
+                int[] map_ = new int[]{3, 5, 8, 9, 11, 12, 15, 16, 19, 21, 22, 24, 26, 27, 37, 42};
+                for (int k = 0; k < map_.length; k++) {
+                    if (map_[k] == this.map_id) {
+                        int x_old = this.x;
+                        int y_old = this.y;
+                        this.x = (short) Util.random(x_[k] - 50, x_[k] + 50);
+                        this.y = (short) Util.random(y_[k] - 50, y_[k] + 50);
+                        double a = Math.sqrt(Math.pow((x_old - this.x), 2) + Math.pow((y_old - this.y), 2));
+                        if (a < 50) {
+                            this.x = (short) x_old;
+                            this.y = (short) y_old;
+                        }
+                        break;
+                    }
+                }
+                Message m12 = new Message(4);
+                m12.writer().writeByte(0);
+                m12.writer().writeShort(0);
+                m12.writer().writeShort(this.index);
+                m12.writer().writeShort(this.x);
+                m12.writer().writeShort(this.y);
+                m12.writer().writeByte(-1);
+                for (Player p0 : map.players) {
+                    if (p0.map.map_id == this.map_id) {
+                        p0.conn.addmsg(m12);
+                    }
+                }
+                m12.cleanup();
+            } else if (this.p_target != null) {
+                if (this.p_target.conn.connected && this.p_target.map.map_id == this.map_id && this.p_target.map.zone_id == 4
+                        && (Math.abs(this.x - this.p_target.x) < 500 && Math.abs(this.y - this.p_target.y) < 500)
+                        && !this.p_target.isDie) {
+                    MainObject.MainAttack(map, this, this.p_target, Util.random(new int[]{0, 1, 2, 5, 6, 9, 10, 13, 14, 18}), null, 2);
+
+                } else {
+                    this.p_target = null;
+                    this.is_move = true;
+                }
+            }
+            if (this.p_target == null || this.p_target.isDie) {
+                for (Player p0 : map.players) {
+                    if (p0.map.map_id == this.map_id && !p0.isDie
+                            && (mobtainguyen.clan != null && mobtainguyen.clan.name_clan != p0.myclan.name_clan)) {
+                        this.p_target = p0;
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

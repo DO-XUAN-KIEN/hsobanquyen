@@ -147,9 +147,9 @@ public class Body2 extends MainObject {
         for (int i = 0; i < p.item.wear.length; i++) {
             Item3 temp = p.item.wear[i];
             if (temp != null) {
-                if (p.level < temp.level) {
-                    continue;
-                }
+//                if (p.level < temp.level) {
+//                    continue;
+//                }
                 for (Option op : temp.op) {
                     if (op.id == id) {
                         param += op.getParam(temp.tier);
@@ -181,6 +181,7 @@ public class Body2 extends MainObject {
                 break;
             }
         }
+        hpm += (p.luyenthe * 20);
         int percent = total_item_param(27);
         if (p.skill_point[9] > 0) {
             for (Option op : p.skills[9].mLvSkill[p.skill_point[9] - 1].minfo) {
@@ -198,6 +199,7 @@ public class Body2 extends MainObject {
                 || p.type_use_mount == Horse.MA_TOC_DO || p.type_use_mount == Horse.RONG_BANG) {
             percent += 1000;
         }
+        percent += ((p.kinhmach - 1) * 5 + p.kinhmach) * 100;
         hpm += ((hpm * (percent / 100)) / 100);
         if (p.get_EffDefault(2) != null) {
             hpm = (hpm * 8) / 10;
@@ -789,6 +791,20 @@ public class Body2 extends MainObject {
                     p.map = m;
                     MapService.enter(p.map, p);
                 }
+            }
+            if (map.zone_id == 7 && p.checkvip() < 1 && !Map.is_map_not_zone2(map.map_id) && !p.isSquire) {
+                    Map m = Map.get_map_by_id(map.map_id)[0];
+                    MapService.leave(map, p);
+                    p.map = m;
+                    MapService.enter(p.map, p);
+                    Service.send_notice_box(p.conn,"Bạn chưa đủ vip 1 để vào");
+            }
+            if (map.zone_id == 8 && p.checkvip() < 2 && !Map.is_map_not_zone2(map.map_id) && !p.isSquire) {
+                Map m = Map.get_map_by_id(map.map_id)[0];
+                MapService.leave(map, p);
+                p.map = m;
+                MapService.enter(p.map, p);
+                Service.send_notice_box(p.conn,"Bạn chưa đủ vip 2 để vào");
             }
             if (p.pet_di_buon != null && p.pet_di_buon.id_map == p.map.map_id && p.map.zone_id == p.map.maxzone
                     && !p.pet_di_buon.item.isEmpty() && map.time_add_bot < System.currentTimeMillis()) {

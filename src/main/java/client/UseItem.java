@@ -157,7 +157,7 @@ public class UseItem {
                 break;
             }
             case 84: {
-                if (conn.p.map.zone_id != conn.p.map.maxzone) {
+                if (conn.p.map.zone_id != 7) {
                     Service.send_notice_box(conn, "Chỉ dùng được trong khu đi buôn");
                     return;
                 }
@@ -189,7 +189,7 @@ public class UseItem {
             break;
         }
         case 86: {
-            if (conn.p.map.zone_id != conn.p.map.maxzone) {
+            if (conn.p.map.zone_id != 7) {
                 Service.send_notice_box(conn, "Chỉ dùng được trong khu đi buôn");
                 return;
             }

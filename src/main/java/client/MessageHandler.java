@@ -15,11 +15,9 @@ import event_daily.MoLy;
 import event_daily.ChienTruong;
 import io.Message;
 import io.Session;
-import map.Dungeon;
-import map.DungeonManager;
-import map.Map;
-import map.MapService;
+import map.*;
 import template.Horse;
+import template.Mob_MoTaiNguyen;
 
 public class MessageHandler {
 
@@ -321,6 +319,7 @@ public class MessageHandler {
             case 5: {
                 //int id = Short.toUnsignedInt(m.reader().readShort());
                 int id = m.reader().readShort();
+                Leo_thap d = Leo_thapManager.get_list(conn.p.name);
                 if (id >= -1000 && id < 0) {
                     for (MobAi temp : conn.p.map.Ai_entrys) {
                         if (temp != null && temp.index == id && !temp.isDie) {
@@ -350,19 +349,16 @@ public class MessageHandler {
                 if (p0 != null) {
                     MapService.send_in4_other_char(conn.p.map, conn.p, p0);
                 } else if (Map.is_map_chiem_mo(conn.p.map, true)) {
-                    NhanBan temp = null;
-                    for (int i = 0; i < Manager.gI().list_nhanban.size(); i++) {
-                        NhanBan temp2 = Manager.gI().list_nhanban.get(i);
-                        if (temp2.index == id) {
-                            temp = temp2;
-                            break;
+                    try {
+                        Mob_MoTaiNguyen moTaiNguyen = Manager.gI().chiem_mo.get_mob_in_map(conn.p.map);
+                        for (int i = 0; i < moTaiNguyen.nhanBans.size(); i++) {
+                            NhanBan nhanBan = moTaiNguyen.nhanBans.get(i);
+                            if (nhanBan != null) {
+                                nhanBan.send_in4(conn.p);
+                            }
                         }
-                    }
-                    if (temp != null) {
-                        try {
-                            temp.send_in4(conn.p);
-                        } catch (Exception e) {
-                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
                 } else if (Map.is_map_chien_truong(conn.p.map.map_id)) {
                     ChienTruong.gI().get_ai(conn.p, id);
@@ -387,6 +383,12 @@ public class MessageHandler {
                 Dungeon d = DungeonManager.get_list(conn.p.name);
                 if (d != null) {
                     d.send_mob_in4(conn, n);
+                } else {
+                    Service.mob_in4(conn.p, n);
+                }
+                Leo_thap leoThap = Leo_thapManager.get_list(conn.p.name);
+                if (leoThap != null) {
+                    leoThap.send_mob_in4(conn, n);
                 } else {
                     Service.mob_in4(conn.p, n);
                 }
@@ -531,6 +533,9 @@ public class MessageHandler {
         Service.send_tab_chat(conn.p,"Thông báo quan trọng","Hello 500 ae");
         // add x2 xp
         conn.p.set_x2_xp(1);
+        if (conn.p.chuyensinh > 0){
+            conn.p.update_Exp(1,false);
+        }
         if (conn.p.myclan == null || !Horse.isHorseClan(conn.p.type_use_mount)) {
             conn.p.type_use_mount = -1;
         }
