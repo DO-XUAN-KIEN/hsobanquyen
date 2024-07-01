@@ -1954,7 +1954,7 @@ public class Service {
                             itbag.icon = ItemTemplate3.item.get(idbuy).getIcon();
                             itbag.color = itsell3.color;
                             itbag.part = ItemTemplate3.item.get(idbuy).getPart();
-                            itbag.islock = true;
+                            itbag.islock = false;
                             itbag.name = ItemTemplate3.item.get(idbuy).getName();
                             itbag.tier = 15;
                             itbag.op = new ArrayList<>();
@@ -2077,7 +2077,7 @@ public class Service {
                                     itbag.icon = ItemTemplate3.item.get(idbuy).getIcon();
                                     itbag.color = itemshoptt.color;
                                     itbag.part = ItemTemplate3.item.get(idbuy).getPart();
-                                    itbag.islock = true;
+                                    itbag.islock = false;
                                     itbag.name = ItemTemplate3.item.get(idbuy).getName();
                                     itbag.tier = 15;
                                     itbag.op = new ArrayList<>();
@@ -2329,18 +2329,6 @@ public class Service {
                         } else {
                             send_notice_box(conn, "Tối thiểu 5 ngọc!");
                         }
-                    }else if (it != null && it.id >= 4831 && it.id <= 4873 && it.color == 5 && it.tierStar <= 15){
-                        Player p = conn.p;
-                        conn.p.id_than = (byte) iditem;
-                        Item3 it_change = conn.p.item.bag3[iditem];
-                        int[] values = {10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40};
-                        int tierStar = it_change.tierStar >= 0 && it_change.tierStar < values.length ? values[it_change.tierStar] : it_change.tierStar;
-                        Service.send_box_input_yesno(conn, -12, "Nâng cấp " + it_change.name + "\n"
-                                + (tierStar) + "/" + conn.p.item.total_item_by_id(7, st.id[p.st_ran[0]]) + " " + ItemTemplate7.item.get(st.id[p.st_ran[0]]).getName() + "\n"
-                                + (tierStar) + "/" + conn.p.item.total_item_by_id(7, st.st1.id[p.st_ran[1]]) + " " + ItemTemplate7.item.get(st.st1.id[p.st_ran[1]]).getName() + "\n"
-                                + (tierStar) + "/" + conn.p.item.total_item_by_id(7, st.st2.id[p.st_ran[2]]) + " " + ItemTemplate7.item.get(st.st2.id[p.st_ran[2]]).getName() + "\n"
-                                + (tierStar) + "/" + conn.p.item.total_item_by_id(7, st.st3.id[p.st_ran[3]]) + " " + ItemTemplate7.item.get(st.st3.id[p.st_ran[3]]).getName() + "\n"
-                                + (tierStar) + "/" + conn.p.item.total_item_by_id(7, st.st4.id[p.st_ran[4]]) + " " + ItemTemplate7.item.get(st.st4.id[p.st_ran[4]]).getName());
                     }
                     break;
                 }

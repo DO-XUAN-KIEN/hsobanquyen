@@ -128,8 +128,8 @@ public class DailyQuest {
                     : (p.quest_daily[1] == 1 ? Util.random(10, 200) : Util.random(10, 20)));
             int exp = Util.random(1000, 10000) * (p.quest_daily[1] + 1) * p.quest_daily[2];
             p.update_vang(vang);
+            p.update_ngoc(ngoc);
             Log.gI().add_log(p.name, "Nhận " + vang + " nhiệm vụ hàng ngày");
-            p.update_coin(ngoc);
             p.update_Exp(exp, false);
             if (p.quest_daily[1] == 1) {
                 if (((p.item.get_bag_able() > 0) || (p.item.total_item_by_id(7, id_blue) > 0))) {

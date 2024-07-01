@@ -156,6 +156,21 @@ public class UseItem {
                 Service.send_time_box(conn.p, (byte) 1, new short[]{(short) ((eff.time - System.currentTimeMillis()) / 1000)}, new String[]{"Buff a đến z"});
                 break;
             }
+            case 339: {
+                conn.p.item.remove(4, 339, 1);
+                Quask.quask_hon_gio(conn, (byte) 0);
+                break;
+            }
+            case 341: {
+                conn.p.item.remove(4, 341, 1);
+                Quask.quask_hon_gio(conn, (byte) 1);
+                break;
+            }
+            case 340: {
+                conn.p.item.remove(4, 340, 1);
+                Quask.quask_hon_gio(conn, (byte) 2);
+                break;
+            }
             case 84: {
                 if (conn.p.map.zone_id != 7) {
                     Service.send_notice_box(conn, "Chỉ dùng được trong khu đi buôn");
@@ -1673,7 +1688,14 @@ public class UseItem {
                 Service.send_char_main_in4(conn.p);
                 break;
             }
-
+            case 315: {
+                conn.p.type_use_mount = Horse.HOA_KY_LAN;
+                conn.p.map.send_mount(conn.p);
+                conn.p.id_horse = 116;
+                MapService.update_in4_2_other_inside(conn.p.map, conn.p);
+                Service.send_char_main_in4(conn.p);
+                break;
+            }
             case 317: {
                 conn.p.type_use_mount = Horse.XE_TRUOT_TUYET;
                 conn.p.map.send_mount(conn.p);

@@ -43,11 +43,14 @@ public class MenuController {
             Menu_ChangeZone(conn);
             return;
         }
+//        if (conn.status != 0 && idnpc != -7){
+//            Service.send_notice_box(conn,"Bạn chưa khtk hãy đi up lên level 10 rồi đăng kí tài khoản ở aman");
+//        }
         // create menu per id npc
         String[] menu;
         switch (idnpc) {
             case -81: {
-                menu = new String[]{"Đăng ký lôi đài", "Vào lôi đài", "Xem lôi đài", "Xem điểm lôi đài", "Nhận quà lôi đài", "Huong dan", "Tháo ngọc khảm", "luyen de tu", "huy de tu", "Lang phu suong"};
+                menu = new String[]{"Đăng ký lôi đài", "Vào lôi đài", "Xem lôi đài", "Xem điểm lôi đài", "Nhận quà lôi đài", "Huong dan", "Tháo ngọc khảm", "Luyện đệ tử", "Hủy đệ tử"};
                 break;
             }
             case -104:
@@ -61,6 +64,10 @@ public class MenuController {
             case -3: { // Lisa
                 menu = new String[]{"Mua bán", "Mở ly", "Thuế", "Nhận quà chiến trường",
                     "Đóng"};
+                break;
+            }
+            case -0: {
+                menu = new String[]{"Quản lý sever","Shop bán đồ tt"};
                 break;
             }
             case -1: { // admin
@@ -151,7 +158,8 @@ public class MenuController {
                 break;
             }
             case -90: { // keva
-                menu = new String[]{"Shop", "Khu Phủ Sương Up", "Map Boss", "Quay Về Làng Phủ Sương", "Về Làng "};
+                menu = new String[]{"Shop", "Map Boss", "Về Làng "};
+                //menu = new String[]{"Shop", "Khu Phủ Sương Up", "Map Boss", "Quay Về Làng Phủ Sương", "Về Làng "};
                 break;
             }
             case -7: {
@@ -171,7 +179,7 @@ public class MenuController {
                     if (conn.p.myclan.mems.get(0).name.equals(conn.p.name)) {
                         menu = new String[]{"Quản lý bang", "Shop Icon", "Shop Bang"};
                     } else {
-                        menu = new String[]{"Kho Bang", "Góp Vàng", "Góp Ngọc", "Rời bang"};
+                        menu = new String[]{"Kho Bang", "Góp Vàng", "Góp Ngọc","Chat bang", "Rời bang"};
                     }
                 } else {
                     menu = new String[]{"Đăng ký bang", "Thông tin"};
@@ -218,7 +226,7 @@ public class MenuController {
             }
             case -49: { //menu_top
                 // menu = new String[]{"Yêu thích", "Shop Dola","Kết Hôn", "Thông Tin Cá Nhân " , "Nhận quà hiếu chiến","BXH Top Rương", "Khu Boss"};
-                menu = new String[]{"Like","Kết Hôn", "Thông Tin Cá Nhân", "Khu boss"};
+                menu = new String[]{"Like","Shop coin","Kết Hôn", "Thông Tin Cá Nhân", "Khu boss"};
                 break;
             }
             case -82: {
@@ -427,14 +435,20 @@ public class MenuController {
                 Menu_Mrs_Oda(conn, index, idmenu);
                 break;
             }
-            case -1: {
-                Menu_Admin(conn, index);
+            case -0: {
+                if (conn.ac_admin >= 123) {
+                    Menu_Sever(conn, index);
+                }
                 break;
             }
-            case -99: { // shopcoin
-                Menu_shopcoin(conn, index);
-                break;
-            }
+//            case -1: {
+//                Menu_Admin(conn, index);
+//                break;
+//            }
+//            case -99: { // shopcoin
+//                Menu_shopcoin(conn, index);
+//                break;
+//            }
             case -98: { // quanap
                 Menu_quanap(conn,index);
                 //quanap.get_qua(conn.p, index);
@@ -1964,7 +1978,7 @@ public class MenuController {
                     if (conn.p.squire != null) {
                         conn.p.squire.switchToSquire(conn.p);
                     } else {
-                        Service.send_box_input_yesno(conn, -127, "Bạn muốn nhận đệ tử với giá 100_000 coin?");
+                        Service.send_box_input_yesno(conn, -127, "Bạn muốn nhận đệ tử với giá 1.000.000 coin?");
                     }
                     break;
                 }
@@ -1977,11 +1991,11 @@ public class MenuController {
                     break;
                 }
                 case 9: {
-                    if (conn.p.level < 100) {
-                        Service.send_notice_box(conn, "Bạn phải đạt từ cấp độ 100 mới có thể thực hiện chức năng này");
-                        return;
-                    }
-                    conn.p.langPhuSuong();
+//                    if (conn.p.level < 100) {
+//                        Service.send_notice_box(conn, "Bạn phải đạt từ cấp độ 100 mới có thể thực hiện chức năng này");
+//                        return;
+//                    }
+//                    conn.p.langPhuSuong();
                     break;
                 }
 
@@ -2532,9 +2546,6 @@ public class MenuController {
     }
 
     private static void Menu_top(Session conn, byte index, byte idmenu) throws IOException {
-        if (!conn.p.isOwner) {
-            return;
-        }
         if (idmenu == 0) {
             switch (index) {
             case 0: {
@@ -2560,11 +2571,11 @@ public class MenuController {
 //                    Service.send_box_UI(conn, 37); // shop coin
 //                    break;
 //                }
-
                 case 1: {
-                    if (!conn.p.isOwner) {
-                        return;
-                    }
+                    Service.send_box_UI(conn, 37);
+                    break;
+                }
+                case 2: {
                     if (conn.p.level < 60) {
                         Service.send_notice_box(conn, "Yêu cầu level trên 60");
                         return;
@@ -2589,7 +2600,7 @@ public class MenuController {
                         break;
                     }
                 }
-                case 2: {
+                case 3: {
                     send_menu_select(conn, 115, new String[]{"Chest Thông Tin Tài Khoản", "Thông Tin Bản Thân"});
                     break;
                 }
@@ -2689,7 +2700,7 @@ public class MenuController {
 //
 //                break;
 //
-                case 3: {
+                case 4: {
                     if (conn.status != 0) {
                         Service.send_notice_box(conn, "Tài khoản chưa được kích hoạt,");
                         return;
@@ -2703,7 +2714,7 @@ public class MenuController {
                     send_menu_select(conn, -49, new String[]{"Khu Boss Even 0x", "Khu Boss Even 1x", "Khu Boss Even 2x", "Khu Boss Even 7x", "Khu Boss Even 8x", "Khu Boss Even 11x", "Khu Boss Even 13x"}, (byte) 3);
                     break;
                 }
-                case 4: {
+                case 5: {
                     send_menu_select(conn, -49,
                             new String[]{"Hướng dẫn", "Nhận nhiệm vụ", "Hủy nhiệm vụ", "Trả nhiệm vụ", "Kiểm tra"}, (byte) 1);
                     break;
@@ -3292,6 +3303,10 @@ public class MenuController {
                         break;
                     }
                     case 3: {
+                        Service.send_box_input_text(conn,-1,"Chat Bang",new String[]{"chat bang"});
+                        break;
+                    }
+                    case 4: {
                         Service.send_box_input_yesno(conn, 117,
                                 "Hãy xác nhận việc rời bang, có khi đi rồi quay lại éo đc đâu nhá");
                         break;
@@ -3581,104 +3596,6 @@ public class MenuController {
                 }
                 break;
             }
-            case 3: {
-                if (!conn.p.isOwner) {
-                    Service.send_notice_box(conn, "Mày chỉ là đệ không thể thao tác");
-                    return;
-                }
-                if (conn.p.item.total_item_by_id(7, 494) < 5 && conn.ac_admin <3) {
-                    Service.send_notice_box(conn, "Không đủ 5 ngọc chuyển sinh");
-                    return;
-                }
-                if (conn.p.level < 140 && conn.ac_admin <3) {
-
-                    Service.send_notice_box(conn, "Cần level 140");
-                    return;
-                }
-                if (conn.p.get_vang() < 10_000_000) {
-                    Service.send_notice_box(conn, "Cần 10.000.000 vàng");
-                    return;
-                }
-                if (conn.p.get_ngoc() < 5000) {
-                    Service.send_notice_box(conn, "Cần 5.000 Ngọc");
-                    return;
-                }
-                // Tile cs theo %
-                int ran = Util.random(100);
-                int ran_lon = Util.random(10000);
-                // Tỷ lệ cs theo %
-                if (((conn.p.chuyensinh > 0 && conn.p.chuyensinh <= 2) && ran > 30) ||
-                        ((conn.p.chuyensinh >2 && conn.p.chuyensinh <=5)&& ran > 20) ||
-                        ((conn.p.chuyensinh >5 && conn.p.chuyensinh < 10) && ran > 10) ||
-                        ((conn.p.chuyensinh >= 10 && conn.p.chuyensinh <= 15) && ran > 5) ||
-                        ((conn.p.chuyensinh >= 15 && conn.p.chuyensinh <= 22) && ran > 1) ||
-                        ((conn.p.chuyensinh > 22 && conn.p.chuyensinh <= 33) && ran_lon < conn.p.mm_cs/4)
-                ) {
-                    conn.p.level =10;
-                    conn.p.exp = 0;
-                    conn.p.item.remove(7, 494, 5);
-                    conn.p.update_ngoc(-5_000);
-                    conn.p.update_vang(-10_000_000);
-                    conn.p.mm_cs = 1;
-                    conn.p.update_chuyensinh(1);
-
-                    conn.p.tiemnang = (short) (500 + Level.get_tiemnang_by_level(conn.p.level - 1)*conn.p.chuyensinh/1.5);
-                    conn.p.point1 = (short) (5 + conn.p.level);
-                    conn.p.point2 = (short) (5 + conn.p.level);
-                    conn.p.point3 = (short) (5 + conn.p.level);
-                    conn.p.point4 = (short) (5 + conn.p.level);
-
-                    Service.send_char_main_in4(conn.p);
-                    Service.send_char_main_in4(conn.p.owner);
-                    conn.p.item.char_inventory(7);
-                    conn.p.item.char_inventory(5);
-                    Service.send_notice_box(conn, "+ Chuyển Sinh Thành công, nhớ thoát ra vào lại rồi hãy đi up nhé, \n+ HÃY OUT GAME. \n+ Số Lần: " + conn.p.chuyensinh);
-                    Manager.gI().chatKTGprocess("Chúc Mừng " + conn.p.name + " Đã Chuyển Sinh Thành Công " + conn.p.chuyensinh + " Lần.");
-
-                    Player p = conn.p;
-
-                    break;
-                } else {
-                    if (conn.p.chuyensinh >50){
-                        conn.p.mm_cs +=1;
-                    }
-                    conn.p.tiemnang += 5;
-                    conn.p.level = 139;
-                    conn.p.item.remove(7, 494, 1);
-                    conn.p.update_ngoc(-2_500);
-                    conn.p.update_vang(-5_000_000);
-
-                    Service.send_char_main_in4(conn.p);
-                    conn.p.item.char_inventory(7);
-                    Service.send_notice_box(conn, "Cuộc sống đôi khi công bằng lắm, hôm qua tặng mình may mắn thì hôm nay khuyến mãi thêm cục xui.\n Nhận 5 điểm tiềm năng.");
-                    Manager.gI().chatKTGprocess("Quá đen " + conn.p.name + " Đã Chuyển Sinh thất bại :(.");
-                    Player p = conn.p;
-                    break;
-                }
-            }
-            case 4: {
-                Service.send_notice_box(conn, "Số Lần Chuyển Sinh: " + conn.p.chuyensinh + "\n Tỉ lệ may mắn: " + conn.p.mm_cs/2 + "%");
-                break;
-            }
-            case 5: {
-                if (conn.p.get_ngoc() < 5000) {
-                    Service.send_notice_box(conn, "Cần 5.000 Ngọc");
-                    return;
-                }
-                if (conn.p.exp >=0) {
-                    Service.send_notice_box(conn, "Mày có bị âm đâu, Muốn bay acc không?");
-                    break;
-                } else {
-                    conn.p.exp = 0;
-                    conn.p.update_ngoc(-5_000);
-                    Service.send_notice_box(conn, "Xoá exp âm thành công");
-                    conn.p.update_Exp(1, false);
-                    Service.send_char_main_in4(conn.p);
-                    Player p = conn.p;
-
-                }
-                break;
-            }
             default: {
                 Service.send_notice_box(conn, "Chưa có chức năng");
                 break;
@@ -3697,11 +3614,14 @@ public class MenuController {
             }
             case 1: {
                 if (!conn.p.isOwner) {
-                    Service.send_notice_box(conn, "Mày chỉ là đệ không thể thao tác");
                     return;
                 }
                 if (conn.p.level < 140 && conn.ac_admin <3) {
                     Service.send_notice_box(conn, "Cần level 140");
+                    return;
+                }
+                if (conn.p.item.total_item_by_id(4,346) < 5){
+                    Service.send_notice_box(conn, "Không đủ 5 ngọc chuyển sinh");
                     return;
                 }
                 if (conn.p.get_vang() < 100_000_000) {
@@ -3713,25 +3633,28 @@ public class MenuController {
                     return;
                 }
                 // Tile cs theo %
-                int ran = Util.random(100);
+                int ran = 0;
                 int ran_lon = Util.random(10000);
+                if (conn.ac_admin >= 100) {
+                    ran = 1;
+                }
+                else ran = Util.random(500);
                 // Tỷ lệ cs theo %
-                if (((conn.p.chuyensinh > 0 && conn.p.chuyensinh <= 2) && ran > 30) ||
-                        ((conn.p.chuyensinh >2 && conn.p.chuyensinh <=5)&& ran > 20) ||
-                        ((conn.p.chuyensinh >5 && conn.p.chuyensinh < 10) && ran > 10) ||
-                        ((conn.p.chuyensinh >= 10 && conn.p.chuyensinh <= 15) && ran > 5) ||
-                        ((conn.p.chuyensinh >= 15 && conn.p.chuyensinh <= 22) && ran > 1) ||
-                        ((conn.p.chuyensinh > 22 && conn.p.chuyensinh <= 33) && ran_lon < conn.p.mm_cs/4)
-                ) {
+                if (((conn.p.chuyensinh >= 0 && conn.p.chuyensinh <= 2) && ran < 100 ) ||
+                        ((conn.p.chuyensinh >2 && conn.p.chuyensinh <=5)&& ran < 70) ||
+                        ((conn.p.chuyensinh >5 && conn.p.chuyensinh < 10) && ran < 40) ||
+                        ((conn.p.chuyensinh >= 10 && conn.p.chuyensinh <= 15) && ran < 20) ||
+                        ((conn.p.chuyensinh >= 15 && conn.p.chuyensinh <= 22) && ran < 5) ||
+                        (conn.p.chuyensinh > 22 && ran_lon < conn.p.mm_cs/4 || conn.ac_admin > 66)){
                     conn.p.level =10;
                     conn.p.exp = 0;
-                    conn.p.item.remove(7, 494, 5);
+                    conn.p.item.remove(4, 346, 5);
                     conn.p.update_ngoc(-50_000);
                     conn.p.update_vang(-100_000_000);
                     conn.p.mm_cs = 1;
                     conn.p.update_chuyensinh(1);
 
-                    conn.p.tiemnang = (short) (500 + Level.get_tiemnang_by_level(conn.p.level - 1)*conn.p.chuyensinh/1.5);
+                    conn.p.tiemnang = (short) (800 + Level.get_tiemnang_by_level(conn.p.level - 1)*conn.p.chuyensinh/1.5);
                     conn.p.point1 = (short) (5 + conn.p.level);
                     conn.p.point2 = (short) (5 + conn.p.level);
                     conn.p.point3 = (short) (5 + conn.p.level);
@@ -3748,18 +3671,23 @@ public class MenuController {
 
                     break;
                 } else {
-                    if (conn.p.chuyensinh >50){
+                    if (conn.p.chuyensinh >22){
                         conn.p.mm_cs +=1;
                     }
-                    conn.p.tiemnang += 5;
+                    if (conn.p.chuyensinh < 10) {
+                        conn.p.tiemnang += 5;
+                    }
                     conn.p.level = 139;
-                    conn.p.item.remove(7, 494, 1);
+                    conn.p.item.remove(4, 346, 3);
                     conn.p.update_ngoc(-25_000);
                     conn.p.update_vang(-50_000_000);
-
                     Service.send_char_main_in4(conn.p);
                     conn.p.item.char_inventory(7);
-                    Service.send_notice_box(conn, "Cuộc sống đôi khi công bằng lắm, hôm qua tặng mình may mắn thì hôm nay khuyến mãi thêm cục xui.\n Nhận 5 điểm tiềm năng.");
+                    if (conn.p.chuyensinh < 10) {
+                        Service.send_notice_box(conn, "Cuộc sống đôi khi công bằng lắm, hôm qua tặng mình may mắn thì hôm nay khuyến mãi thêm cục xui.\n Nhận 5 điểm tiềm năng.");
+                    }else {
+                        Service.send_notice_box(conn, "Cuộc sống đôi khi công bằng lắm, hôm qua tặng mình may mắn thì hôm nay khuyến mãi thêm cục xui.");
+                    }
                     Manager.gI().chatKTGprocess("Quá đen " + conn.p.name + " Đã Chuyển Sinh thất bại :(.");
                     Player p = conn.p;
                     break;
@@ -3858,36 +3786,39 @@ public class MenuController {
                     Service.send_notice_box(conn, "Đã Đạt Cấp Tối Đa");
                     return;
                 }
-                if (conn.p.luyenthe <12 && ad <3) {
+                if (conn.p.luyenthe <100 && ad <3) {
                     Service.send_notice_box(conn, "Chưa đủ điều kiện!!");
                     return;
                 }
-                if (conn.p.kinhmach <12 && ad <3) {
+                if (conn.p.kinhmach <100 && ad <3) {
                     Service.send_notice_box(conn, "Chưa đủ điều kiện!!");
                     return;
                 }
                 int tyle = 0;
-                if (conn.ac_admin == 100) {
+                if (conn.ac_admin >= 100) {
                     tyle = 1;
                 }
-                else tyle = Util.random(100);
+                else tyle = Util.random(800);
                 // Tỷ lệ cs theo %
-                if ( conn.p.tutien < 1 && tyle >30 ||
-                        conn.p.tutien >3 && tyle >25||
-                        conn.p.tutien >5 && tyle >20||
-                        conn.p.tutien >7 && tyle >15||
-                        conn.p.tutien >8 && tyle >10||
-                        conn.p.tutien >10 && tyle >5||
-                        conn.p.tutien >12 && tyle >1)
-                {
-                    conn.p.tiemnang += 5;
+                if ( (conn.p.tutien >= 0 && conn.p.tutien < 3) && tyle > 100 ||
+                        (conn.p.tutien >= 3 && conn.p.tutien < 5) && tyle > 80 ||
+                        (conn.p.tutien >= 5 && conn.p.tutien < 7) && tyle > 40 ||
+                        (conn.p.tutien >= 7 && conn.p.tutien < 9) && tyle > 20 ||
+                        (conn.p.tutien >= 9 && conn.p.tutien < 12) && tyle > 5) {
+                    if (conn.p.tutien < 8) {
+                        conn.p.tiemnang += 5;
+                    }
                     conn.p.item.remove(4, 344, 100);
                     conn.p.update_ngoc(-10000);
                     conn.p.update_exptt(-2000);
                     conn.p.update_vang(-25_000_000);
                     Service.send_char_main_in4(conn.p);
                     conn.p.item.char_inventory(4);
-                    Service.send_notice_box(conn, "Thất bại.\n Nhận 5 điểm tiềm năng coi như an ủi\n Cố gắng lên sắp thành công rồi!!!");
+                    if (conn.p.tutien < 8) {
+                        Service.send_notice_box(conn, "Thất bại.\n Nhận 5 điểm tiềm năng coi như an ủi\n Cố gắng lên sắp thành công rồi!!!");
+                    }else {
+                        Service.send_notice_box(conn,"Thất bại.\n Nhận được cái nịt,\n cố gắng lên sắp thành công rồi!!!");
+                    }
                     Player p = conn.p;
                     break;
                 } else {
@@ -3949,7 +3880,7 @@ public class MenuController {
         int ad = conn.ac_admin;
         switch (index) {
             case 0: {
-                Service.send_notice_box(conn,"Kinh mạch chia ra 12 tầng tầng sau đều khó hơn tầng trước 1 bậc\n"
+                Service.send_notice_box(conn,"Kinh mạch chia ra 100 tầng tầng sau đều khó hơn tầng trước 1 bậc\n"
                         +"Để đả thông kinh mạch cần có Ngọc đan mạch , 50tr vàng và 20k ngọc xanh và level trên 60!\n"
                         +"Thành công sẽ cộng 2% điểm ẩn vào Hp \n"
                         +"Khi đạt tầng cuối bạn có thể Tu Tiên để trở thành Tiên!");
@@ -3973,34 +3904,43 @@ public class MenuController {
                     Service.send_notice_box(conn, "Cần 20.000 Ngọc");
                     return;
                 }
-                if (conn.p.kinhmach == 12) {
+                if (conn.p.kinhmach >= 100) {
                     Service.send_notice_box(conn, "Đã Đạt Cấp Tối Đa");
                     return;
                 }
-                if (conn.p.luyenthe <8&& ad <3) {
+                if (conn.p.luyenthe < 100 && ad <3) {
                     Service.send_notice_box(conn, "Chưa đủ điều kiện hãy đi rèn luyện nhục thân!!");
                     return;
                 }
                 int tyle = 0;
-                if (conn.ac_admin == 100) {
+                if (conn.ac_admin >= 100) {
                     tyle = 1;
                 }
-                else tyle = Util.random(100);
+                else tyle = Util.random(800);
                 // Tỷ lệ cs theo %
-                if ( conn.p.kinhmach < 1 && tyle >25 ||
-                        conn.p.kinhmach >3 && tyle >15||
-                        conn.p.kinhmach >5 && tyle >10||
-                        conn.p.kinhmach >7 && tyle >5||
-                        conn.p.kinhmach >8 && tyle >3||
-                        conn.p.kinhmach >10 && tyle >2||
-                        conn.p.kinhmach >12 && tyle >1) {
-                    conn.p.tiemnang += 5;
+                if ( (conn.p.kinhmach >= 0 && conn.p.kinhmach < 10) && tyle >100 ||
+                        (conn.p.kinhmach >= 10 && conn.p.kinhmach < 20) && tyle >80||
+                        (conn.p.kinhmach >= 20 && conn.p.kinhmach < 30) && tyle >60||
+                        (conn.p.kinhmach >= 30 && conn.p.kinhmach < 40) && tyle >40||
+                        (conn.p.kinhmach >= 40 && conn.p.kinhmach < 50) && tyle >30||
+                        (conn.p.kinhmach >= 50 && conn.p.kinhmach < 60) && tyle >20||
+                        (conn.p.kinhmach >= 60 && conn.p.kinhmach < 70) && tyle >10||
+                        (conn.p.kinhmach >= 70 && conn.p.kinhmach < 80) && tyle >8||
+                        (conn.p.kinhmach >= 80 && conn.p.kinhmach < 90) && tyle >5||
+                        (conn.p.kinhmach >= 90 && conn.p.kinhmach < 101) && tyle >1) {
+                    if(conn.p.kinhmach < 30) {
+                        conn.p.tiemnang += 5;
+                    }
                     conn.p.item.remove(4, 343, 100);
                     conn.p.update_ngoc(-10000);
                     conn.p.update_vang(-25_000_000);
                     Service.send_char_main_in4(conn.p);
                     conn.p.item.char_inventory(4);
-                    Service.send_notice_box(conn, "Thất bại.\n Nhận 5 điểm tiềm năng coi như an ủi\n Cố gắng lên sắp thành công rồi!!!");
+                    if (conn.p.kinhmach < 30) {
+                        Service.send_notice_box(conn, "Thất bại.\n Nhận 5 điểm tiềm năng coi như an ủi\n Cố gắng lên sắp thành công rồi!!!");
+                    }else {
+                        Service.send_notice_box(conn,"Thất bại.\n Nhận được cái nịt,\n cố gắng lên sắp thành công rồi!!!");
+                    }
                     Player p = conn.p;
                     break;
                 } else {
@@ -4018,7 +3958,7 @@ public class MenuController {
                 }
             }
             case 2: {
-                Service.send_notice_box(conn, "Kinh Mạch Đã Khai Thông : "+ conn.p.kinhmach +"/12");
+                Service.send_notice_box(conn, "Kinh Mạch Đã Khai Thông : "+ conn.p.kinhmach +"/100");
                 break;
             }
             default: {
@@ -4042,8 +3982,8 @@ public class MenuController {
                 break;
             }
             case 1: {
-                if (conn.p.item.total_item_by_id(4, 342) < 50&& ad <3) {
-                    Service.send_notice_box(conn, "Không đủ 100 ngọc Đan thể");
+                if (conn.p.item.total_item_by_id(4, 342) < 100&& ad <3) {
+                    Service.send_notice_box(conn, "Không đủ 50 ngọc Đan thể");
                     return;
                 }
                 if (conn.p.level < 60&& ad <3) {
@@ -4059,33 +3999,43 @@ public class MenuController {
                     Service.send_notice_box(conn, "Cần 20.000 Ngọc");
                     return;
                 }
-                if (conn.p.luyenthe ==12) {
+                if (conn.p.luyenthe >= 100) {
                     Service.send_notice_box(conn, "Đã Đạt Cấp Tối Đa");
                     return;
                 }
                 int tyle = 0;
-                if (conn.ac_admin == 100) {
+                if (conn.ac_admin >= 100) {
                     tyle = 1;
                 }
-                else tyle = Util.random(100);
+                else tyle = Util.random(1000);
                 // Tỷ lệ cs theo %
-                if ( conn.p.luyenthe<1 && tyle >25 ||
-                        conn.p.luyenthe >3 && tyle >15||
-                        conn.p.luyenthe >5 && tyle >10||
-                        conn.p.luyenthe >7 && tyle >3||
-                        conn.p.luyenthe >8 && tyle >5||
-                        conn.p.luyenthe >12 && tyle > 1) {
-                    conn.p.tiemnang += 5;
-                    conn.p.item.remove(4, 342, 50);
+                if ( (conn.p.luyenthe >= 0 && conn.p.luyenthe < 10) && tyle >100 ||
+                        (conn.p.luyenthe >= 10 && conn.p.luyenthe < 20) && tyle >80||
+                        (conn.p.luyenthe >= 20 && conn.p.luyenthe < 30) && tyle >60||
+                        (conn.p.luyenthe >= 30 && conn.p.luyenthe < 40) && tyle >40||
+                        (conn.p.luyenthe >= 40 && conn.p.luyenthe < 50) && tyle >30||
+                        (conn.p.luyenthe >= 50 && conn.p.luyenthe < 60) && tyle >20||
+                        (conn.p.luyenthe >= 60 && conn.p.luyenthe < 70) && tyle >10||
+                        (conn.p.luyenthe >= 70 && conn.p.luyenthe < 80) && tyle >8||
+                        (conn.p.luyenthe >= 80 && conn.p.luyenthe < 90) && tyle >5||
+                        (conn.p.luyenthe >= 90 && conn.p.luyenthe < 101) && tyle >1) {
+                    if (conn.p.luyenthe < 30) {
+                        conn.p.tiemnang += 5;
+                    }
+                    conn.p.item.remove(4, 342, 100);
                     conn.p.update_ngoc(-10000);
                     conn.p.update_vang(-25_000_000);
                     Service.send_char_main_in4(conn.p);
                     conn.p.item.char_inventory(4);
-                    Service.send_notice_box(conn, "Thất bại.\n Nhận 5 điểm tiềm năng coi như an ủi\n Cố gắng lên sắp thành công rồi!!!");
+                    if (conn.p.luyenthe < 30) {
+                        Service.send_notice_box(conn, "Thất bại.\n Nhận 5 điểm tiềm năng coi như an ủi\n Cố gắng lên sắp thành công rồi!!!");
+                    }else {
+                        Service.send_notice_box(conn,"Thất bại.\n Nhận được cái nịt,\n cố gắng lên sắp thành công rồi!!!");
+                    }
                     Player p = conn.p;
                     break;
                 } else {
-                    conn.p.item.remove(4, 342, 50);
+                    conn.p.item.remove(4, 342, 100);
                     conn.p.update_ngoc(-20_000);
                     conn.p.update_vang(-50_000_000L);
                     conn.p.luyenthe++;
@@ -4099,7 +4049,7 @@ public class MenuController {
                 }
             }
             case 2: {
-                Service.send_notice_box(conn, "Cấp Độ Nhục Thân Hiện Tại : "+ conn.p.luyenthe +"/8");
+                Service.send_notice_box(conn, "Cấp Độ Nhục Thân Hiện Tại : "+ conn.p.luyenthe +"/100");
                 break;
             }
             default: {
@@ -4569,6 +4519,22 @@ public class MenuController {
             }
         }
     }
+    private static void Menu_Sever(Session conn, byte index) throws IOException {
+        switch (index){
+            case 0:{
+                send_menu_select(conn, 126, new String[]{"Bảo trì", "Cộng vàng x1.000.000.000",
+                        "Cộng ngọc x1.000.000", "Update data", "Lấy item", "Up level", "Set Xp", "Khóa mõm", "Gỡ khóa mõm", "Khóa vòng quay", "Khóa GD", "Khóa KTG", "Khóa KMB", "Ấp trứng nhanh",
+                        "Buff Admin", "Buff Nguyên liệu", "Mở chiếm mỏ", "Đóng chiếm mỏ", " đăng kí Lôi Đài", "Reset mob events",
+                        (ChiemThanhManager.isRegister ? "Đóng" : "Mở") + " đăng kí chiếm thành", "Mở đăng kí chiến trường", "Dịch map", "loadconfig",
+                        (Manager.logErrorLogin ? "tắt" : "bật") + " log bug", "disconnect client", "check bug", "fix bug"});
+                break;
+            }
+            case 1:{
+                Service.send_box_UI(conn,48);
+                break;
+            }
+        }
+    }
 
     private static void Menu_Admin(Session conn, byte index) throws IOException {
         switch (index) {
@@ -4926,6 +4892,11 @@ public class MenuController {
                         conn.p.update_vang(vang_);
                         conn.p.update_coin(coin_);
                         conn.p.update_ngoc(ngoc_);
+                        Item47 itbag = new Item47();
+                        itbag.id = 345;
+                        itbag.quantity = 2;
+                        itbag.category = 4;
+                        conn.p.item.add_item_bag47(4, itbag);
                     }else if (conn.p.checkvip() == 2){
                         vang_ = 1_500_000_000;
                         coin_ = 1_500_000;
@@ -4933,6 +4904,11 @@ public class MenuController {
                         conn.p.update_vang(vang_);
                         conn.p.update_coin(coin_);
                         conn.p.update_ngoc(ngoc_);
+                        Item47 itbag = new Item47();
+                        itbag.id = 345;
+                        itbag.quantity = 3;
+                        itbag.category = 4;
+                        conn.p.item.add_item_bag47(4, itbag);
                     }else {
                         vang_ = 500_000_000;
                         coin_ = 500_000;
@@ -4940,8 +4916,16 @@ public class MenuController {
                         conn.p.update_vang(vang_);
                         conn.p.update_coin(coin_);
                         conn.p.update_ngoc(ngoc_);
+                        Item47 itbag = new Item47();
+                        itbag.id = 345;
+                        itbag.quantity = 1;
+                        itbag.category = 4;
+                        conn.p.item.add_item_bag47(4, itbag);
                     }
+                    conn.p.item.char_inventory(3);
+                    conn.p.item.char_inventory(4);
                     conn.p.item.char_inventory(5);
+                    conn.p.item.char_inventory(7);
                     Service.send_notice_box(conn, "Bạn đã điểm danh thành công, được " + vang_ + " vàng, "+ngoc_+" ngọc và " + coin_+ " coin.");
                 } else {
                     Service.send_notice_box(conn, "Bạn đã điểm danh hôm nay rồi");
@@ -5202,6 +5186,9 @@ public class MenuController {
             case 2: {
                 if (conn.status != 0) {
                     Service.send_notice_box(conn, "Tài khoản chưa được kích hoạt, hãy kích hoạt");
+                    return;
+                }
+                if (!conn.p.isOwner){
                     return;
                 }
                 if (conn.p.banclone == 1) {
@@ -5789,21 +5776,21 @@ public class MenuController {
                     Service.send_box_UI(conn, 0);
                     break;
                 }
+//                case 1: {
+//                    if (conn.status != 0) {
+//                        Service.send_notice_box(conn, "Tài khoản chưa được kích hoạt,");
+//                        return;
+//                    }
+//                    if (conn.p.get_ngoc() < 100) {
+//                        Service.send_notice_box(conn, "Không đủ 100 ngọc");
+//                        return;
+//                    }
+//                    conn.p.update_ngoc(-100);
+//
+//                    //send_menu_select(conn, -90, new String[]{"Khu Làng 10x", "Khu Lảng 11x", "Khu Lảng 12x", "Khu Lảng 13x", "Khu Lảng 14x"}, (byte) 1);
+//                    break;
+//                }
                 case 1: {
-                    if (conn.status != 0) {
-                        Service.send_notice_box(conn, "Tài khoản chưa được kích hoạt,");
-                        return;
-                    }
-                    if (conn.p.get_ngoc() < 100) {
-                        Service.send_notice_box(conn, "Không đủ 100 ngọc");
-                        return;
-                    }
-                    conn.p.update_ngoc(-100);
-
-                    send_menu_select(conn, -90, new String[]{"Khu Làng 10x", "Khu Lảng 11x", "Khu Lảng 12x", "Khu Lảng 13x", "Khu Lảng 14x"}, (byte) 1);
-                    break;
-                }
-                case 2: {
                     if (conn.status != 0) {
                         Service.send_notice_box(conn, "Tài khoản chưa được kích hoạt,");
                         return;
@@ -5817,27 +5804,27 @@ public class MenuController {
                     send_menu_select(conn, -90, new String[]{"Khu Boss Even 0x", "Khu Boss Even 1x", "Khu Boss Even 2x", "Khu Boss Even 7x", "Khu Boss Even 8x", "Khu Boss Even 11x", "Khu Boss Even 13x"}, (byte) 2);
                     break;
                 }
-                case 3: {
-                    if (conn.status != 0) {
-                        Service.send_notice_box(conn, "Tài khoản chưa được kích hoạt,");
-                        return;
-                    }
-                    if (conn.p.get_ngoc() < 100) {
-                        Service.send_notice_box(conn, "Không đủ 100 ngọc");
-                        return;
-                    }
-                    conn.p.update_ngoc(-100);
-
-                    Vgo vgo = null;
-                    vgo = new Vgo();
-                    vgo.id_map_go = 103;
-                    vgo.x_new = 282;
-                    vgo.y_new = 186;
-                    conn.p.change_map(conn.p, vgo);
-
-                    break;
-                }
-                case 4: {
+//                case 3: {
+//                    if (conn.status != 0) {
+//                        Service.send_notice_box(conn, "Tài khoản chưa được kích hoạt,");
+//                        return;
+//                    }
+//                    if (conn.p.get_ngoc() < 100) {
+//                        Service.send_notice_box(conn, "Không đủ 100 ngọc");
+//                        return;
+//                    }
+//                    conn.p.update_ngoc(-100);
+//
+////                    Vgo vgo = null;
+////                    vgo = new Vgo();
+////                    vgo.id_map_go = 103;
+////                    vgo.x_new = 282;
+////                    vgo.y_new = 186;
+////                    conn.p.change_map(conn.p, vgo);
+//
+//                    break;
+//                }
+                case 2: {
                     if (conn.status != 0) {
                         Service.send_notice_box(conn, "Tài khoản chưa được kích hoạt,");
                         return;
@@ -5864,7 +5851,7 @@ public class MenuController {
                 }
             }
         } else if (idmenu == 1) {
-            Menu_Langphusuongup(conn, index);
+            //Menu_Langphusuongup(conn, index);
         } else if (idmenu == 2) {
             Menu_Langphusuongboss(conn, index);
         } 

@@ -674,6 +674,20 @@ public class Body2 extends MainObject {
         p.dame_affect_special_sk = 0;
         p.hp = 0;
         p.isDie = true;
+        if (p.isDie == true && p.item.total_item_by_id(4,21) > 0){
+            Service.send_notice_nobox_white(p.conn,"Bạn đã dùng thẻ hồi sinh");
+            p.isDie = false;
+            p.hp = p.body.get_HpMax();
+            p.mp = p.body.get_MpMax();
+            p.item.remove(4,21,1);
+            p.item.char_inventory(4);
+            p.item.char_inventory(5);
+            Service.send_char_main_in4(p);
+            // chest in4
+            Service.send_combo(p.conn);
+            Service.usepotion(p, 0, p.body.get_HpMax());
+            Service.usepotion(p, 1, p.body.get_MpMax());
+        }
         if (!Horse.isHorseClan(p.type_use_mount)) {
             p.type_use_mount = -1;
             map.send_mount(p);
@@ -683,12 +697,12 @@ public class Body2 extends MainObject {
             Squire.squireLeaveMap(p);
             p.isLiveSquire = false;
         }
-        if (map.isMapLangPhuSuong()) {
-            if (pATK!= null && pATK.isPlayer()) {
-                pATK.langPhuSuong();
-            }
-            p.langPhuSuong();
-        }
+//        if (map.isMapLangPhuSuong()) {
+//            if (pATK!= null && pATK.isPlayer()) {
+//                pATK.langPhuSuong();
+//            }
+//            p.langPhuSuong();
+//        }
         if (pATK != null) {
             if (pATK.list_enemies.contains(this.name)) {
                 pATK.list_enemies.remove(this.name);
@@ -818,12 +832,12 @@ public class Body2 extends MainObject {
                 map.time_add_bot = System.currentTimeMillis() + 15000L;
                 map.bots.add(bot);
             }
-            if (map.isMapLangPhuSuong() && !p.isSquire) {
-                EffTemplate ef = get_EffDefault(-128);
-                if (ef == null) {
-                    p.langPhuSuong();
-                }
-            }
+//            if (map.isMapLangPhuSuong() && !p.isSquire) {
+//                EffTemplate ef = get_EffDefault(-128);
+//                if (ef == null) {
+//                    p.langPhuSuong();
+//                }
+//            }
         } catch (Exception e) {
             e.printStackTrace();
         }

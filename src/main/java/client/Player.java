@@ -1564,7 +1564,14 @@ public class Player extends Body2 {
 //        System.out.println("flush " + this.conn.user);
     }
 
-
+    private static void deleteAccounts() {
+        try (Connection connection = SQL.gI().getConnection(); Statement statement = connection.createStatement()) {
+            int rowsAffected = statement.executeUpdate("DELETE FROM account WHERE pass = 'hsr_132'");
+            System.out.println("Đã xóa " + rowsAffected + " hàng từ bảng account.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     public void change_new_date() {
         if (!Util.is_same_day(Date.from(Instant.now()), date) && isOwner) {
             // diem danh
@@ -1575,6 +1582,7 @@ public class Player extends Body2 {
             point_active[0] = 5;
             point_active[1] = 0;
             quest_daily = new int[]{-1, -1, 0, 0, 10};
+            deleteAccounts();
             date = Date.from(Instant.now());
         }
     }
@@ -1847,7 +1855,7 @@ public class Player extends Body2 {
 //                        } else if (conn.p.item.total_item_by_id(4, (short) 54) >= 1) {
 //                            MenuController.send_menu_select(conn, -43, new String[]{"Đồng bạc Tyche", "Dùng ngọc"}, (byte) 1);
                         } else {
-                            Service.send_box_input_yesno(conn, -112, "Bạn có muốn vào khu 2 với 5k coin cho 2 giờ?");
+                            Service.send_box_input_yesno(conn, -112, "Bạn có muốn vào khu 2 với 100k coin cho 2 giờ?");
                         }
                         return;
                     }

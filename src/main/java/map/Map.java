@@ -849,7 +849,7 @@ public class Map implements Runnable {
             m.writer().writeByte(1);
             m.writer().writeUTF("Ms AD");
             m.writer().writeUTF("Giao Tiếp");
-            m.writer().writeByte(-1);// id npc
+            m.writer().writeByte(-0);// id npc
             m.writer().writeByte(22);   // icon
             m.writer().writeShort(358); // x
             m.writer().writeShort(302); // y

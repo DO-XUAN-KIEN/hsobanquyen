@@ -220,7 +220,6 @@ public class Leo_thap {
                 for (int i = 0; i < template.players.size(); i++) {
                     Player p0 = template.players.get(i);
                     p0.dokho = 0;
-                    p0.boss_rieng += 1;
                     p0.x = 432;
                     p0.y = 354;
                     Map[] map_enter = Map.get_map_by_id(1);
@@ -535,10 +534,12 @@ public class Leo_thap {
             if (!mob.isDie) {
                 mob.isDie = true;
                 // send p outside
-                if(Util.random_ratio(17))
-                    ev_he.Event_3.LeaveItemMap(map, mob, p);
+//                if(Util.random_ratio(17))
+//                    ev_he.Event_3.LeaveItemMap(map, mob, p);
                 if(30>Util.random(1,101))
                     leave_item_by_type7(map, (short)Util.random(417,464), p, mob.index);
+                if (50>Util.random(100))
+                    leave_item_by_type4(map,(short) Util.random(342,345),p,mob.index);
                 Message m2 = new Message(17);
                 m2.writer().writeShort(p.index);
                 m2.writer().writeShort(mob.index);
@@ -683,6 +684,31 @@ public class Leo_thap {
             mi.writer().writeShort(index_item_map); //
             mi.writer().writeUTF(name);
             mi.writer().writeByte(color_); // color
+            mi.writer().writeShort(-1); // id player
+            MapService.send_msg_player_inside(map, p_master, mi, true);
+            mi.cleanup();
+        }
+    }
+    public static void leave_item_by_type4(Map map, short id_item, Player p_master, int index_mob) throws IOException {
+        int index_item_map = map.get_item_map_index_able();
+        if (index_item_map > -1) {
+            //
+            map.item_map[index_item_map] = new ItemMap();
+            map.item_map[index_item_map].id_item = id_item;
+            map.item_map[index_item_map].color = 0;
+            map.item_map[index_item_map].quantity = 1;
+            map.item_map[index_item_map].category = 4;
+            map.item_map[index_item_map].idmaster = (short) p_master.index;
+            map.item_map[index_item_map].time_exist = System.currentTimeMillis() + 60_000L;
+            map.item_map[index_item_map].time_pick = System.currentTimeMillis() + 1_500L;
+            // add in4 game scr
+            Message mi = new Message(19);
+            mi.writer().writeByte(4);
+            mi.writer().writeShort(index_mob); // id mob die
+            mi.writer().writeShort(ItemTemplate4.item.get(map.item_map[index_item_map].id_item).getIcon());
+            mi.writer().writeShort(index_item_map); //
+            mi.writer().writeUTF(ItemTemplate4.item.get(map.item_map[index_item_map].id_item).getName());
+            mi.writer().writeByte(0); // color
             mi.writer().writeShort(-1); // id player
             MapService.send_msg_player_inside(map, p_master, mi, true);
             mi.cleanup();

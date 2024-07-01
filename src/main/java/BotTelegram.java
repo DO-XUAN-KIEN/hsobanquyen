@@ -33,7 +33,6 @@
 //        String filePath = "backup.sql";
 //        try {
 //            byte[] fileBytes = Files.readAllBytes(Paths.get(filePath));
-//
 //            File tempFile = File.createTempFile("backup", ".sql");
 //            FileOutputStream fos = new FileOutputStream(tempFile);
 //            fos.write(fileBytes);
@@ -41,7 +40,7 @@
 //            InputFile inputFile = new InputFile().setMedia(tempFile);
 //
 //            SendDocument sendDocument = new SendDocument();
-//            sendDocument.setChatId("6856452187");
+//            sendDocument.setChatId("6856452187"); // Thay bằng chat ID của bạn
 //            sendDocument.setDocument(inputFile);
 //            execute(sendDocument);
 //        } catch (TelegramApiException e) {

@@ -370,9 +370,9 @@ public class MainObject {
             if ((focus.level - ObjAtk.level >=10 || focus.level - ObjAtk.level <= -10) && map.zone_id == map.maxzone){
                 return;
             }
-            if (ObjAtk.isPlayer() && focus.isPlayer() && (map.zone_id == 1 || map.zone_id == 7 || map.zone_id == 8) && !Map.is_map_not_zone2(map.map_id) && ((Player) ObjAtk).conn.ac_admin < 66) {
-                return;
-            }
+//            if (ObjAtk.isPlayer() && focus.isPlayer() && (map.zone_id == 1 || map.zone_id == 7 || map.zone_id == 8) && !Map.is_map_not_zone2(map.map_id) && ((Player) ObjAtk).conn.ac_admin < 66) {
+//                return;
+//            }
             if (ObjAtk.isPlayer() && focus.isPlayer() && !map.isMapChiemThanh() && (map.ismaplang || ObjAtk.level < 11 || focus.level < 11
                     || (ObjAtk.typepk != 0 && ObjAtk.typepk == focus.typepk) || ObjAtk.hieuchien > 320_000) && ((Player) ObjAtk).conn.ac_admin < 66) {
                 return;
@@ -413,9 +413,9 @@ public class MainObject {
                     Service.send_notice_box(((Player) ObjAtk).conn, "Đối phương có hiệu ứng chống pk");
                     return;
                 }
-                if ((map.zone_id == 1 || map.zone_id == 7 || map.zone_id == 8) && !Map.is_map_not_zone2(map.map_id) && ((Player) ObjAtk).conn.ac_admin < 66) {
-                    return;
-                }
+//                if ((map.zone_id == 1 || map.zone_id == 7 || map.zone_id == 8) && !Map.is_map_not_zone2(map.map_id) && ((Player) ObjAtk).conn.ac_admin < 66) {
+//                    return;
+//                }
                 if (((Player) focus).pet_follow == 4708) {
                     Service.send_notice_box(((Player) ObjAtk).conn, "Đối phương đang được pet bảo vệ");
                     return;
@@ -702,7 +702,6 @@ public class MainObject {
                         DamePlus += 1;
                     }
                 }
-
                 double ptHP = (ObjAtk.hp / ObjAtk.get_HpMax()) * 100;
                 if ((ef = ObjAtk.get_EffMe_Kham(StrucEff.NgocPhongMa)) != null) {
                     HoiHP += (int) (hpmax * ef.param * 0.0001);
@@ -723,7 +722,6 @@ public class MainObject {
             //</editor-fold>
 
             dame += dame * DamePlus;
-
             int def = focus.get_DefBase();
 //        def += def * focus.get_PercentDefBase() * 0.0001;
 //        if (ObjAtk.isPlayer()) {
@@ -747,6 +745,11 @@ public class MainObject {
                         dame = 0;
                     } else {
                         dame = 1;
+                    }
+                }
+                if (focus.isBoss()){
+                    if (30 > Util.random(100)) {
+                        dame = 0;
                     }
                 }
                 boolean check = (dame < 0

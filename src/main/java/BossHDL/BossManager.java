@@ -9,6 +9,7 @@ import map.LeaveItemMap;
 import map.Mob_in_map;
 import template.Mob;
 import map.Map;
+import template.Mob_Leothap;
 
 /**
  *
@@ -16,6 +17,7 @@ import map.Map;
  */
 public class BossManager {
     public static final CopyOnWriteArrayList<Mob_in_map> entrys = new CopyOnWriteArrayList<>();
+    private static long time_hoi;
     
     private static byte GetIdMap(int idboss){
         switch (idboss) {
@@ -123,6 +125,9 @@ public class BossManager {
     public static void Update(){
         try{
             long time = System.currentTimeMillis();
+            if (time_hoi == 0){
+                time_hoi = time;
+            }
             for(Mob_in_map mob : entrys){
                 if((!mob.is_boss_active || mob.isDie) && time > mob.time_back){
                     Map[] map = Map.get_map_by_id(mob.map_id);
@@ -136,6 +141,15 @@ public class BossManager {
                     //Manager.gI().chatKTGprocess(""+mob.template.name+" đã xuất hiện tại "+map[mob.zone_id].name);
                     //System.out.println("Boss "+mob.template.name+" Acctive "+map[mob.zone_id].name+ " khu "+(mob.zone_id+1));
                 }
+            }
+            if (time - time_hoi >= 5000){
+                for (Mob_in_map mob : entrys) {
+                    mob.hp += 1_000_000;
+                    if (mob.hp >= mob.get_HpMax()) {
+                        mob.hp = mob.get_HpMax();
+                    }
+                }
+                time_hoi = time;
             }
         }catch(Exception e){e.printStackTrace();}
     }

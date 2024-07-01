@@ -184,17 +184,31 @@ public class Mob_in_map extends MainObject {
                                 if(Util.random(2000) < 4) {
                                     LeaveItemMap.leave_item_by_type7(map, (short) 494, p, mob.index);
                                 }
+                                if (Util.random(1000) < 4) {
+                                    LeaveItemMap.leave_item_by_type4(map, (short) Util.random(342,345),p,mob.index);
+                                }
+                                if (Util.random(1500) < 4) {
+                                    LeaveItemMap.leave_item_by_type4(map, (short) 346,p,mob.index);
+                                }
                                 if (Util.random(0, 10) < 2) {
                                     LeaveItemMap.leave_item_by_type7(map, (short) Util.random(116, 126), p, mob.index);
                                 } else {
                                     LeaveItemMap.leave_item_by_type7(map, (short) 13, p, mob.index);
                                 }
                             }
-                            else if (percent > Util.random(0, 500) && zone_id == 8 && !Map.is_map_not_zone2(map_id)) {
-                                if (Util.random(0, 10) < 2) {
-                                    LeaveItemMap.leave_item_by_type7(map, (short) Util.random(417, 464), p, mob.index);
-                                } else {
-                                    LeaveItemMap.leave_item_by_type7(map, (short) 13, p, mob.index);
+                            if (percent > Util.random(0, 500) && zone_id == 7 && !Map.is_map_not_zone2(map_id)) {
+                                if (Util.random(800) < 4) {
+                                    LeaveItemMap.leave_item_by_type4(map, (short) Util.random(342,345),p,mob.index);
+                                }
+                                if (Util.random(1000) < 4) {
+                                    LeaveItemMap.leave_item_by_type4(map, (short) 346,p,mob.index);
+                                }
+                            } else if (percent > Util.random(0, 500) && zone_id == 8 && !Map.is_map_not_zone2(map_id)) {
+                                if (Util.random(500) < 4) {
+                                    LeaveItemMap.leave_item_by_type4(map, (short) Util.random(342,345),p,mob.index);
+                                }
+                                if (Util.random(800) < 4) {
+                                    LeaveItemMap.leave_item_by_type4(map, (short) 346,p,mob.index);
                                 }
                             }
                             if (percent > Util.random(0, 300)) {

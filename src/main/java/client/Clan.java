@@ -33,6 +33,7 @@ public class Clan {
     public static int[] vang_upgrade = new int[]{0, 1_000_000};
     public static int[] ngoc_upgrade = new int[]{0, 1_000};
     public List<Clan_mems> mems;
+    public int ID;
     public String name_clan;
     public String name_clan_shorted;
     public short icon;

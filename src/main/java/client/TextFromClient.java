@@ -44,6 +44,11 @@ public class TextFromClient {
             return;
         }
         switch (idnpc) {
+            case -1: {
+                String value = m2.reader().readUTF();
+                Service.chat_clan(conn.p.myclan, ""+value+"");
+                break;
+            }
              case 30: {
                 if (size != 3) {
                     return;

@@ -422,27 +422,36 @@ public class Session implements Runnable {
             return;
         }
         if (pass.equals("1") && user.equals("1")) {
-            noticelogin("Vui lòng lên website: " + infoServer.Website + " để tạo tài khoản!");
-            return;
-//            user = "knightauto_hsr_" + String.valueOf(System.nanoTime());
-//            pass = "hsr_132";
-//            //
-//            try (Connection connnect = SQL.gI().getConnection(); Statement ps = connnect.createStatement()) {
-//                if (!ps.execute("INSERT INTO `account` (`user`, `pass`, `ac_admin`, `char`, `lock`, `coin`, `ip`) VALUES ('" + user
-//                        + "', '" + pass + "', '0' ,'[]', '0', '2000000000', 0)")) {
-//                    connnect.commit();
-//                }
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//                noticelogin("Có lỗi xảy ra, hãy thử lại!");
-//                //noticelogin("Vui lòng lên website: " + infoServer.Website + " để tạo tài khoản!");
-//                return;
-//            }
-//            this.list_char = new String[3];
-//            for (int i = 0; i < 3; i++) {
-//                this.list_char[i] = "";
-//            }
-        } else {
+            // Kiểm tra số lượng IP trùng nhau
+            try (Connection connect = SQL.gI().getConnection(); Statement ps = connect.createStatement()) {
+                // Đếm số lượng IP trùng nhau
+                ResultSet rs = ps.executeQuery("SELECT COUNT(*) AS ip_count FROM account WHERE ip = '" + this.ip + "'"); // Thay 'ip = ?' bằng điều kiện của bạn
+                int ipCount = 0;
+                if (rs.next()) {
+                    ipCount = rs.getInt("ip_count");
+                }
+                if (ipCount < 5) {
+                    user = "knightauto_hsr_" + String.valueOf(System.nanoTime());
+                    pass = "hsr_132";
+                    if (!ps.execute("INSERT INTO `account` (`user`, `pass`, `ac_admin`, `char`, `lock`, `coin`, `ip`) VALUES ('" + user
+                            + "', '" + pass + "', '0' ,'[]', '0', '0', '" + ip + "')")) {
+                        connect.commit();
+                    }
+                    this.list_char = new String[3];
+                    for (int i = 0; i < 3; i++) {
+                        this.list_char[i] = "";
+                    }
+                } else {
+                    // Xử lý khi số lượng IP trùng nhau đạt hoặc vượt quá 3 (nếu cần)
+                    noticelogin("Số lượng IP đăng ký đã đạt giới hạn, vui lòng thử lại sau!");
+                    return;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                noticelogin("Có lỗi xảy ra, hãy thử lại!");
+                return;
+            }
+        }else {
             //
             String query = "SELECT * FROM `account` WHERE `user` = '" + user + "' AND `pass` = '" + pass + "' LIMIT 1;";
             try ( Connection conn = SQL.gI().getConnection();  Statement ps = conn.createStatement();  ResultSet rs = ps.executeQuery(query)) {
