@@ -221,6 +221,7 @@ public class Player extends Body2 {
     public long time_use_item_arena;
     public int id_henshin;
     public int count_special;
+    public ChiemMo mo;
 
     public void ResetCreateItemStar() {
         isCreateItemStar = false;
@@ -1563,15 +1564,6 @@ public class Player extends Body2 {
         }
 //        System.out.println("flush " + this.conn.user);
     }
-
-    private static void deleteAccounts() {
-        try (Connection connection = SQL.gI().getConnection(); Statement statement = connection.createStatement()) {
-            int rowsAffected = statement.executeUpdate("DELETE FROM account WHERE pass = 'hsr_132'");
-            System.out.println("Đã xóa " + rowsAffected + " hàng từ bảng account.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
     public void change_new_date() {
         if (!Util.is_same_day(Date.from(Instant.now()), date) && isOwner) {
             // diem danh
@@ -1582,7 +1574,6 @@ public class Player extends Body2 {
             point_active[0] = 5;
             point_active[1] = 0;
             quest_daily = new int[]{-1, -1, 0, 0, 10};
-            deleteAccounts();
             date = Date.from(Instant.now());
         }
     }
@@ -1830,60 +1821,66 @@ public class Player extends Body2 {
             conn.addmsg(m);
             m.cleanup();
         }
-        byte zone = m2.reader().readByte();
-        Map map_change = Map.get_map_by_id(this.map.map_id)[zone];
-        if (zone == map.maxzone && !conn.p.isKnight() && !conn.p.isRobber() && !conn.p.isTrader() && map_change.is_map_buon()) {
-            return;
-        }
-        if (zone < this.map.maxzone || (conn.p.item.wear[11] != null && (conn.p.item.wear[11].id == 3599
-                || conn.p.item.wear[11].id == 3593 || conn.p.item.wear[11].id == 3596))) {
-            if (zone != this.map.zone_id) {
-                Map map = Map.get_map_by_id(this.map.map_id)[zone];
-                if (map.players.size() >= map.maxplayer) {
-                    Service.send_notice_box(conn, "Có lỗi xảy ra khi chuyển map hoặc đã đầy, hãy thử lại sau");
-                    return;
-                }
-                if (zone == 1 && !Map.is_map_not_zone2(map_change.map_id)) {
-                    EffTemplate ff = conn.p.get_EffDefault(-127);
-                    if (ff == null) {
-                        if (conn.p.khu2 > 0) {
-                            conn.p.add_EffDefault(-127, 1, 2 * 60 * 60 * 1000);
-                            MapService.leave(conn.p.map, conn.p);
-                            conn.p.map = map_change;
-                            MapService.enter(conn.p.map, conn.p);
-                            khu2--;
-//                        } else if (conn.p.item.total_item_by_id(4, (short) 54) >= 1) {
-//                            MenuController.send_menu_select(conn, -43, new String[]{"Đồng bạc Tyche", "Dùng ngọc"}, (byte) 1);
-                        } else {
-                            Service.send_box_input_yesno(conn, -112, "Bạn có muốn vào khu 2 với 100k coin cho 2 giờ?");
-                        }
-                        return;
-                    }
-                }
-                if (zone == 7 && !Map.is_map_not_zone2(map_change.map_id)) {
-                    if (checkvip() < 1){
-                        Service.send_notice_box(conn, "Bạn chưa đủ vip 1 để vào");
-                        return;
-                    }
-                    MapService.leave(conn.p.map, conn.p);
-                    conn.p.map = map_change;
-                    MapService.enter(conn.p.map, conn.p);
-                }
-                if (zone == 8 && !Map.is_map_not_zone2(map_change.map_id)) {
-                    if (checkvip() < 2){
-                        Service.send_notice_box(conn, "Bạn chưa đủ vip 2 để vào");
-                        return;
-                    }
-                    MapService.leave(conn.p.map, conn.p);
-                    conn.p.map = map_change;
-                    MapService.enter(conn.p.map, conn.p);
-                }
-                MapService.leave(this.map, this);
-                this.map = map_change;
-                MapService.enter(this.map, this);
-            } else {
-                Service.send_notice_box(conn, "Bạn đang ở khu vực này!");
+        try {
+            byte zone = m2.reader().readByte();
+            Map map_change = Map.get_map_by_id(this.map.map_id)[zone];
+            if (zone == map.maxzone && !conn.p.isKnight() && !conn.p.isRobber() && !conn.p.isTrader() && map_change.is_map_buon()) {
+                return;
             }
+            if (zone < this.map.maxzone || (conn.p.item.wear[11] != null && (conn.p.item.wear[11].id == 3599
+                    || conn.p.item.wear[11].id == 3593 || conn.p.item.wear[11].id == 3596))) {
+                if (zone != this.map.zone_id) {
+                    Map map = Map.get_map_by_id(this.map.map_id)[zone];
+                    if (map.players.size() >= map.maxplayer) {
+                        Service.send_notice_box(conn, "Có lỗi xảy ra khi chuyển map hoặc đã đầy, hãy thử lại sau");
+                        return;
+                    }
+                    if(conn.p.myclan == null && zone == 4){
+                        Service.send_notice_box(conn,"Cần có bang mới có thể vào khu này");
+                        return;
+                    }
+                    if (zone == 1 && !Map.is_map_not_zone2(map_change.map_id)) {
+                        EffTemplate ff = conn.p.get_EffDefault(-127);
+                        if (ff == null) {
+                            if (conn.p.khu2 > 0) {
+                                conn.p.add_EffDefault(-127, 1, 2 * 60 * 60 * 1000);
+                                MapService.leave(conn.p.map, conn.p);
+                                conn.p.map = map_change;
+                                MapService.enter(conn.p.map, conn.p);
+                                khu2--;
+                            } else {
+                                Service.send_box_input_yesno(conn, -112, "Bạn có muốn vào khu 2 với 100k coin cho 2 giờ?");
+                            }
+                            return;
+                        }
+                    }
+                    if (zone == 7 && !Map.is_map_not_zone2(map_change.map_id)) {
+                        if (checkvip() < 1) {
+                            Service.send_notice_box(conn, "Bạn chưa đủ vip 1 để vào");
+                            return;
+                        }
+                        MapService.leave(conn.p.map, conn.p);
+                        conn.p.map = map_change;
+                        MapService.enter(conn.p.map, conn.p);
+                    }
+                    if (zone == 8 && !Map.is_map_not_zone2(map_change.map_id)) {
+                        if (checkvip() < 2) {
+                            Service.send_notice_box(conn, "Bạn chưa đủ vip 2 để vào");
+                            return;
+                        }
+                        MapService.leave(conn.p.map, conn.p);
+                        conn.p.map = map_change;
+                        MapService.enter(conn.p.map, conn.p);
+                    }
+                    MapService.leave(this.map, this);
+                    this.map = map_change;
+                    MapService.enter(this.map, this);
+                } else {
+                    Service.send_notice_box(conn, "Bạn đang ở khu vực này!");
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

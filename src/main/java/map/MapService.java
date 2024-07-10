@@ -2023,9 +2023,9 @@ public class MapService {
                                 d.fire_mob(map, mod_target_Leothap, conn.p, index_skill, type);
                             }
                         }
-                    } else if (Map.is_map_chiem_mo(conn.p.map, true) && conn.p.myclan != null) {
+                    }if (Map.is_map_chiem_mo(conn.p.map, true) && conn.p.myclan != null) {
                         Mob_MoTaiNguyen temp_mob = conn.p.myclan.get_mo_tai_nguyen(ObjAtk);
-                        if (temp_mob == null) {
+                        if (temp_mob == null) { // Đánh mỏ
                             temp_mob = Manager.gI().chiem_mo.get_mob_in_map(map);
                             MainObject.MainAttack(map, conn.p, temp_mob, index_skill, _skill, type);
                         } else {

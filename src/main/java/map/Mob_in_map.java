@@ -265,10 +265,10 @@ public class Mob_in_map extends MainObject {
                 }
                 for (int j = 0; j < map.players.size(); j++) {
                     Player pp = map.players.get(j);
-                    if (!pp.other_mob_inside.containsKey(this.index)) {
+                    if (pp != null && !pp.other_mob_inside.containsKey(this.index)) {
                         pp.other_mob_inside.put(this.index, true);
                     }
-                    if (pp.other_mob_inside.get(this.index)) {
+                    if (pp != null && pp.other_mob_inside.get(this.index)) {
                         Message mm = new Message(4);
                         mm.writer().writeByte(1);
                         mm.writer().writeShort(this.template.mob_id);

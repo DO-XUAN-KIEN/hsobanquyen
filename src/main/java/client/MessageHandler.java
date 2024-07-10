@@ -529,8 +529,8 @@ public class MessageHandler {
 //        send_notice_nobox_white(conn, ("Đổi Coin Sang Vàng Ngọc Tại Npc Zuru - Nạp Coin Tại hsomeobeo.pro  "));
 //        send_notice_nobox_white(conn, ("Số người online : " + (Session.client_entrys.size())));
         send_notice_nobox_white(conn, ("Bang " +  Manager.nameClanThue  + " Đang Sở Hữu  Quyền Thu Thuế Trên Toàn Sever " + " Thuế " + Manager.thue + " % "));
-        Service.send_notice_nobox_yellow(conn, ("Bang " + Manager.nameClanThue + " - Đang Là Bang Hùng Mạnh Nhất Thế Giới Hiệp Sĩ"));
-        Service.send_tab_chat(conn.p,"Thông báo quan trọng","Hello 500 ae");
+        //Service.send_notice_nobox_yellow(conn, ("Bang " + Manager.nameClanThue + " - Đang Là Bang Hùng Mạnh Nhất Thế Giới Hiệp Sĩ"));
+        Service.send_tab_chat(conn.p,"Thông Báo","Hello 500 ae");
         // add x2 xp
         conn.p.set_x2_xp(1);
         conn.p.dokho = 0;

@@ -819,7 +819,7 @@ public class Clan {
 
     public static int get_mem_by_level(short level) {
         int quant = (level / 5) * 5;
-        quant += 5;
+        quant = 5;
         return (quant < 45) ? quant : 45;
     }
 

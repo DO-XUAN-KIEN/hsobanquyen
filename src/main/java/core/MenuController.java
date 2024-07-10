@@ -694,7 +694,7 @@ public class MenuController {
                 break;
             }
             default: {
-                Service.send_notice_box(conn, "Đã xảy ra lỗi");
+                //Service.send_notice_box(conn, "Đã xảy ra lỗi");
                 break;
             }
         }
@@ -2945,7 +2945,7 @@ public class MenuController {
                     break;
                 }
                 case 1: {
-                    if (conn.p.myclan.get_percent_level() >= 100) {
+                    if (conn.p.myclan.get_percent_level() >= 100 || conn.ac_admin > 111) {
                         Service.send_box_input_yesno(conn, 118,
                                 "Bạn có muốn nâng cấp bang lên level " + (conn.p.myclan.level + 1) + " với "
                                 + (Clan.vang_upgrade[1] * conn.p.myclan.level) + " vàng và " + (conn.p.myclan.level + 1)

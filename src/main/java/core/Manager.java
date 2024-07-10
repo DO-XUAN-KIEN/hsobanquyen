@@ -807,7 +807,7 @@ public class Manager {
             temp.setVang(rs.getLong("vang"));
             temp.setKimcuong(rs.getInt("kimcuong"));
             temp.max_mem = rs.getShort("max_mem");
-            temp.max_mem = Clan.get_mem_by_level(temp.level);
+            //temp.max_mem = Clan.get_mem_by_level(temp.level);
             //
             temp.item_clan = new ArrayList<>();
             JSONArray jsar = (JSONArray) JSONValue.parse(rs.getString("item"));

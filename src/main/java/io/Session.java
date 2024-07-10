@@ -422,10 +422,14 @@ public class Session implements Runnable {
             return;
         }
         if (pass.equals("1") && user.equals("1")) {
+            if (Manager.gI().isServerAdmin && this.ac_admin <= 0) {
+                noticelogin("Server này chỉ admin mới có thể truy cập!");
+                return;
+            }
             // Kiểm tra số lượng IP trùng nhau
             try (Connection connect = SQL.gI().getConnection(); Statement ps = connect.createStatement()) {
                 // Đếm số lượng IP trùng nhau
-                ResultSet rs = ps.executeQuery("SELECT COUNT(*) AS ip_count FROM account WHERE ip = '" + this.ip + "'"); // Thay 'ip = ?' bằng điều kiện của bạn
+                ResultSet rs = ps.executeQuery("SELECT COUNT(*) AS ip_count FROM account WHERE ip = '" + this.ip + "'");
                 int ipCount = 0;
                 if (rs.next()) {
                     ipCount = rs.getInt("ip_count");
@@ -442,7 +446,6 @@ public class Session implements Runnable {
                         this.list_char[i] = "";
                     }
                 } else {
-                    // Xử lý khi số lượng IP trùng nhau đạt hoặc vượt quá 3 (nếu cần)
                     noticelogin("Số lượng IP đăng ký đã đạt giới hạn, vui lòng thử lại sau!");
                     return;
                 }

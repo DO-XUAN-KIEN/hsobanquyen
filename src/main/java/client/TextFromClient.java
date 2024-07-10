@@ -2121,6 +2121,7 @@ public class TextFromClient {
                 Service.Show_open_box_notice_item(conn.p, "Bạn nhận được", new short[]{tatca}, new int[]{quant}, new short[]{4});
                 break;
             }
+
             default: {
                 Service.send_notice_box(conn, "Đã xảy ra lỗi");
                 break;

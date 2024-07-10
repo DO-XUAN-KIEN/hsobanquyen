@@ -2456,7 +2456,7 @@ public class GameSrc {
                         int ran = Util.random(100);
                         byte color = 0;
                         //98 open
-                        if ((conn.ac_admin > 4 && Manager.BuffAdmin) || ran >= 95) {
+                        if ((conn.ac_admin > 4 && Manager.BuffAdmin) || ran >= 98) {
                             color = 5;
                             //94
                         } else if (ran >= 85)//8
