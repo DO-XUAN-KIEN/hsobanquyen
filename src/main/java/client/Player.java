@@ -49,7 +49,10 @@ public class Player extends Body2 {
     public byte dokho;
     public byte boss_rieng;
     public byte type_use_mount;
+    public byte mm_tt;
+    public byte mm_md;
     // public int hieuchien;
+    public int sk_hongio;
     public int dibuon;
     public int dicuop;
     public int boss;
@@ -148,8 +151,6 @@ public class Player extends Body2 {
     public Wedding it_wedding;
     public String[] in4_wedding;
     public int[] quest_daily;
-    public int[] st_ran;
-    public int[] sc_ran;
     public int chuyencan;
     public int diemsukien;
     public byte khu2;
@@ -210,10 +211,13 @@ public class Player extends Body2 {
     public boolean isCreateArmor = false;
     public boolean isdothan = false;
     public boolean ismdthan = false;
+    public boolean istb2 = false;
     public byte ClazzItemStar = -1;
     public byte TypeItemStarCreate = -1;
     public short[] MaterialItemStar;
     public short[] NLdothan;
+    public short[] Nltt;
+    public short[] NLtb2;
     public int id_Upgrade_Medal_Star = -1;
 
     //biến heo chiến trường
@@ -227,6 +231,7 @@ public class Player extends Body2 {
         isCreateItemStar = false;
         isdothan = false;
         ismdthan = false;
+        istb2 = false;
         isCreateArmor = false;
         ClazzItemStar = -1;
         TypeItemStarCreate = -1;
@@ -268,6 +273,19 @@ public class Player extends Body2 {
                 (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),
                 (short) Util.random(417, 437), (short) Util.random(437, 457), (short) Util.random(326, 336), (short) Util.random(336, 346), (short) Util.random(457, 464),};
     }
+    public void SetNLtt() {
+        short[] baseValues = {
+                (short) Util.random(246, 316),
+                (short) Util.random(246, 316),
+                (short) Util.random(316, 326),
+                (short) Util.random(326, 336),
+                (short) Util.random(336, 346),
+        };
+        Nltt = new short[baseValues.length * 8];
+        for (int i = 0; i < Nltt.length; i++) {
+            Nltt[i] = baseValues[i % baseValues.length];
+        }
+    }
     public void setnldothan() {
         NLdothan = new short[]{
                 (short) Util.random(246, 316), (short) Util.random(246, 316), (short) Util.random(316, 326), (short) Util.random(326, 336), (short) Util.random(336, 346),
@@ -278,6 +296,14 @@ public class Player extends Body2 {
                 (short) Util.random(246, 316), (short) Util.random(246, 316), (short) Util.random(316, 326), (short) Util.random(326, 336), (short) Util.random(336, 346),
                 (short) Util.random(246, 316), (short) Util.random(246, 316), (short) Util.random(316, 326), (short) Util.random(326, 336), (short) Util.random(336, 346),
                 (short) Util.random(246, 316), (short) Util.random(246, 316), (short) Util.random(316, 326), (short) Util.random(326, 336), (short) Util.random(336, 346),};
+    }
+
+    public void setnltb2() {
+        short[] baseValues = {493};
+        NLtb2 = new short[baseValues.length * 8];
+        for (int i = 0; i < NLtb2.length; i++) {
+            NLtb2[i] = baseValues[i % baseValues.length];
+        }
     }
 
 
@@ -393,7 +419,10 @@ public class Player extends Body2 {
                 dokho = rs.getByte("dokho");
                 boss_rieng = rs.getByte("boss_rieng");
                 khu2 = rs.getByte("khu2");
+                mm_tt = rs.getByte("mm_tt");
+                mm_md = rs.getByte("mm_md");
                 hieuchien = rs.getInt("hieuchien");
+                sk_hongio= rs.getInt("sk_hongio");
                 dibuon = rs.getInt("dibuon");
                 dicuop = rs.getInt("dicuop");
                 boss = rs.getInt("boss");
@@ -818,6 +847,31 @@ public class Player extends Body2 {
                     setnldothan();
                 }
                 jsar.clear();
+                jsar = (JSONArray) JSONValue.parse(rs.getString("NL_tb2"));
+                if (jsar == null) {
+                    return false;
+                }
+                NLtb2 = new short[jsar.size()];
+                for (int i = 0; i < jsar.size(); i++) {
+                    NLtb2[i] = Short.parseShort(jsar.get(i).toString());
+                }
+                if (NLtb2 == null || NLtb2.length < 40) {
+                    setnltb2();
+                }
+                jsar.clear();
+
+                jsar = (JSONArray) JSONValue.parse(rs.getString("NL_tt"));
+                if (jsar == null) {
+                    return false;
+                }
+                Nltt = new short[jsar.size()];
+                for (int i = 0; i < jsar.size(); i++) {
+                    Nltt[i] = Short.parseShort(jsar.get(i).toString());
+                }
+                if (Nltt == null || Nltt.length < 40) {
+                    setnltb2();
+                }
+                jsar.clear();
 
                 jsar = (JSONArray) JSONValue.parse(rs.getString("quest_daily"));
                 if (jsar == null) {
@@ -827,25 +881,6 @@ public class Player extends Body2 {
                 for (int i = 0; i < 5; i++) {
                     if (jsar.size() < 5) continue;
                     quest_daily[i] = Integer.parseInt(jsar.get(i).toString());
-                }
-                jsar.clear();
-                // đồ thần random
-                jsar = (JSONArray) JSONValue.parse(rs.getString("st_ran"));
-                if (jsar == null) {
-                    return false;
-                }
-                st_ran = new  int[jsar.size()];
-                for (int i = 0; i < jsar.size(); i++) {
-                    st_ran[i] = Integer.parseInt(jsar.get(i).toString());
-                }
-                //
-                jsar = (JSONArray) JSONValue.parse(rs.getString("sc_ran"));
-                if (jsar == null) {
-                    return false;
-                }
-                sc_ran = new  int[jsar.size()];
-                for (int i = 0; i < jsar.size(); i++) {
-                    sc_ran[i] = Integer.parseInt(jsar.get(i).toString());
                 }
                 jsar.clear();
                 jsar = (JSONArray) JSONValue.parse(rs.getString("point_active"));
@@ -1074,7 +1109,7 @@ public class Player extends Body2 {
                 jsar.clear();
                 for (int i = 0; i < MainEff.size(); i++) {
                     EffTemplate temp = MainEff.get(i);
-                    if (temp.id != -126 && temp.id != -125 && temp.id != -127 && temp.id != -128) {
+                    if (temp.id != -126 && temp.id != -125 && temp.id != -127 && temp.id != -128 && temp.id != -129 && temp.id != -130) {
                         continue;
                     }
                     JSONArray jsar21 = new JSONArray();
@@ -1110,18 +1145,6 @@ public class Player extends Body2 {
                     jsar.add(j);
                 }
                 a += ",`quest_daily` = '" + jsar.toJSONString() + "'";
-                jsar.clear();
-                // random đồ thần
-                for (int i = 0; i < st_ran.length; i++) {
-                    jsar.add(st_ran[i]);
-                }
-                a += ",`st_ran` = '" + jsar.toJSONString() + "'";
-                jsar.clear();
-                // random đồ thần
-                for (int i = 0; i < sc_ran.length; i++) {
-                    jsar.add(sc_ran[i]);
-                }
-                a += ",`sc_ran` = '" + jsar.toJSONString() + "'";
                 jsar.clear();
 
                 for (int i = 0; i < 21; i++) {
@@ -1369,6 +1392,19 @@ public class Player extends Body2 {
                 }
                 a += ",`NL_do_than` = '" + jsar.toJSONString() + "'";
                 jsar.clear();
+                //nltb2
+                for (int i = 0; i < NLtb2.length; i++) {
+                    jsar.add(NLtb2[i]);
+                }
+                a += ",`NL_tb2` = '" + jsar.toJSONString() + "'";
+                jsar.clear();
+
+                //nltt
+                for (int i = 0; i < Nltt.length; i++) {
+                    jsar.add(Nltt[i]);
+                }
+                a += ",`NL_tt` = '" + jsar.toJSONString() + "'";
+                jsar.clear();
 
                 for (int i = 0; i < point_active.length; i++) {
                     jsar.add(point_active[i]);
@@ -1387,7 +1423,10 @@ public class Player extends Body2 {
                 a += ",`dokho` = " + dokho;
                 a += ",`boss_rieng` = " + boss_rieng;
                 a += ",`khu2` = " + khu2;
+                a += ",`mm_tt` = " + mm_tt;
+                a += ",`mm_md` = " + mm_md;
                 a += ",`hieuchien` = " + hieuchien;
+                a += ",`sk_hongio` = " + sk_hongio;
                 a += ",`chuyensinh` = " + chuyensinh;
                 a += ",`mm_cs` = " + mm_cs;
                 a += ",`luyenthe` = " + luyenthe;
@@ -1629,6 +1668,10 @@ public class Player extends Body2 {
 //            Service.send_notice_nobox_white(conn, "Yêu cầu trình độ cấp 40");
 //            return;
 //        }
+        if(!(vgo.id_map_go >= 0 && vgo.id_map_go <= 7) && conn.status != 0){
+            Service.send_notice_box(conn,"Hãy ib cho Xuân Hiếu để kích hoạt tài khoản");
+            return;
+        }
         if (map.map_id == 0) {
             Message m = new Message(55);
             m.writer().writeByte(1);
@@ -1883,7 +1926,19 @@ public class Player extends Body2 {
             e.printStackTrace();
         }
     }
-
+    public synchronized boolean update_khtk() throws IOException {
+        String query = "SELECT `status` FROM `account` WHERE `user` = '" + conn.user + "' LIMIT 1;";
+        try (Connection connection = SQL.gI().getConnection(); Statement ps = connection.createStatement(); ResultSet rs = ps.executeQuery(query)) {
+            rs.next();
+            if (ps.executeUpdate(
+                    "UPDATE `account` SET `status` = 0 WHERE `user` = '" + conn.user + "'") == 1) {
+                connection.commit();
+            }
+        } catch (SQLException e) {
+            Service.send_notice_box(conn, "Đã xảy ra lỗi");
+        }
+        return true;
+    }
     public synchronized boolean update_coin(int coin_exchange) throws IOException {
         String query = "SELECT `coin` FROM `account` WHERE `user` = '" + conn.user + "' LIMIT 1;";
         int coin_old = 0;

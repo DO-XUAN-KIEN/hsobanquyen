@@ -33,7 +33,6 @@ public class Clan {
     public static int[] vang_upgrade = new int[]{0, 1_000_000};
     public static int[] ngoc_upgrade = new int[]{0, 1_000};
     public List<Clan_mems> mems;
-    public int ID;
     public String name_clan;
     public String name_clan_shorted;
     public short icon;
@@ -47,7 +46,7 @@ public class Clan {
     public int max_mem;
     public List<Item47> item_clan;
     public List<Mob_MoTaiNguyen> mo_tai_nguyen;
-    
+
     public static void ResetMoTaiNguyen(){
         try{
             for(Clan c: entrys){

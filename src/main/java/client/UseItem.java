@@ -156,6 +156,48 @@ public class UseItem {
                 Service.send_time_box(conn.p, (byte) 1, new short[]{(short) ((eff.time - System.currentTimeMillis()) / 1000)}, new String[]{"Buff a đến z"});
                 break;
             }
+            case 347:{
+                if (conn.p.get_EffDefault(EffTemplate.buffvv) != null){
+                    Service.send_notice_box(conn,"Bạn đang sử dụng buff rồi");
+                    return;
+                }
+                conn.p.add_EffDefault(EffTemplate.buffvv,1,1000 * 60 * 60 * 24 * 5);
+                break;
+            }
+            case 352: {
+                conn.p.item.remove(4,id_potion,1);
+                conn.p.add_EffDefault(-129, 1, 2 * 60 * 60 * 1000);
+                EffTemplate eff = conn.p.get_EffDefault(-129);
+                Service.send_time_box(conn.p, (byte) 1, new short[]{(short) ((eff.time - System.currentTimeMillis()) / 1000)}, new String[]{"Miễn nhiễm hiệu ứng"});
+                break;
+            }
+            case 353: {
+                Vgo vgo = null;
+                vgo = new Vgo();
+                vgo.id_map_go = 137;
+                vgo.x_new = 150;
+                vgo.y_new = 54;
+                conn.p.change_map(conn.p, vgo);
+                if (conn.p.get_EffDefault(-130) == null){
+                    conn.p.item.remove(4,id_potion,1);
+                    conn.p.add_EffDefault(-130, 1, 1 * 60 * 60 *1000);
+                }
+                EffTemplate eff = conn.p.get_EffDefault(-130);
+                Service.send_time_box(conn.p, (byte) 1, new short[]{(short) ((eff.time - System.currentTimeMillis()) / 1000)}, new String[]{"TIME còn lại"});
+                break;
+            }
+            case 348: {
+                conn.p.item.remove(4,id_potion,1);
+                conn.p.item.char_inventory(4);
+                Quask.qua_sk_moi(conn, (byte) 0);
+                break;
+            }
+            case 349: {
+                conn.p.item.remove(4,id_potion,1);
+                conn.p.item.char_inventory(4);
+                Quask.qua_sk_moi(conn, (byte) 1);
+                break;
+            }
             case 339: {
                 conn.p.item.remove(4, 339, 1);
                 Quask.quask_hon_gio(conn, (byte) 0);

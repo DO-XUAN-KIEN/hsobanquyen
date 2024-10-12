@@ -173,30 +173,35 @@ public class medal {
             }
             else if (id_CSVIP.contains(id_add))
             {
-                if(tem.color ==0)
+                if(tem.color == 0)
                 {
                     param_add = Util.random(600, 800);
                     param_add2 = Util.random(600, 800);
                 }
-                else if(tem.color ==1)
+                else if(tem.color == 1)
                 {
                     param_add = Util.random(700, 900);
                     param_add2 = Util.random(700, 900);
                 }
-                else if(tem.color ==2)
+                else if(tem.color == 2)
                 {
                     param_add = Util.random(800, 1100);
                     param_add2 = Util.random(800, 1100);
                 }
-                else if(tem.color ==3)
+                else if(tem.color == 3)
                 {
                     param_add = Util.random(1000, 1350);
                     param_add2 = Util.random(1000, 1350);
                 }
-                else if(tem.color ==4)
+                else if(tem.color == 4)
                 {
                     param_add = Util.random(1200, 1500);
                     param_add2 = Util.random(1200, 1500);
+                }
+                else if(tem.color == 5)
+                {
+                    param_add = Util.random(1500, 1800);
+                    param_add2 = Util.random(1500, 1800);
                 }
             }
             else if (id_add >= 7 && id_add <= 13) {
@@ -210,6 +215,8 @@ public class medal {
                     param_add = Util.random(253, 300);
                 else if(tem.color == 4)
                     param_add = Util.random(300, 347);
+                else if(tem.color == 5)
+                    param_add = Util.random(500, 700);
             }
             else {
                 param_add = Util.random(50,200);

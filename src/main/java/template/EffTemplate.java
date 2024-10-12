@@ -23,6 +23,7 @@ public class EffTemplate {
     public static final int buffhoihp = 94;
     public static final int buffpt = 95;
     public static final int bufftatca = 96;
+    public static final int buffvv = 97;
     public static final int SPECIAL = 39;
     public static final int GIAP_BAO_HO = 38;
     public static final int HUNG_TAN = 34;

@@ -186,28 +186,30 @@ public class KingCupManager {
             Service.send_notice_box(p.conn, "Bạn không có trong danh sách hoặc đã nhận rồi.");
             return;
         }
-
+        if (p.item.get_bag_able()< 20){
+            Service.send_notice_nobox_white(p.conn,"Hành trang đầy");
+            return;
+        }
         short[] id_reward_7;
         short[] quantity_reward_7;
         short[] id_reward_4;
         short[] quantity_reward_4;
         boolean isHaveBook = false;
         int coin;
-
         switch (p.type_reward_king_cup) {
             case 1, 5, 9, 13 -> {
                 id_reward_7 = new short[]{14, (short) Util.random(8, 10), 11, 349};
                 quantity_reward_7 = new short[]{5, 15, 15, 2};
-                id_reward_4 = new short[]{53, 54};
-                quantity_reward_4 = new short[]{1, 1};
+                id_reward_4 = new short[]{53, 54,273};
+                quantity_reward_4 = new short[]{1, 1,15};
                 coin = 30_000;
                 p.update_coin(coin);
             }
             case 17, 21, 25 -> {
                 id_reward_7 = new short[]{14, (short) Util.random(8, 10), 11, 349};
                 quantity_reward_7 = new short[]{5, 20, 20, 2};
-                id_reward_4 = new short[]{10, 53, 54};
-                quantity_reward_4 = new short[]{1, 1, 1};
+                id_reward_4 = new short[]{10, 53, 54,273};
+                quantity_reward_4 = new short[]{1, 1, 1,20};
                 coin = 40_000;
                 p.update_coin(coin);
                 isHaveBook = true;
@@ -215,32 +217,32 @@ public class KingCupManager {
             case 2, 6, 10, 14 -> {
                 id_reward_7 = new short[]{(short) Util.random(8, 10), 11};
                 quantity_reward_7 = new short[]{10, 10};
-                id_reward_4 = new short[]{53, 54};
-                quantity_reward_4 = new short[]{1, 1};
+                id_reward_4 = new short[]{53, 54,273};
+                quantity_reward_4 = new short[]{1, 1,10};
                 coin = 20_000;
                 p.update_coin(coin);
             }
             case 18, 22, 26 -> {
                 id_reward_7 = new short[]{14};
                 quantity_reward_7 = new short[]{7};
-                id_reward_4 = new short[]{10};
-                quantity_reward_4 = new short[]{5};
+                id_reward_4 = new short[]{10,273};
+                quantity_reward_4 = new short[]{5,15};
                 coin = 30_000;
                 p.update_coin(coin);
             }
             case 3, 7, 11, 15 -> {
                 id_reward_7 = new short[]{(short) Util.random(8, 10), 11};
                 quantity_reward_7 = new short[]{6, 6};
-                id_reward_4 = new short[]{53};
-                quantity_reward_4 = new short[]{3};
+                id_reward_4 = new short[]{53,273};
+                quantity_reward_4 = new short[]{3,5};
                 coin = 10_000;
                 p.update_coin(coin);
             }
             case 19, 23, 27 -> {
                 id_reward_7 = new short[]{14};
                 quantity_reward_7 = new short[]{1};
-                id_reward_4 = new short[]{10, 53, 54};
-                quantity_reward_4 = new short[]{1, 1, 1};
+                id_reward_4 = new short[]{10, 53, 54,273};
+                quantity_reward_4 = new short[]{1, 1, 1,10};
                 coin = 20_000;
                 p.update_coin(coin);
             }

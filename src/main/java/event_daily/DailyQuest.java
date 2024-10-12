@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import client.Player;
 import core.Log;
+import core.Manager;
 import core.Service;
 import core.Util;
 import map.Map;
@@ -30,7 +31,14 @@ public class DailyQuest {
                     && Mob.entrys.get(i).mob_id != 92 && Mob.entrys.get(i).mob_id != 155 && Mob.entrys.get(i).mob_id != 106
                     && Mob.entrys.get(i).mob_id != 79 && Mob.entrys.get(i).mob_id != 149 && Mob.entrys.get(i).mob_id != 174
                     && Mob.entrys.get(i).mob_id != 83 && Mob.entrys.get(i).mob_id != 105 && Mob.entrys.get(i).mob_id != 84
-                    && Mob.entrys.get(i).mob_id != 101 && Mob.entrys.get(i).mob_id != 104 && Mob.entrys.get(i).mob_id != 103) {
+                    && Mob.entrys.get(i).mob_id != 101 && Mob.entrys.get(i).mob_id != 104 && Mob.entrys.get(i).mob_id != 103
+                    && Mob.entrys.get(i).mob_id != 198 && Mob.entrys.get(i).mob_id != 199 && Mob.entrys.get(i).mob_id != 200
+                    && Mob.entrys.get(i).mob_id != 201 && Mob.entrys.get(i).mob_id != 202 && Mob.entrys.get(i).mob_id != 203
+                    && Mob.entrys.get(i).mob_id != 204 && Mob.entrys.get(i).mob_id != 205 && Mob.entrys.get(i).mob_id != 206
+                    && Mob.entrys.get(i).mob_id != 207 && Mob.entrys.get(i).mob_id != 208 && Mob.entrys.get(i).mob_id != 209
+                    && Mob.entrys.get(i).mob_id != 210 && Mob.entrys.get(i).mob_id != 211 && Mob.entrys.get(i).mob_id != 212
+                    && Mob.entrys.get(i).mob_id != 213 && Mob.entrys.get(i).mob_id != 214 && Mob.entrys.get(i).mob_id != 215
+                    && Mob.entrys.get(i).mob_id != 216 && Mob.entrys.get(i).mob_id != 217 && Mob.entrys.get(i).mob_id != 218) {
                 if (checkmob(i)) {
                     list_mob.add(i);
                 }
@@ -121,6 +129,7 @@ public class DailyQuest {
             short id_blue = (short) Util.random(216, 226);
             short id_yellow = (short) Util.random(226, 236);
             short id_violet = (short) Util.random(236, 246);
+            short nlmd3 = (short) Util.random(246,346);
             short id_ngocrong = (short) Util.random(464,470);
             int vang = Util.random(100_000, 500_000);
             int ngoc = p.quest_daily[1] == 3 ? Util.random(100, 1000)
@@ -154,7 +163,21 @@ public class DailyQuest {
                     itbag.quantity = 1;
                     itbag.category = 7;
                     p.item.add_item_bag47(7, itbag);
-                    }
+                }
+                if (((p.item.get_bag_able() > 10) || (p.item.total_item_by_id(7, nlmd3) > 0))){
+                    Item47 itbag = new Item47();
+                    itbag.id = nlmd3;
+                    itbag.quantity = (short) Util.random(5,10);
+                    itbag.category = 7;
+                    p.item.add_item_bag47(7, itbag);
+                }
+                if (Manager.gI().event == 11){
+                    Item47 itbag = new Item47();
+                    itbag.id = 338;
+                    itbag.quantity = 2;
+                    itbag.category = 4;
+                    p.item.add_item_bag47(4, itbag);
+                }
             }
             p.item.char_inventory(3);
             p.item.char_inventory(4);

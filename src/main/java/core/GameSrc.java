@@ -395,10 +395,6 @@ public class GameSrc {
     }
 
     public synchronized static void trade_process(Session conn, Message m2) throws IOException {
-        if (!Manager.isGiaoDich) {
-            Service.send_notice_box(conn, "Không thể giao dịch");
-            return;
-        }
         if (conn.p.level < 20) {
             Service.send_notice_box(conn, "Yêu cầu trình độ cấp 20");
             return;
@@ -418,118 +414,51 @@ public class GameSrc {
         }
         switch (type) {
             case 0: {
-                if (conn.p.banclone == 1) {
-                    if (conn.p.checkcoin() < 10_000_000) {
-                        Service.send_notice_box(conn, "Hãy bỏ 10tr coin để mở khóa giao dịch");
-                        return;
-                    }
-                    conn.p.banclone = 0;
-                    int coin_ = 10_000_000;
-                    conn.p.update_coin(-coin_);
-                    conn.p.item.char_inventory(5);
-                    Player p0 = Map.get_player_by_name(m2.reader().readUTF());
-                    if (p0 != null) {
-                        if (p0.list_item_trade == null) {
-                            Message m = new Message(36);
-                            m.writer().writeByte(0);
-                            m.writer().writeUTF(conn.p.name);
-                            p0.conn.addmsg(m);
-                            m.cleanup();
-                        } else {
-                            Service.send_notice_box(conn, "Đối phương đang có giao dịch");
-                        }
-                    } else {
-                        Service.send_notice_box(conn, "Xảy ra lỗi");
-                    }
-                    break;
-
-                } else {
-                    if (conn.p.checkcoin() < 1_000_000) {
-                        Service.send_notice_box(conn, "Không đủ điều kiện 1tr coin để giao dịch");
-                        return;
-                    }
-                    Player p0 = Map.get_player_by_name(m2.reader().readUTF());
-                    if (p0 != null) {
-                        if (p0.list_item_trade == null) {
-                            Message m = new Message(36);
-                            m.writer().writeByte(0);
-                            m.writer().writeUTF(conn.p.name);
-                            p0.conn.addmsg(m);
-                            m.cleanup();
-                        } else {
-                            Service.send_notice_box(conn, "Đối phương đang có giao dịch");
-                        }
-                    } else {
-                        Service.send_notice_box(conn, "Xảy ra lỗi");
-                    }
-                    break;
+                if (!Manager.isGiaoDich && conn.ac_admin < 111) {
+                    Service.send_notice_box(conn, "Không thể giao dịch");
+                    return;
                 }
+                Player p0 = Map.get_player_by_name(m2.reader().readUTF());
+                if (p0 != null) {
+                    if (p0.list_item_trade == null) {
+                        Message m = new Message(36);
+                        m.writer().writeByte(0);
+                        m.writer().writeUTF(conn.p.name);
+                        p0.conn.addmsg(m);
+                        m.cleanup();
+                    } else {
+                        Service.send_notice_box(conn, "Đối phương đang có giao dịch");
+                    }
+                } else {
+                    Service.send_notice_box(conn, "Xảy ra lỗi");
+                }
+                break;
             }
             case 1: {
-                if (conn.p.banclone == 1) {
-                    if (conn.p.checkcoin() < 10_000_000) {
-                        Service.send_notice_box(conn, "Hãy bỏ 10tr coin để mở khóa giao dịch");
-                        return;
-                    }
-                    conn.p.banclone = 0;
-                    int coin_ = 10_000_000;
-                    conn.p.update_coin(-coin_);
-                    conn.p.item.char_inventory(5);
-
-                    Message m = new Message(36);
-                    m.writer().writeByte(1);
-                    Player p0 = Map.get_player_by_name(m2.reader().readUTF());
-                    if (p0 == null) {
-                        return;
-                    }
-                    m.writer().writeUTF(p0.name);
-                    conn.p.name_trade = p0.name;
-                    p0.name_trade = conn.p.name;
-                    conn.addmsg(m);
-                    m.cleanup();
-                    //
-                    m = new Message(36);
-                    m.writer().writeByte(1);
-                    m.writer().writeUTF(conn.p.name);
-                    p0.conn.addmsg(m);
-                    m.cleanup();
-                    p0.list_item_trade = new short[9];
-                    conn.p.list_item_trade = new short[9];
-                    for (int i = 0; i < conn.p.list_item_trade.length; i++) {
-                        conn.p.list_item_trade[i] = -1;
-                        p0.list_item_trade[i] = -1;
-                    }
-                    break;
-                } else {
-                    if (conn.p.checkcoin() < 1_000_000) {
-                        Service.send_notice_box(conn, "Không đủ điều kiện 1tr coin để giao dịch");
-                        return;
-                    }
-                    Message m = new Message(36);
-                    m.writer().writeByte(1);
-                    Player p0 = Map.get_player_by_name(m2.reader().readUTF());
-                    if (p0 == null) {
-                        return;
-                    }
-                    m.writer().writeUTF(p0.name);
-                    conn.p.name_trade = p0.name;
-                    p0.name_trade = conn.p.name;
-                    conn.addmsg(m);
-                    m.cleanup();
-                    //
-                    m = new Message(36);
-                    m.writer().writeByte(1);
-                    m.writer().writeUTF(conn.p.name);
-                    p0.conn.addmsg(m);
-                    m.cleanup();
-                    p0.list_item_trade = new short[9];
-                    conn.p.list_item_trade = new short[9];
-                    for (int i = 0; i < conn.p.list_item_trade.length; i++) {
-                        conn.p.list_item_trade[i] = -1;
-                        p0.list_item_trade[i] = -1;
-                    }
-                    break;
+                Message m = new Message(36);
+                m.writer().writeByte(1);
+                Player p0 = Map.get_player_by_name(m2.reader().readUTF());
+                if (p0 == null) {
+                    return;
                 }
+                m.writer().writeUTF(p0.name);
+                conn.p.name_trade = p0.name;
+                p0.name_trade = conn.p.name;
+                conn.addmsg(m);
+                m.cleanup();
+                //
+                m = new Message(36);
+                m.writer().writeByte(1);
+                m.writer().writeUTF(conn.p.name);
+                p0.conn.addmsg(m);
+                m.cleanup();
+                p0.list_item_trade = new short[9];
+                conn.p.list_item_trade = new short[9];
+                for (int i = 0; i < conn.p.list_item_trade.length; i++) {
+                    conn.p.list_item_trade[i] = -1;
+                    p0.list_item_trade[i] = -1;
+                }
+                break;
             }
             case 2: {
                 Player p0 = Map.get_player_by_name(conn.p.name_trade);
@@ -1370,6 +1299,8 @@ public class GameSrc {
                         _st = Util.random(400, 600);
                     } else if (color_ == 4) {
                         _st = Util.random(600, 800);
+                    } else if (color_ == 5) {
+                        _st = Util.random(1000, 1500);
                     }
                     it_temp.op.set(i, new Option(Util.random(0, 5), _st, it_temp.id));
                     Service.send_wear(conn.p);
@@ -1410,6 +1341,8 @@ public class GameSrc {
                         param_add = Util.randomNext(253, 300, lastpr);
                     } else if (it_temp.color == 4) {
                         param_add = Util.randomNext(300, 347, lastpr);
+                    } else if (it_temp.color == 5) {
+                        param_add = Util.randomNext(500, 700, lastpr);
                     }
                 }
                 ops.add(id_add);
@@ -1846,6 +1779,10 @@ public class GameSrc {
                             Service.send_notice_box(conn, "Giá tiền không phù hợp!");
                             return;
                         }
+                        if (p_store.it_price > 1_000_000 || p_store.it_price < 10_000 && Manager.gI().event == 7){
+                            Service.send_notice_box(conn,"Giá bán không được quá 1_000_000");
+                            return;
+                        }
                         p_store.it_quant = m2.reader().readShort();
                         p_store.it_type = m2.reader().readByte();
                         if (p_store.it_quant <= 0 || p_store.it_quant > 32_000) {
@@ -1867,7 +1804,7 @@ public class GameSrc {
                                 Service.send_notice_box(conn, "Số lượng không hợp lệ!");
                                 return;
                             }
-                            if (p_store.it_type == 4 && (Helps.CheckItem.item4CanTrade(p_store.it_id) || p_store.it_id == 135 || p_store.it_id == 52 || p_store.it_id == 56 || p_store.it_id == 143 || p_store.it_id == 226 || p_store.it_id == 318 || p_store.it_id == 327 || p_store.it_id == 328 || p_store.it_id == 329 || p_store.it_id == 330 || (p_store.it_id >= 339 && p_store.it_id <= 341))) {
+                            if (p_store.it_type == 4 && (Helps.CheckItem.item4CanTrade(p_store.it_id) || p_store.it_id == 135 || p_store.it_id == 52 || p_store.it_id == 56 || p_store.it_id == 143 || p_store.it_id == 226 || p_store.it_id == 318 || p_store.it_id == 327 || p_store.it_id == 328 || p_store.it_id == 329 || p_store.it_id == 330 || (p_store.it_id >= 339 && p_store.it_id <= 341)|| (p_store.it_id >= 348 && p_store.it_id <= 352))) {
                                 Service.send_notice_box(conn, "Đồ bán không hợp lệ!");
                                 return;
                             }

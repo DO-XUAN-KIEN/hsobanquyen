@@ -16,6 +16,7 @@ import event_daily.ChienTruong;
 import io.Message;
 import io.Session;
 import map.*;
+import template.EffTemplate;
 import template.Horse;
 import template.Mob_MoTaiNguyen;
 
@@ -62,6 +63,8 @@ public class MessageHandler {
                     DoSieucap.nangdothan(conn,m);
                 } else if (conn.p.ismdthan) {
                     DoSieucap.nangmdthan(conn,m);
+                } else if (conn.p.istb2) {
+                    DoSieucap.nangtb2(conn,m);
                 } else {
                     GameSrc.Create_Medal(conn, m);
                 }
@@ -536,6 +539,10 @@ public class MessageHandler {
         conn.p.dokho = 0;
         if (conn.p.chuyensinh > 0){
             conn.p.update_Exp(1,false);
+        }
+        if(conn.p.get_EffDefault(-129) != null) {
+            EffTemplate eff = conn.p.get_EffDefault(-129);
+            Service.send_time_box(conn.p, (byte) 1, new short[]{(short) ((eff.time - System.currentTimeMillis()) / 1000)}, new String[]{"Miễn nhiễm hiệu ứng"});
         }
         if (conn.p.myclan == null || !Horse.isHorseClan(conn.p.type_use_mount)) {
             conn.p.type_use_mount = -1;

@@ -68,6 +68,9 @@ public class Mob_in_map extends MainObject {
         } else if (this.level > 100 && this.level <= 600) {
             dmob = (dmob * 21) / 10;
         }
+        if (this.map_id == 136){
+            dmob = (dmob * 60) / 10;
+        }
         if (this.is_boss) {
             dmob = (int) (dmob * this.level * 0.03);
         }
@@ -148,7 +151,7 @@ public class Mob_in_map extends MainObject {
                 }
                 p.item.char_inventory(5);
                 if (mainAtk.isPlayer()) {
-                    if (Math.abs(mob.level - mainAtk.level) <= 10 && !check_mob_roi_ngoc_kham) {
+                    if ((Math.abs(mob.level - mainAtk.level) <= 10 || map_id == 136 || map_id == 137)&& !check_mob_roi_ngoc_kham) {
                         if (map.isMapLangPhuSuong()) {
                             int percent = 20;
                             if (percent > Util.random(0, 300)) {
@@ -165,7 +168,21 @@ public class Mob_in_map extends MainObject {
                             if (Manager.gI().event != -1 && 30 > Util.random(0, 100) && Math.abs(mob.level - mainAtk.level) <= 5) {
                                 LeaveItemMap.leave_item_event(map, mob, (Player) mainAtk);
                             }
-                        } else {
+                        }else if (map_id == 136){
+                            if (Util.random(0,2222) < 20) {
+                                LeaveItemMap.leave_item_by_type4(map, (short) 350, p, mob.index);
+                            }
+                            if (20 + 10 > Util.random(0, 300)) {
+                                LeaveItemMap.leave_vang(map, mob, (Player) mainAtk);
+                            }
+                        }else if (map_id == 137){
+                            if (Util.random(0,333) < 10) {
+                                LeaveItemMap.leave_item_by_type7(map, (short) Util.random(126,146), p, mob.index);
+                            }
+                            if (20 + 10 > Util.random(0, 300)) {
+                                LeaveItemMap.leave_vang(map, mob, (Player) mainAtk);
+                            }
+                        }else {
                             int percent = 20;
                             if ((zone_id == 1 || zone_id == 7 || zone_id == 8) && !Map.is_map_not_zone2(map_id)
                                     && p.get_EffDefault(-127) != null) {
@@ -178,8 +195,7 @@ public class Mob_in_map extends MainObject {
                             }
                             if (percent > Util.random(0, 300) || mob.color_name != 0) {
                                 LeaveItemMap.leave_item_3(map, mob, (Player) mainAtk);
-                            }
-                            else if (percent > Util.random(0, 500) && zone_id == 1 && !Map.is_map_not_zone2(map_id)
+                            }else if (percent > Util.random(0, 500) && zone_id == 1 && !Map.is_map_not_zone2(map_id)
                                     && p.get_EffDefault(-127) != null) {
                                 if(Util.random(2000) < 4) {
                                     LeaveItemMap.leave_item_by_type7(map, (short) 494, p, mob.index);
@@ -195,20 +211,35 @@ public class Mob_in_map extends MainObject {
                                 } else {
                                     LeaveItemMap.leave_item_by_type7(map, (short) 13, p, mob.index);
                                 }
+                                if (Manager.gI().event == 11){
+                                    if (Util.random(500) < 4){
+                                        LeaveItemMap.leave_item_by_type4(map,(short) Util.random(335, 339),p,mob.index);
+                                    }
+                                }
                             }
-                            if (percent > Util.random(0, 500) && zone_id == 7 && !Map.is_map_not_zone2(map_id)) {
-                                if (Util.random(800) < 4) {
+                            if (percent > Util.random(0, 300) && zone_id == 7 && !Map.is_map_not_zone2(map_id)) {
+                                if (Util.random(300) < 4) {
                                     LeaveItemMap.leave_item_by_type4(map, (short) Util.random(342,345),p,mob.index);
                                 }
-                                if (Util.random(1000) < 4) {
-                                    LeaveItemMap.leave_item_by_type4(map, (short) 346,p,mob.index);
-                                }
-                            } else if (percent > Util.random(0, 500) && zone_id == 8 && !Map.is_map_not_zone2(map_id)) {
                                 if (Util.random(500) < 4) {
+                                    LeaveItemMap.leave_item_by_type4(map, (short) 346,p,mob.index);
+                                }
+                                if (Manager.gI().event == 11){
+                                    if (Util.random(400) < 4){
+                                        LeaveItemMap.leave_item_by_type4(map,(short) Util.random(335, 339),p,mob.index);
+                                    }
+                                }
+                            } else if (percent > Util.random(0, 200) && zone_id == 8 && !Map.is_map_not_zone2(map_id)) {
+                                if (Util.random(100) < 4) {
                                     LeaveItemMap.leave_item_by_type4(map, (short) Util.random(342,345),p,mob.index);
                                 }
-                                if (Util.random(800) < 4) {
+                                if (Util.random(200) < 4) {
                                     LeaveItemMap.leave_item_by_type4(map, (short) 346,p,mob.index);
+                                }
+                                if (Manager.gI().event == 11){
+                                    if (Util.random(200) < 4){
+                                        LeaveItemMap.leave_item_by_type4(map,(short) Util.random(335, 339),p,mob.index);
+                                    }
                                 }
                             }
                             if (percent > Util.random(0, 300)) {

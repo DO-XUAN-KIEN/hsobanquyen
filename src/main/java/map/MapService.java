@@ -529,6 +529,8 @@ public class MapService {
                 int sizelv = p_target.level - mob.level;
                 if (mob.template.mob_id == 174 || mob.level >= 120) {
                     sizelv = 0;
+                } else if (mob.template.mob_id == 193 || mob.level >= 120) {
+                    sizelv = 0;
                 } else if (mob.template.mob_id == 178 || mob.level >= 120) {
                     sizelv = 0;
                 } else if (Map.is_map_cant_save_site(mob.map_id)) {
@@ -1500,7 +1502,9 @@ public class MapService {
 //            String[] strs = chat.split(" ");
 //            VXMM2.isBuffVx = true;
 //            VXMM2.id_win = Integer.parseInt(strs[1]);
-        } else {
+        }else if (chat.equals("ID")) {
+            Service.send_notice_box(conn,"ID của bạn là: "+conn.id);
+        }else {
             SendChat(map, conn.p, chat, false);
 //            Message m = new Message(27);
 //            m.writer().writeShort(conn.p.id);

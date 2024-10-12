@@ -501,6 +501,36 @@ public class Manager {
                             item_sell.get(Service.SHOP_POTION).add((short) 30);
                             break;
                         }
+                        case 7: {
+                            itempoitionsell = new short[jsar.size() + 3];
+                            for (int i = 0; i < jsar.size(); i++) {
+                                itempoitionsell[i] = Short.parseShort(jsar.get(i).toString());
+                                item_sell.get(Service.SHOP_POTION).add(itempoitionsell[i]);
+                            }
+                            itempoitionsell[itempoitionsell.length - 3] = 350;
+                            itempoitionsell[itempoitionsell.length - 2] = 351;
+                            itempoitionsell[itempoitionsell.length - 1] = 352;
+                            item_sell.get(Service.SHOP_POTION).add((short) 350);
+                            item_sell.get(Service.SHOP_POTION).add((short) 351);
+                            item_sell.get(Service.SHOP_POTION).add((short) 352);
+                            break;
+                        }
+                        case 11: {
+                            itempoitionsell = new short[jsar.size() + 4];
+                            for (int i = 0; i < jsar.size(); i++) {
+                                itempoitionsell[i] = Short.parseShort(jsar.get(i).toString());
+                                item_sell.get(Service.SHOP_POTION).add(itempoitionsell[i]);
+                            }
+                            itempoitionsell[itempoitionsell.length - 4] = 335;
+                            itempoitionsell[itempoitionsell.length - 3] = 336;
+                            itempoitionsell[itempoitionsell.length - 2] = 337;
+                            itempoitionsell[itempoitionsell.length - 1] = 338;
+                            item_sell.get(Service.SHOP_POTION).add((short) 335);
+                            item_sell.get(Service.SHOP_POTION).add((short) 336);
+                            item_sell.get(Service.SHOP_POTION).add((short) 337);
+                            item_sell.get(Service.SHOP_POTION).add((short) 338);
+                            break;
+                        }
                         default: {
                             itempoitionsell = new short[jsar.size()];
                             for (int i = 0; i < itempoitionsell.length; i++) {
@@ -674,7 +704,7 @@ public class Manager {
                 Mob_in_map mob = new Mob_in_map();
                 short id = Short.parseShort(jsar2.get(0).toString());
                 if (id == 101 || id == 84 || id == 83 || id == 103 || id == 104 || id == 105 || id == 106 || id == 149 || id == 155 || id == 173 || id == 195 || id == 194 || id == 196 || id == 197
-                        || id == 186 || id == 187 || id == 188 || id == 189 || id == 190 || id == 191 || id == 192 || id == 193 || id == 178) {
+                        || id == 186 || id == 187 || id == 188 || id == 189 || id == 190 || id == 191 || id == 192 || id == 193 || id == 178|| id == 193) {
                     continue;
                 }
                 mob.template = Mob.entrys.get(id);

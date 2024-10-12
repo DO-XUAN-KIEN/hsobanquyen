@@ -1,7 +1,5 @@
 package core;
 
-import History.His_DelItem;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +7,6 @@ import java.util.List;
 import client.Clan;
 import client.Pet;
 import client.Player;
-import event_daily.st;
 import io.Message;
 import io.Session;
 import map.Eff_player_in_map;
@@ -1011,6 +1008,8 @@ public class Service {
                     m.writer().writeUTF("Tiến hóa đồ tinh tú[VIP PRO]");
                 } else if (conn.p.ismdthan) {
                     m.writer().writeUTF("Tiến hóa mề đay");
+                } else if (conn.p.istb2) {
+                    m.writer().writeUTF("Cường hóa trang bị 2");
                 } else {
                     m.writer().writeUTF("Nâng cấp mề đay");
                 }

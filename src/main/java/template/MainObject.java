@@ -547,11 +547,14 @@ public class MainObject {
                 if (p.get_EffDefault(StrucEff.NOI_TAI_DIEN) != null) {
                     dame -= dame / 5;
                 }
+                if (map.mapsk == true){
+                    dame -= dame /10;
+                }
             }
             //</editor-fold>
             //<editor-fold defaultstate="collapsed" desc="ngựa...">
             if (ObjAtk.isPlayer()) {
-                if (p.get_EffDefault(EffTemplate.buffdame) != null || p.get_EffDefault(EffTemplate.bufftatca) != null){
+                if (p.get_EffDefault(EffTemplate.buffdame) != null || p.get_EffDefault(EffTemplate.bufftatca) != null || p.get_EffDefault(EffTemplate.buffvv) != null){
                     DamePlus += 0.2;
                 }
                 if (p.type_use_mount == Horse.NGUA_XICH_THO) {
@@ -753,7 +756,7 @@ public class MainObject {
                     }
                 }
                 boolean check = (dame < 0
-                        || (focus.isBoss() && Math.abs(focus.level - ObjAtk.level) >= 5 && focus.level < 139 && focus.template.mob_id != 178 && !Map.is_map_cant_save_site(focus.map_id))
+                        || (focus.isBoss() && Math.abs(focus.level - ObjAtk.level) >= 5 && focus.level < 139 && focus.template.mob_id != 193 && focus.template.mob_id != 178 && !Map.is_map_cant_save_site(focus.map_id))
                         || (focus.isBoss() && focus.template.mob_id == 178 && map.zone_id == 0 && ObjAtk.level > 89)
                         || (focus.isBoss() && focus.template.mob_id == 178 && map.zone_id == 2 && !(ObjAtk.level >= 90 && ObjAtk.level < 110))
                         || (focus.isBoss() && focus.template.mob_id == 178 && map.zone_id == 3 && ObjAtk.level < 110)) && !(map.ismapkogioihan());

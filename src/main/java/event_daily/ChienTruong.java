@@ -528,6 +528,11 @@ public class ChienTruong {
 					if(Util.random(10000) < 1 ){
 						id_item_leave3 = new short[]{(short) Util.random(4577, 4585)};
 					}
+					if (Manager.gI().event == 11){
+						if (Util.random(100) < 5){
+							id_item_leave4 = new short[]{337};
+						}
+					}
 					p.update_point_arena(1);
 					p.item.char_inventory(5);
 					break;
@@ -536,6 +541,9 @@ public class ChienTruong {
 					id_item_leave7 = new short[]{(short) Util.random(126, 146)};
 					if(Util.random(5000) < 1){
 						id_item_leave3 = new short[]{(short) Util.random(4577, 4585)};
+					}
+					if (Manager.gI().event == 11){
+						id_item_leave4 = new short[]{337};
 					}
 					p.update_point_arena(5);
 					p.item.char_inventory(5);

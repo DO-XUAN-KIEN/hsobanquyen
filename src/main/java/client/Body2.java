@@ -191,7 +191,7 @@ public class Body2 extends MainObject {
                 }
             }
         }
-        if(p.get_EffDefault(EffTemplate.buffhp) != null || p.get_EffDefault(EffTemplate.bufftatca) != null){
+        if(p.get_EffDefault(EffTemplate.buffhp) != null || p.get_EffDefault(EffTemplate.bufftatca) != null || p.get_EffDefault(EffTemplate.buffvv) != null){
             percent += 2000;
         }
         if (p.type_use_mount == Horse.HEO_RUNG || p.type_use_mount == Horse.CON_LAN || p.type_use_mount == Horse.SKELETON
@@ -294,7 +294,7 @@ public class Body2 extends MainObject {
         if (p.get_EffDefault(35) != null) {
             param += p.get_EffDefault(35).param;
         }
-        if(p.get_EffDefault(EffTemplate.buffpst) != null || get_EffDefault(EffTemplate.bufftatca) != null){
+        if(p.get_EffDefault(EffTemplate.buffpst) != null || get_EffDefault(EffTemplate.bufftatca) != null || p.get_EffDefault(EffTemplate.buffvv) != null){
             param += 2000;
         }
         EffTemplate eff_thien_su = getEffTinhTu(EffTemplate.GIAP_THIEN_SU);
@@ -313,7 +313,7 @@ public class Body2 extends MainObject {
         if (get_EffDefault(34) != null) {
             param += get_EffDefault(34).param;
         }
-        if (get_EffDefault(EffTemplate.buffne) != null || get_EffDefault(EffTemplate.bufftatca) != null){
+        if (get_EffDefault(EffTemplate.buffne) != null || get_EffDefault(EffTemplate.bufftatca) != null || p.get_EffDefault(EffTemplate.buffvv) != null){
             param += 2000;
         }
         if (giam_ne) {
@@ -365,7 +365,7 @@ public class Body2 extends MainObject {
         if (p.get_EffDefault(24) != null) {
             def += p.get_EffDefault(24).param;
         }
-        if (p.get_EffDefault(EffTemplate.buffpt) != null || get_EffDefault(EffTemplate.bufftatca) != null){
+        if (p.get_EffDefault(EffTemplate.buffpt) != null || get_EffDefault(EffTemplate.bufftatca) != null || p.get_EffDefault(EffTemplate.buffvv) != null){
             def += 2000;
         }
         if (p.type_use_mount == Horse.NGUA_CHIEN_GIAP || p.type_use_mount == Horse.VOI_MA_MUT) {
@@ -418,7 +418,11 @@ public class Body2 extends MainObject {
         if (ef != null) {
             def += (def * (ef.param / 100)) / 100;
         }
-        return (int) (def * 0.8);
+        //return (int) (def * 0.8);
+        int pt = (int) (def * 0.8);
+        if (pt >= 2_000_000_000)
+            pt = 2_000_000_000;
+        return pt;
     }
 
     @Override
@@ -716,6 +720,9 @@ public class Body2 extends MainObject {
 //            p.langPhuSuong();
 //        }
         if (pATK != null) {
+            if (pATK.typepk == 0 && (p.map.map_id != 136 && p.map != null)) {
+                pATK.hieuchien++;
+            }
             if (pATK.list_enemies.contains(this.name)) {
                 pATK.list_enemies.remove(this.name);
                 MapService.SendChat(map, pATK, "Này Thì Cắn :v", true);
@@ -758,7 +765,7 @@ public class Body2 extends MainObject {
             EffTemplate vet_thuong_sau = p.get_EffDefault(StrucEff.VET_THUONG_SAU);
             EffTemplate te_cong = p.get_EffDefault(StrucEff.TE_CONG);
             int percent = p.body.total_skill_param(29) + p.body.total_item_param(29);
-            if (p.get_EffDefault(EffTemplate.buffhoihp) != null || get_EffDefault(EffTemplate.bufftatca) != null){
+            if (p.get_EffDefault(EffTemplate.buffhoihp) != null || get_EffDefault(EffTemplate.bufftatca) != null || p.get_EffDefault(EffTemplate.buffvv) != null){
                 percent += 2000;
             }
             if (p.time_buff_hp < System.currentTimeMillis() && vet_thuong_sau == null && te_cong == null) {
@@ -817,6 +824,14 @@ public class Body2 extends MainObject {
                     p.map = m;
                     MapService.enter(p.map, p);
                 }
+            }
+            if(map.map_id == 137 && p.get_EffDefault(-130) == null){
+                Map m = Map.get_map_by_id(1)[0];
+                MapService.leave(map, p);
+                p.map = m;
+                p.x = 408;
+                p.y = 360;
+                MapService.enter(p.map, p);
             }
             if (map.zone_id == 7 && p.checkvip() < 1 && !Map.is_map_not_zone2(map.map_id) && !p.isSquire) {
                     Map m = Map.get_map_by_id(map.map_id)[0];

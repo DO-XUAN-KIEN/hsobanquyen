@@ -85,6 +85,7 @@ public class Map implements Runnable {
     public long time_add_bot;
     public UseItemArena Arena;
     public KingCup kingCupMap;
+    public boolean mapsk;
 
     public Map(int id, int zone, String[] npc_name, String name, byte typemap, boolean ismaplang, boolean showhs,
             int maxplayer, int maxzone, List<Vgo> vgo) throws IOException {
@@ -380,6 +381,16 @@ public class Map implements Runnable {
                     }
                     if (p.isDie && kingCupMap != null && p.time_die + 3000L > System.currentTimeMillis()) {
                         kingCupMap.refresh();
+                    }
+                    if (this.map_id == 136) {
+                        if(p.get_EffDefault(-129) == null){
+                            mapsk = true;
+                            Service.usepotion(p, 0, (int) -(p.hp * Util.random(10, 60) * 0.01));
+                        } else {
+                            mapsk = false;
+                        }
+                    }else {
+                        mapsk = false;
                     }
                     if (this.map_id == 50) { // pet_manager
                         long now_time = System.currentTimeMillis();
@@ -1380,7 +1391,7 @@ public class Map implements Runnable {
 
     public static boolean is_map_cant_save_site(short id) {
         return id == 48 || id == 88 || id == 89 || id == 90 || id == 91 || id == 82 || id == 102 || id == 100 || (id >= 83 && id <= 87) || (id >= 53 && id <= 61)
-                || Map.is_map_chien_truong(id) || id == 125 || id == 127 || id == 129 || id == 132 || id == 135 || id == 46;
+                || Map.is_map_chien_truong(id) || id == 125 || id == 127 || id == 129 || id == 132 || id == 135 || id == 46 || id == 137;
     }
     public static boolean is_map_not_zone2(short id) {
         return id == 48 || id == 88 || id == 89 || id == 90 || id == 91 || id == 82 || id == 102 || id == 100
