@@ -186,6 +186,53 @@ public class UseItem {
                 Service.send_time_box(conn.p, (byte) 1, new short[]{(short) ((eff.time - System.currentTimeMillis()) / 1000)}, new String[]{"TIME còn lại"});
                 break;
             }
+            case 354: {
+                conn.p.item.remove(4, id_potion, 1);
+                while (true) {
+                    short iditem = (short) Util.random(4633,4798);
+                    if (iditem >= 4656 && iditem <= 4675 || iditem == 4695 || iditem == 4699 || iditem == 4701 ||
+                            iditem == 4708 || iditem == 4761 || iditem == 4762 || iditem == 4768 || iditem == 4788 ||
+                            iditem == 4702) continue;
+                    List<box_item_template> ids = new ArrayList<>();
+                    ids.add(new box_item_template(iditem, (short) 1, (byte) 3));
+                    conn.p.item.add_item_bag3_default(iditem,0,true);
+                    Service.Show_open_box_notice_item(conn.p, "Bạn nhận được", ids);
+                    break;
+                }
+                break;
+
+            }
+            case 114: {
+                if (conn.ac_admin < 111){
+                    return;
+                }
+                while (true) {
+                    short iditem = (short) Util.random(4633,4798);
+                    if (iditem >= 4656 && iditem <= 4675 || iditem == 4695 || iditem == 4699 || iditem == 4701 ||
+                            iditem == 4708 || iditem == 4761 || iditem == 4762 || iditem == 4768 || iditem == 4788 ||
+                            iditem == 4702) continue;
+                    List<box_item_template> ids = new ArrayList<>();
+                    Item3 itbag = new Item3();
+                    itbag.id = iditem;
+                    itbag.name = ItemTemplate3.item.get(iditem).getName();
+                    itbag.clazz = ItemTemplate3.item.get(iditem).getClazz();
+                    itbag.type = ItemTemplate3.item.get(iditem).getType();
+                    itbag.level = ItemTemplate3.item.get(iditem).getLevel();
+                    itbag.icon = ItemTemplate3.item.get(iditem).getIcon();
+                    itbag.op = new ArrayList<>();
+                    itbag.op.addAll(ItemTemplate3.item.get(iditem).getOp());
+                    itbag.color = ItemTemplate3.item.get(iditem).getColor();
+                    itbag.part = ItemTemplate3.item.get(iditem).getPart();
+                    itbag.tier = 0;
+                    itbag.islock = false;
+                    itbag.time_use = 0;
+                    conn.p.item.add_item_bag3(itbag);
+                    conn.p.item.char_inventory(5);
+                    Service.Show_open_box_notice_item(conn.p, "Bạn nhận được", ids);
+                    break;
+                }
+                break;
+            }
             case 348: {
                 conn.p.item.remove(4,id_potion,1);
                 conn.p.item.char_inventory(4);

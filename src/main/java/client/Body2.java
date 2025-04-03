@@ -859,6 +859,7 @@ public class Body2 extends MainObject {
                 map.time_add_bot = System.currentTimeMillis() + 15000L;
                 map.bots.add(bot);
             }
+
 //            if (map.isMapLangPhuSuong() && !p.isSquire) {
 //                EffTemplate ef = get_EffDefault(-128);
 //                if (ef == null) {

@@ -809,7 +809,9 @@ public class MainObject {
                 }
                 ListEf.add(new Eff_TextFire(4, (int) dame));
             }
-
+            if(ObjAtk.isPlayer() && focus.isMob() && (focus.template.mob_id >= 89 && focus.template.mob_id <= 92) && (dame > 1 || dame < 1)){
+                dame = 1;
+            }
             //<editor-fold defaultstate="collapsed" desc="Phản Dame       ...">
             if (ObjAtk.isPlayer() && focus.get_PhanDame() > Util.random(10_000)) {
                 int DAMEpst = (int) (dame * 0.5);

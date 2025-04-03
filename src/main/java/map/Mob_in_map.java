@@ -176,7 +176,7 @@ public class Mob_in_map extends MainObject {
                                 LeaveItemMap.leave_vang(map, mob, (Player) mainAtk);
                             }
                         }else if (map_id == 137){
-                            if (Util.random(0,333) < 10) {
+                            if (Util.random(0,333) < 33 ) {
                                 LeaveItemMap.leave_item_by_type7(map, (short) Util.random(126,146), p, mob.index);
                             }
                             if (20 + 10 > Util.random(0, 300)) {
@@ -218,10 +218,10 @@ public class Mob_in_map extends MainObject {
                                 }
                             }
                             if (percent > Util.random(0, 300) && zone_id == 7 && !Map.is_map_not_zone2(map_id)) {
-                                if (Util.random(300) < 4) {
+                                if (Util.random(300) < 11) {
                                     LeaveItemMap.leave_item_by_type4(map, (short) Util.random(342,345),p,mob.index);
                                 }
-                                if (Util.random(500) < 4) {
+                                if (Util.random(500) < 11) {
                                     LeaveItemMap.leave_item_by_type4(map, (short) 346,p,mob.index);
                                 }
                                 if (Manager.gI().event == 11){
@@ -230,10 +230,10 @@ public class Mob_in_map extends MainObject {
                                     }
                                 }
                             } else if (percent > Util.random(0, 200) && zone_id == 8 && !Map.is_map_not_zone2(map_id)) {
-                                if (Util.random(100) < 4) {
+                                if (Util.random(100) < 11) {
                                     LeaveItemMap.leave_item_by_type4(map, (short) Util.random(342,345),p,mob.index);
                                 }
-                                if (Util.random(200) < 4) {
+                                if (Util.random(200) < 11) {
                                     LeaveItemMap.leave_item_by_type4(map, (short) 346,p,mob.index);
                                 }
                                 if (Manager.gI().event == 11){

@@ -88,6 +88,7 @@ public class Manager {
     public int time_login;
     public List<ItemSell3[]> itemsellTB;
     public short[] itempoitionsell;
+    public short[] item4sellcoin;
     public short[] item7sell;
     public short[] item7sell1;
     public VXMM2 vxmm;
@@ -97,6 +98,7 @@ public class Manager {
      public ChienTruong chien_truong;
     public List<NhanBan> list_nhanban;
     public static boolean isLockVX = false;
+    public static boolean isDauGia = false;
     public static boolean isGiaoDich = false;
     public static boolean isKmb = true;
     public static boolean isKTG = true;
@@ -629,6 +631,13 @@ public class Manager {
                         item_sell.get(Service.SHOP_MATERIRAL).add(item7sell[i]);
                     }
                     break;
+                }
+                case 98: {
+                    item4sellcoin = new short[jsar.size()];
+                    for (int i = 0; i < item4sellcoin.length; i++) {
+                        item4sellcoin[i] = Short.parseShort(jsar.get(i).toString());
+                        item_sell.get(Service.SHOP_POTION).add(item4sellcoin[i]);
+                    }
                 }
                 case 99: {
                     item7sell1 = new short[jsar.size()];

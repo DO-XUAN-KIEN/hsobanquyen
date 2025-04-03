@@ -2008,6 +2008,71 @@ public class Player extends Body2 {
         }
         return result;
     }
+    public synchronized String checkuser(){
+        String result = "";
+        String query = "SELECT`char` FROM `account` WHERE `tiennap` > 0 ORDER BY  tiennap DESC LIMIT 1;";
+        try ( Connection connection = SQL.gI().getConnection();  Statement ps = connection.createStatement();  ResultSet rs = ps.executeQuery(query)) {
+            rs.next();
+            result = rs.getString("char");
+        } catch (SQLException e) {
+            result = "";
+        }
+        return result;
+    }
+    public synchronized int checkdaugia(){
+        int result = 0;
+        String query = "SELECT`tiennap` FROM `account` WHERE `tiennap` > 0 ORDER BY  tiennap DESC LIMIT 1;";
+        try ( Connection connection = SQL.gI().getConnection();  Statement ps = connection.createStatement();  ResultSet rs = ps.executeQuery(query)) {
+            rs.next();
+            result = rs.getInt("tiennap");
+        } catch (SQLException e) {
+            result = 0;
+        }
+        return result;
+    }
+    public synchronized int checkID(){
+        int result = 0;
+        String query = "SELECT`id` FROM `account` WHERE `tiennap` > 0 ORDER BY  tiennap DESC LIMIT 1;";
+        try ( Connection connection = SQL.gI().getConnection();  Statement ps = connection.createStatement();  ResultSet rs = ps.executeQuery(query)) {
+            rs.next();
+            result = rs.getInt("id");
+        } catch (SQLException e) {
+            result = 0;
+        }
+        return result;
+    }
+    public synchronized boolean update_daugia(int nap_exchange) throws IOException {
+        String query = "SELECT `tiennap` FROM `account` WHERE `user` = '" + conn.user + "' LIMIT 1;";
+        int nap_old = 0;
+        try (Connection connection = SQL.gI().getConnection(); Statement ps = connection.createStatement(); ResultSet rs = ps.executeQuery(query)) {
+            rs.next();
+            nap_old = rs.getInt("tiennap");
+            nap_old += nap_exchange;
+            if (ps.executeUpdate(
+                    "UPDATE `account` SET `tiennap` = " + nap_old + " WHERE `user` = '" + conn.user + "'") == 1) {
+                connection.commit();
+            }
+        } catch (SQLException e) {
+            Service.send_notice_box(conn, "Đã xảy ra lỗi-p3");
+        }
+        return true;
+    }
+    public synchronized boolean update_vip(int nap_exchange) throws IOException {
+        String query = "SELECT `Vip` FROM `account` WHERE `user` = '" + conn.user + "' LIMIT 1;";
+        int nap_old = 0;
+        try (Connection connection = SQL.gI().getConnection(); Statement ps = connection.createStatement(); ResultSet rs = ps.executeQuery(query)) {
+            rs.next();
+            nap_old = rs.getByte("Vip");
+            nap_old += nap_exchange;
+            if (ps.executeUpdate(
+                    "UPDATE `account` SET `Vip` = " + nap_old + " WHERE `user` = '" + conn.user + "'") == 1) {
+                connection.commit();
+            }
+        } catch (SQLException e) {
+            Service.send_notice_box(conn, "Đã xảy ra lỗi4");
+        }
+        return true;
+    }
     public synchronized boolean history_coin(int coin_exchange, String log) throws IOException {
         String query
                 = "INSERT INTO `history_coin` (`user_id`, `user_name`, `name_player` , `coin_change`, `logger`) VALUES ('"

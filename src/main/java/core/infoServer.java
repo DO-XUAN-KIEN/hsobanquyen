@@ -10,7 +10,7 @@ package core;
  * @author chien
  */
 public class infoServer {
-    public static String NameServer= "Hiệp Sĩ Admin";
-    public static String Website= "knightadmin.top";
+    public static String NameServer= "Hiệp Sĩ EASY";
+    public static String Website= "EASY.top";
     
 }

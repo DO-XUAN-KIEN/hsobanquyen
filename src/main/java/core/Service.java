@@ -1277,6 +1277,15 @@ public class Service {
                 }
                 break;
             }
+            case 98: {
+                m.writer().writeUTF("Cửa hàng item sử dụng");
+                m.writer().writeByte(0);
+                m.writer().writeShort(Manager.gI().item4sellcoin.length);
+                for (int i = 0; i < Manager.gI().item4sellcoin.length; i++) {
+                    m.writer().writeShort(Manager.gI().item4sellcoin[i]);
+                }
+                break;
+            }
             case 99: {
                 m.writer().writeUTF("Code by Vĩnh Lỏh");
                 m.writer().writeByte(4);
@@ -1882,6 +1891,12 @@ public class Service {
                     }
                     Log.gI().add_log(p.name, "Trừ " + price + " mua đồ lisa");
                     p.update_vang(-price);
+                }else if (ItemTemplate4.item.get(idbuy).getPricetype() == 1 && (idbuy >= 342 || idbuy == 183 || idbuy == 194 || idbuy == 53 || idbuy == 21)){
+                    if (p.checkcoin() < price) {
+                        send_notice_box(p.conn, "Không đủ " + price + " coin");
+                        return;
+                    }
+                    p.update_coin((int) -price);
                 } else {
                     if (p.get_ngoc() < price) {
                         send_notice_box(p.conn, "Không đủ " + price + " ngọc");
@@ -2045,9 +2060,7 @@ public class Service {
                                     itbag.name = ItemTemplate3.item.get(idbuy).getName();
                                     itbag.tier = 0;
                                     itbag.op = new ArrayList<>();
-                                    for (int i = 0; i < itemsellcoin.op.size(); i++) {
-                                        itbag.op.add(new Option(itemsellcoin.op.get(i).id, itemsellcoin.op.get(i).getParam(0)));
-                                    }
+                                    itbag.op.addAll(itemsellcoin.op);
                                     itbag.time_use = 0;
                                     p.item.add_item_bag3(itbag);
                                     p.item.char_inventory(3);
@@ -2078,11 +2091,9 @@ public class Service {
                                     itbag.part = ItemTemplate3.item.get(idbuy).getPart();
                                     itbag.islock = false;
                                     itbag.name = ItemTemplate3.item.get(idbuy).getName();
-                                    itbag.tier = 15;
+                                    itbag.tier = 0;
                                     itbag.op = new ArrayList<>();
-                                    for (int i = 0; i < itemshoptt.op.size(); i++) {
-                                        itbag.op.add(new Option(itemshoptt.op.get(i).id, itemshoptt.op.get(i).getParam(0)));
-                                    }
+                                    itbag.op.addAll(itemshoptt.op);
                                     itbag.time_use = 0;
                                     p.item.add_item_bag3(itbag);
                                     p.item.char_inventory(3);

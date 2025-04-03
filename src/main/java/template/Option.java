@@ -60,21 +60,23 @@ public class Option {
             return param;
         }
         //
-        int parbuffer = this.param;
-
+        long parbuffer = this.param;
+        if (this.id >= 0 && this.id <= 6) {
+            return (int) (parbuffer*8) / 5;
+        }
         if (this.id >= 29 && this.id <= 36 || this.id >= 16 && this.id <= 22 || this.id == 41) {
             parbuffer += 20 * tier;
-            return parbuffer;
+            return (int) parbuffer;
         }
 
         if (this.id >= 23 && this.id <= 26) {
-            return (parbuffer + tier);
+            return (int) (parbuffer + tier);
         }
         if (this.id == 42) {
-            return (parbuffer + tier * 400);
+            return (int) (parbuffer + tier * 400);
         }
         if ((this.id >= 7 && this.id <= 13) || this.id == 15 || this.id == 27 || this.id == 28) {
-            return (parbuffer + 100 * tier);
+            return (int) (parbuffer + 100 * tier);
         }
         if ((this.id == 37 || this.id == 38) && tier < 9) {
             return 1;
@@ -82,11 +84,11 @@ public class Option {
         if (tier > 15) {
             tier = 15;
         }
-        if ((this.id >= 0 && this.id <= 6) || this.id == 14 || this.id == 40) {
+        if (this.id == 14 || this.id == 40) {
             parbuffer = (parafterupdate[tier] * this.param) / 100;
-            return parbuffer;
+            return (int) parbuffer;
         }
-        return parbuffer;
+        return (int) parbuffer;
     }
 
     public int getParamMD(int tier) {

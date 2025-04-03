@@ -125,8 +125,8 @@ public class DoSieucap {
                 Service.send_notice_box(conn, "Trang bị đã đạt cấp tối đa!");
                 return;
             }
-            long vang_req = (temp.tierStar + 1) * 10_000_000;
-            int coin_req = (temp.tierStar + 1) * 50_000;
+            long vang_req = 1_000_000;
+            int coin_req = 200_000;
             if (conn.p.get_vang() < vang_req){
                 Service.send_notice_box(conn,"Không đủ "+vang_req+ "vàng");
                 return;
@@ -139,9 +139,9 @@ public class DoSieucap {
             conn.p.update_coin(-coin_req);
             boolean suc;
             if (temp.tierStar < 10) {
-                suc = Util.random(66666) < ti_le_nang_do[temp.tierStar] || (conn.ac_admin > 111 && Manager.BuffAdmin) || conn.p.mm_tt >= 40;
+                suc = Util.random(66666) < ti_le_nang_do[temp.tierStar] || (conn.ac_admin > 111 && Manager.BuffAdmin) || conn.p.mm_tt >= 20;
             }else {
-                suc = Util.random(111111) < ti_le_nang_do[temp.tierStar] || (conn.ac_admin > 111 && Manager.BuffAdmin) || conn.p.mm_tt >= 60;
+                suc = Util.random(111111) < ti_le_nang_do[temp.tierStar] || (conn.ac_admin > 111 && Manager.BuffAdmin) || conn.p.mm_tt >= 40;
             }
             if (suc) {
                 List<Option> ops = ItemStar.GetOpsItemStarUpgrade(temp.clazz, temp.type, temp.id, temp.tierStar + 1, temp.op);
@@ -155,11 +155,21 @@ public class DoSieucap {
                 conn.p.setnldothan();
                 for (int i = 0; i < temp.op.size(); i++) {
                     Option op = temp.op.get(i);
-                    if (op.id >= 0 && op.id <= 99) {
-                        if (op.id == 37 || op.id == 38){
-                            op.setParam(3);
-                        }else {
-                            op.setParam(op.getParam(4));
+                    if (op.id >= 0 && op.id <= 99 && op.id != 37 && op.id != 38) {
+                        if (op.id >= 0 && op.id < 7) {
+                            op.setParam(op.getParam(0) + 300);
+                        }else if (op.id >= 7 && op.id <= 13) {
+                            op.setParam((int) (op.getParam(0) * 1.005));
+                        }else if (op.id >= 23 && op.id <= 26) {
+                            op.setParam(op.getParam(0)+1);
+                        }else if (op.id >= 27 && op.id <= 36) {
+                            op.setParam((int) (op.getParam(0) * 1.002));
+                        } else if (op.id == 14 || op.id == 15){
+                            op.setParam(op.getParam(0) + 1);
+                        } else if (!(op.id >= 33 && op.id <= 36)) {
+                            op.setParam(op.getParam(0)+ 10);
+                        } else {
+                            op.setParam(op.getParam(0));
                         }
                     }
                     if (op != null && op.id >= -128 && op.id <= -80 || (op.id == 99)) {
@@ -319,8 +329,8 @@ public class DoSieucap {
                         Service.send_notice_box(conn, "Trang bị đã đạt cấp tối đa!");
                         return;
                     }
-                    long vang_req = (item.tierStar + 1) * 10_000_000;
-                    int coin_req = (item.tierStar + 1) * 50_000;
+                    long vang_req = 1_000_000;
+                    int coin_req = 200_000;
                     if (conn.p.get_vang() < vang_req){
                         Service.send_notice_box(conn,"Không đủ "+vang_req+ "vàng");
                         return;
@@ -349,9 +359,9 @@ public class DoSieucap {
                         conn.p.update_coin(-coin_req);
                         boolean suc;
                         if (item.tierStar < 10) {
-                            suc = Util.random(77777) < ti_le_nang_md[item.tier - 15] || (conn.ac_admin > 111 && Manager.BuffAdmin) || conn.p.mm_md >= 40;
+                            suc = Util.random(77777) < ti_le_nang_md[item.tier - 15] || (conn.ac_admin > 111 && Manager.BuffAdmin) || conn.p.mm_md >= 20;
                         }else {
-                            suc = Util.random(111111) < ti_le_nang_md[item.tier - 15] || (conn.ac_admin > 111 && Manager.BuffAdmin) || conn.p.mm_md >= 60;
+                            suc = Util.random(111111) < ti_le_nang_md[item.tier - 15] || (conn.ac_admin > 111 && Manager.BuffAdmin) || conn.p.mm_md >= 40;
                         }
 //                        if (item.tier >= 15 && item.tier <= 30) {
 //                            suc = Util.random(100000) < ti_le_nang_md[item.tier - 15] || (conn.ac_admin > 3 && Manager.BuffAdmin);
@@ -365,7 +375,7 @@ public class DoSieucap {
                             item.color = 5;
                             item.tier++;
                             item.tierStar++;
-                            item.icon = 13218;
+                            item.icon = 13180;
                             item.UpdateName();
                             conn.p.setnldothan();
                             if(item.tier == 16){
@@ -471,9 +481,9 @@ public class DoSieucap {
 //                                int tier = item.tierStar >= 0 && item.tierStar < values.length ? values[item.tierStar] : item.tierStar;
                                 m_send.writer().writeShort(493);
                                 if (conn.version >= 270) {
-                                    m_send.writer().writeShort(100);
+                                    m_send.writer().writeShort(5);
                                 } else {
-                                    m_send.writer().writeByte(100);
+                                    m_send.writer().writeByte(5);
                                 }
                                 conn.addmsg(m_send);
                                 m_send.cleanup();
@@ -501,17 +511,13 @@ public class DoSieucap {
 //                        int tier = item.tierStar >= 0 && item.tierStar < values.length ? values[item.tierStar] : item.tierStar;
                         for (int i = 0; i < 5; i++) {
                             if (i < conn.p.NLtb2.length) {
-                                if (conn.p.item.total_item_by_id(7, conn.p.NLtb2[i]) < 100 && (conn.ac_admin < 4 || !Manager.BuffAdmin)) {
+                                if (conn.p.item.total_item_by_id(7, conn.p.NLtb2[i]) < 5 && (conn.ac_admin < 4 || !Manager.BuffAdmin)) {
                                     Service.send_notice_box(conn, "Không đủ " + ItemTemplate7.item.get(conn.p.NLtb2[i]).getName() + "!");
                                     return;
                                 }
                             }
                         }
-                        for (int i = 0; i < 5; i++) {
-                            if (i < conn.p.NLtb2.length) {
-                                conn.p.item.remove(7, conn.p.NLtb2[i], 100);
-                            }
-                        }
+                        conn.p.item.remove(7, 493, 5);
                         int ran = Util.random(1000);
                         boolean suc =(item.tier >= 0 && item.tier < 5) && ran > 200 ||
                                 (item.tier >= 5 && item.tier < 10) && ran > 300 ||
